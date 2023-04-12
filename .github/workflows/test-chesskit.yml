@@ -1,0 +1,34 @@
+name: Test ChessKit
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+    
+env:
+  DEVELOPER_DIR: /Applications/Xcode_14.2.app/Contents/Developer
+
+jobs:
+  test:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build Package
+        run: swift build -v
+
+      - name: Run Tests
+        run: swift test --enable-code-coverage -v
+
+      - name: Gather code coverage
+        run: xcrun llvm-cov export -format="lcov" .build/debug/ChessKitPackageTests.xctest/Contents/MacOS/ChessKitPackageTests -instr-profile .build/debug/codecov/default.profdata > coverage_report.lcov
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage_report.lcov
+          verbose: true
