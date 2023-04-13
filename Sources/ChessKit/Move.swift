@@ -54,6 +54,7 @@ public struct Move: Equatable, Hashable {
     /// The comment associated with a move.
     public var comment: String
     
+    /// Initialize a move with the given characteristics.
     public init(
         result: Result,
         piece: Piece,
@@ -72,6 +73,9 @@ public struct Move: Equatable, Hashable {
         self.comment = comment
     }
     
+    /// Initialize a move with a given SAN string.
+    ///
+    /// This initializer fails if the provided SAN string is invalid.
     public init?(san: String, color: Piece.Color, position: Position) {
         guard let move = SANParser.parse(move: san, for: color, in: position) else {
             return nil
@@ -98,6 +102,9 @@ public struct Move: Equatable, Hashable {
 extension Move {
     
     /// Single move assessments.
+    ///
+    /// The raw String value corresponds to what is displayed
+    /// in a PGN string.
     public enum Assessment: String {
         case null = "$0"
         case good = "$1"
@@ -110,6 +117,7 @@ extension Move {
         case singular = "$8"
         case worst = "$9"
         
+        /// The human-readable move assessment notation.
         public var notation: String {
             switch self {
             case .null:         return ""

@@ -17,12 +17,27 @@ public struct MovePair: Hashable {
     /// made a move yet, or the game ended after white's move.
     public var black: Move?
     
+    /// Initialize a `MovePair` with the given moves and turn number.
+    ///
+    /// - parameter turnNumber: The number of the current move.
+    /// - parameter white: The white move in the pair.
+    /// - parameter black: The black move in the pair, if applicable.
+    ///
+    /// Each turn has a white move but not necessarily a black move
+    /// if black hasn't moved yet.
+    ///
     public init(turnNumber: Int = 1, white: Move, black: Move? = nil) {
         self.turnNumber = turnNumber
         self.white = white
         self.black = black
     }
     
+    /// Update the attribute of a particular move.
+    ///
+    /// - parameter color: The color of the move in the pair to update.
+    /// - parameter keyPath: The key path of the move to update.
+    /// - parameter newValue: The new value to set the key path to.
+    ///
     public mutating func updateMove<T>(
         with color: Piece.Color,
         keyPath: WritableKeyPath<Move, T>,
@@ -34,6 +49,13 @@ public struct MovePair: Hashable {
         }
     }
     
+    /// Returns the move within the move pair corresponding to the
+    /// provided color.
+    ///
+    /// - parameter color: The color of the requested move.
+    /// - returns: The move corresponding to `color`, or `nil`
+    /// if a move of that color doesn't exist (only applicable
+    /// for `Piece.Color.black`).
     public func move(for color: Piece.Color) -> Move? {
         switch color {
         case .white:    return white
@@ -42,20 +64,37 @@ public struct MovePair: Hashable {
     }
 }
 
+/// Represents a chess game.
+///
+/// This object is the entry point for interacting with a full
+/// chess game within `ChessKit`. It provides methods for
+/// making moves and publishes the played moves in an observable way.
+///
 public class Game: ObservableObject {
     
-    @Published public var moves: [Int: MovePair]
+    @Published public private(set) var moves: [Int: MovePair]
     var positions: [Position]
     
     var currentPosition: Position? {
         positions.last
     }
     
-    public init(startingWith position: Position) {
+    /// Initialize a game with a starting position.
+    ///
+    /// - parameter position: The starting position of the game.
+    /// Defaults to the starting position.
+    ///
+    public init(startingWith position: Position = .standard) {
         moves = [:]
         positions = [position]
     }
     
+    /// Initialize a game with a PGN string.
+    ///
+    /// - parameter pgn: A string containing a PGN representation of
+    /// a game.
+    ///
+    /// This initalizer fails if the PGN is invalid.
     public init?(pgn: String) {
         guard let parsed = PGNParser.parse(game: pgn) else {
             return nil
@@ -65,6 +104,12 @@ public class Game: ObservableObject {
         positions = parsed.positions
     }
     
+    /// Perform the provided move in the game.
+    ///
+    /// - parameter move: The move to perform.
+    /// - parameter turn: The turn of the move.
+    /// - parameter color: The color of the piece that is performing the move.
+    ///
     public func make(move: Move, turn: Int, for color: Piece.Color) {
         guard let currentPosition = positions.last else { return }
         
@@ -97,7 +142,7 @@ public class Game: ObservableObject {
         positions.append(newPosition)
     }
     
-    /// The FEN represenation of the game.
+    /// The PGN represenation of the game.
     public var pgn: String {
         PGNParser.convert(game: self)
     }

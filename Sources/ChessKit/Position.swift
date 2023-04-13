@@ -27,6 +27,7 @@ public struct Position {
     /// Keeps track of the number of moves in a game for the current position.
     public private(set) var clock: Clock
     
+    /// Initialize a position with a given array of pieces and characteristics.
     init(
         pieces: [Piece],
         sideToMove: Piece.Color = .white,
@@ -41,6 +42,9 @@ public struct Position {
         self.clock = clock
     }
     
+    /// Initialize a move with a provided FEN string.
+    ///
+    /// This initializer fails if the provided FEN string is invalid.
     public init?(fen: String) {
         guard let parsed = FENParser.parse(fen: fen) else {
             return nil
@@ -140,6 +144,7 @@ public struct Position {
 }
 
 extension Position {
+    /// A random chess position that can be used for testing.
     public static let test = Position(pieces: [
         Piece(.pawn,   color: .black, square: .c3),
         Piece(.bishop, color: .black, square: .f4),
@@ -151,5 +156,6 @@ extension Position {
         Piece(.king,   color: .white, square: .g3)
     ])
     
+    /// The standard starting chess position.
     public static let standard = Position(fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")!
 }

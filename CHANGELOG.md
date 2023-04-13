@@ -1,3 +1,8 @@
+# [Unreleased]
+
+* Add documentation for all public members
+* Add default starting position for `Game` initializer
+
 # ChessKit 0.1.1
 Released Wednesday, April 12, 2023.
 

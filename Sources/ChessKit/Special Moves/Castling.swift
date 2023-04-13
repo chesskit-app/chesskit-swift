@@ -52,6 +52,10 @@ struct LegalCastlings: Equatable {
     
 }
 
+/// Represents a castling move in a standard chess game.
+///
+/// Contains various characteristics of the castling move
+/// such as king and rook start and end squares and notation.
 public struct Castling: Equatable, Hashable {
     
     /// Kingside castle for black.

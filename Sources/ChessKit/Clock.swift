@@ -14,9 +14,9 @@ public struct Clock {
     
     /// The number of halfmoves, incremented after each move.
     /// It is reset to zero after each capture or pawn move.
-    var halfmoves = 0
+    public var halfmoves = 0
     
     /// The number of fullmoves, incremented after each Black move.
-    var fullmoves = 1
+    public var fullmoves = 1
     
 }

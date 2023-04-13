@@ -46,15 +46,18 @@ public enum Square: Equatable, CaseIterable {
 
     /// The rank on the chess board, from 1 to 8.
     public struct Rank: ExpressibleByIntegerLiteral, Equatable, Hashable {
-        
+        /// The possible range of Rank numbers.
         public static let range = 1...8
         
+        /// The integer value of the Rank.
         public var value: Int
         
+        /// Initialize a Rank with a provided integer value.
         public init(_ value: Int) {
             self.value = value.bounded(by: Rank.range)
         }
         
+        /// Initialize a Rank with a provided integer literal.
         public init(integerLiteral value: IntegerLiteralType) {
             self.init(value)
         }

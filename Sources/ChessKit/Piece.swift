@@ -16,7 +16,7 @@ public struct Piece: Equatable, Hashable {
         }
         
         /// Toggles to the opposite color value.
-        mutating public func toggle() {
+        public mutating func toggle() {
             self = self.opposite
         }
     }

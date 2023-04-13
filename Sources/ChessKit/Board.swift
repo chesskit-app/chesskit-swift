@@ -3,6 +3,10 @@
 //  ChessKit
 //
 
+/// Delegate protocol that allows the implementer to receive
+/// events related to changes in position on the board such
+/// as pawn promotions and end results.
+/// 
 public protocol BoardDelegate: AnyObject {
     func didPromote(with move: Move)
     func didEnd(with result: Board.EndResult)
@@ -17,6 +21,7 @@ public struct Board {
     
     public weak var delegate: BoardDelegate?
     
+    /// The current position represented on the board.
     public var position: Position
     
     /// Specifies whether this board object is temporary.
@@ -29,6 +34,12 @@ public struct Board {
     
     // MARK: - Initializer
     
+    /// Initializes a board with the given `position`.
+    ///
+    /// - parameter position: The starting position of the board.
+    /// Defaults to `Position.standard` which is the starting position
+    /// for a standard chess game.
+    ///
     public init(position: Position = .standard) {
         self.position = position
         isTemporary = false
@@ -41,6 +52,25 @@ public struct Board {
     
     // MARK: - Moves
     
+    /// Moves the piece at a given square to a new square.
+    ///
+    /// - parameter start: The starting square of the piece.
+    /// - parameter end: The ending square of the piece.
+    /// - returns: The `Move` object representing the move.
+    /// If `start` doesn't contain a piece or `end` is not a valid legal move
+    /// for the piece at `start`, `nil` is returned.
+    ///
+    /// The return value can be ignored if the intention is only to perform
+    /// the move but not capture the details in any way. If the move is
+    /// not legal, this method returns without performing any actions.
+    ///
+    /// This method also handles all the side effects of a given move.
+    ///
+    /// For example:
+    /// - Moving the king in a castling move will also move the
+    /// corresponding rook.
+    /// - Moving to capture a piece removes the captured piece from the board.
+    ///
     @discardableResult
     public mutating func move(pieceAt start: Square, to end: Square) -> Move? {
         guard let piece = position.piece(at: start), canMove(piece: piece, to: end) else {
@@ -117,6 +147,11 @@ public struct Board {
     
     // MARK: - Move legality checking
     
+    /// Checks if a piece at a given square can be moved to a new square.
+    ///
+    /// - parameter square: The square currently containing the piece.
+    /// - parameter newSquare: The new square for the piece.
+    /// - returns: Whether or not the move is valid.
     public func canMove(pieceAt square: Square, to newSquare: Square) -> Bool {
         if let piece = position.piece(at: square) {
             return canMove(piece: piece, to: newSquare)
@@ -152,6 +187,11 @@ public struct Board {
         }
     }
     
+    /// Returns the possible legal moves for a piece at a given square.
+    ///
+    /// - parameter square: The square containing the piece to check.
+    /// - returns: An array of squares containing legal moves or an empty
+    /// array if there are no legal moves or if there is no piece at `square`.
     public func legalMoves(forPieceAt square: Square) -> [Square] {
         if let piece = position.piece(at: square) {
             return legalMoves(for: piece)
@@ -391,6 +431,16 @@ public struct Board {
         }
     }
     
+    /// Completes a pawn promotion move.
+    ///
+    /// - parameter move: The move that triggered the promotion.
+    /// - parameter kind: The piece kind to promote a pawn to.
+    /// - returns: The final move containing the promoted piece.
+    ///
+    /// Call this when a pawn reaches the opposite side of the board
+    /// and a piece to promote to is selected to complete the promotion
+    /// move.
+    ///
     @discardableResult
     public mutating func completePromotion(of move: Move, to kind: Piece.Kind) -> Move {
         let promotedPiece = Piece(kind, color: move.piece.color, square: move.end)
@@ -415,9 +465,14 @@ public struct Board {
         }
     }
     
+    /// Represents an end result of a standard chess game.
     public enum EndResult: Equatable {
-        case win(Piece.Color), draw(DrawType)
+        /// The board represents a win for the given color.
+        case win(Piece.Color)
+        /// The board represents a draw with a given reason.
+        case draw(DrawType)
         
+        /// The type of draw represented on the board.
         public enum DrawType: String {
             case agreement
             case insufficientMaterial
