@@ -8,6 +8,6 @@ on:
 
 jobs:
   test:
-    uses: chesskit-app/workflows/test-swift-package.yml@master
+    uses: chesskit-app/workflows/.github/workflows/test-swift-package.yml@master
     runs-on: macos-latest
     secrets: inherit
