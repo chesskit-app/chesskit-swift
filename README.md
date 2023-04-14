@@ -6,14 +6,17 @@ A Swift package for implementing chess logic.
 
 ## Usage
 
-* Add a package dependency to your Xcode project or Swift Package with the following URL:
-`https://github.com/chesskit-app/chesskit-swift`
+* Add a package dependency to your Xcode project or Swift Package:
+``` swift
+.package(url: "https://github.com/chesskit-app/chesskit-swift", from: "0.1.0")
+```
 
-* Import `ChessKit` to use it in a source file:
+* Next you can import `ChessKit` to use it in your Swift code:
 ``` swift
 import ChessKit
 
 // ...
+
 ```
 
 ## Features
