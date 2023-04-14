@@ -9,5 +9,4 @@ on:
 jobs:
   test:
     uses: chesskit-app/workflows/.github/workflows/test-swift-package.yml@master
-    runs-on: macos-latest
     secrets: inherit
