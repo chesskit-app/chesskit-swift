@@ -10,3 +10,5 @@ jobs:
   test:
     uses: chesskit-app/workflows/.github/workflows/test-swift-package.yml@master
     secrets: inherit
+    with:
+       test_bundle: ChessKitPackageTests
