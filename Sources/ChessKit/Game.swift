@@ -147,4 +147,15 @@ public class Game: ObservableObject {
         PGNParser.convert(game: self)
     }
     
+    /// Annotate the move of a given `color` for a given `turn`.
+    public func annotate(
+        moveAt turn: Int,
+        color: Piece.Color,
+        assessment: Move.Assessment,
+        comment: String = ""
+    ) {
+        moves[turn]?.updateMove(with: color, keyPath: \.assessment, newValue: assessment)
+        moves[turn]?.updateMove(with: color, keyPath: \.comment, newValue: comment)
+    }
+    
 }
