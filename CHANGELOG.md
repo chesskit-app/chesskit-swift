@@ -1,16 +1,19 @@
 # [Unreleased]
 
 #### Added
-* `MoveIndex` struct and `MoveTree` class to track move turns and variations.
+* `MoveTree` and `MoveTree.Index` objects to track move turns and variations.
     * `Game.moves` is now a `MoveTree` object instead of `[Int: MovePair]`
-    * `MoveIndex` includes piece color so it can be used to directly identify any single move within a game
+    * `MoveTree.Index` includes piece color and variation so it can be used to directly identify any single move within a game
     * Use the properties and functions of `MoveTree` to retrieve moves within the tree as needed
+
+* `make(move:index:)` and `make(moves:index:)` with ability to make moves on `Game` with SAN strings for convenience
+    * For example: `game.make(moves: ["e4", "e5"])`
 
 #### Removed
 * `Game.annotateMove`
     * Modify `Move.assessment` and `Move.comment` directly instead
 * `MovePair`
-    * Use `Move` in conjuction with `MoveIndex` to track move indicies
+    * Use `Move` in conjuction with `MoveTree.Index` to track move indicies
 * `color` parameter from `SANParser.parse()`
     * The color is now obtained from the `sideToMove` in the provided `position`
 
