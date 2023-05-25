@@ -13,18 +13,20 @@ public class SANParser {
     /// Parses a SAN string and returns a move.
     ///
     /// - parameter san: The SAN string of a move.
-    /// - parameter color: The color of the piece being moved.
     /// - parameter position: The current chess position to make the move from.
     /// - returns: A Swift representation of a move, or `nil` if the
     ///     SAN is invalid.
     ///
+    /// Make sure the provided `position` has the correct `sideToMove`
+    /// set or the parsing may fail due to invalid moves.
+    ///
     public static func parse(
         move san: String,
-        for color: Piece.Color,
         in position: Position
     ) -> Move? {
         guard isValid(san: san) else { return nil }
         
+        let color = position.sideToMove
         var checkstate = Move.CheckState.none
         
         if san.contains("#") {

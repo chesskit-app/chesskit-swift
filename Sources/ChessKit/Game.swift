@@ -5,63 +5,192 @@
 
 import Foundation
 
-/// Contains a pair of moves (white and black) and the associated turn number.
-public struct MovePair: Hashable {
-    /// The turn number of the move.
-    public var turnNumber: Int
-    /// The white move.
-    public var white: Move
-    /// The black move.
-    ///
-    /// This is optional since black goes second and may not have
-    /// made a move yet, or the game ended after white's move.
-    public var black: Move?
+public class MoveTree {
     
-    /// Initialize a `MovePair` with the given moves and turn number.
-    ///
-    /// - parameter turnNumber: The number of the current move.
-    /// - parameter white: The white move in the pair.
-    /// - parameter black: The black move in the pair, if applicable.
-    ///
-    /// Each turn has a white move but not necessarily a black move
-    /// if black hasn't moved yet.
-    ///
-    public init(turnNumber: Int = 1, white: Move, black: Move? = nil) {
-        self.turnNumber = turnNumber
-        self.white = white
-        self.black = black
+    private class Node {
+        
+        /// The move for this node.
+        let move: Move
+        /// The move index for this node.
+        var index: MoveIndex = .minimum
+        /// The previous node.
+        var previous: Node?
+        /// The next node.
+        weak var next: Node?
+        /// Children nodes (i.e. variation moves)
+        var children: [Node] = []
+        
+        init(move: Move) {
+            self.move = move
+        }
+        
     }
     
-    /// Update the attribute of a particular move.
+    private var dictionary: [MoveIndex: Node] = [:]
+    private var root: Node?
+    
+    /// Returns the move at the specified index.
     ///
-    /// - parameter color: The color of the move in the pair to update.
-    /// - parameter keyPath: The key path of the move to update.
-    /// - parameter newValue: The new value to set the key path to.
+    /// - parameter index: The move index to query.
+    /// - returns: The move at the given index, or `nil` if no
+    /// move exists at that index.
     ///
-    public mutating func updateMove<T>(
-        with color: Piece.Color,
-        keyPath: WritableKeyPath<Move, T>,
-        newValue: T
-    ) {
+    public func move(at index: MoveIndex) -> Move? {
+        dictionary[index]?.move
+    }
+    
+    public subscript(_ index: MoveIndex) -> Move? {
+        move(at: index)
+    }
+    
+    /// The indices of all the moves stored in the tree, sorted ascending.
+    public var indices: [MoveIndex] {
+        dictionary.keys.sorted(by: <)
+    }
+    
+    /// Adds a move to the move tree.
+    ///
+    /// - parameter move: The move to add to the tree.
+    /// - parameter moveIndex: The `MoveIndex` of the parent move, if applicable.
+    /// If `moveIndex` is `nil`, the move tree is cleared and the provided
+    /// move is set to the `head` of the move tree.
+    ///
+    /// - returns: The move index resulting from the addition of the move.
+    @discardableResult
+    public func add(
+        move: Move,
+        toParentIndex moveIndex: MoveIndex? = nil
+    ) -> MoveIndex {
+        let newNode = Node(move: move)
+        
+        guard let root, let moveIndex else {
+            let index = MoveIndex.minimum.next
+            
+            newNode.index = index
+            self.root = newNode
+            
+            dictionary = [index: newNode]
+            return index
+        }
+        
+        let parent = dictionary[moveIndex] ?? root
+        newNode.previous = parent
+        
+        var newIndex = moveIndex.next
+        
+        print("=====")
+        print(move.san)
+        print(parent.move.san)
+        
+        if parent.next == nil {
+            parent.next = newNode
+        } else {
+            parent.children.append(newNode)
+            
+            while indices.contains(newIndex) {
+                newIndex.variation += 1
+                print(newIndex)
+            }
+        }
+        
+        dictionary[newIndex] = newNode
+        newNode.index = newIndex
+        
+        return newIndex
+    }
+    
+    public func previousIndex(for index: MoveIndex) -> MoveIndex? {
+        dictionary[index]?.previous?.index
+    }
+    
+    public func nextIndex(for index: MoveIndex) -> MoveIndex? {
+        dictionary[index]?.next?.index
+    }
+    
+}
+
+public struct MoveIndex: Comparable, Hashable, CustomStringConvertible {
+    
+    public var description: String {
+        "[\(number), \(color), #\(variation)]"
+    }
+    
+    public let number: Int
+    public let color: Piece.Color
+    public var variation: Int
+    
+    public init(number: Int, color: Piece.Color, variation: Int) {
+        self.number = number
+        self.color = color
+        self.variation = variation
+    }
+    
+    /// The minimum value of `MoveIndex(number: 0, color: .black)`
+    ///
+    /// This represents the starting position of the game.
+    ///
+    /// i.e. `MoveIndex(number: 1, color: .white)` is returned by `MoveIndex.minimum.next`
+    /// which is the first move of the game (played by white).
+    public static let minimum = MoveIndex(number: 0, color: .black, variation: 0)
+    
+    /// The previous index.
+    ///
+    /// This assumes `variation` is constant.
+    public var previous: MoveIndex {
         switch color {
-        case .white:    white[keyPath: keyPath] = newValue
-        case .black:    black?[keyPath: keyPath] = newValue
+        case .white:
+            return MoveIndex(
+                number: number - 1,
+                color: .black,
+                variation: variation
+            )
+        case .black:
+            return MoveIndex(
+                number: number,
+                color: .white,
+                variation: variation
+            )
         }
     }
     
-    /// Returns the move within the move pair corresponding to the
-    /// provided color.
+    /// The next index.
     ///
-    /// - parameter color: The color of the requested move.
-    /// - returns: The move corresponding to `color`, or `nil`
-    /// if a move of that color doesn't exist (only applicable
-    /// for `Piece.Color.black`).
-    public func move(for color: Piece.Color) -> Move? {
+    /// This assumes `variation` is constant.
+    public var next: MoveIndex {
         switch color {
-        case .white:    return white
-        case .black:    return black
+        case .white:
+            return MoveIndex(
+                number: number,
+                color: .black,
+                variation: variation
+            )
+        case .black:
+            return MoveIndex(
+                number: number + 1,
+                color: .white,
+                variation: variation
+            )
         }
     }
+    
+    public static func < (lhs: MoveIndex, rhs: MoveIndex) -> Bool {
+        if lhs.variation == rhs.variation {
+            return lhs.number < rhs.number || (
+                lhs.number == rhs.number &&
+                lhs.color == .white && rhs.color == .black
+            )
+        } else {
+            if lhs.number == rhs.number {
+                return lhs.variation < rhs.variation
+            } else {
+                return lhs.number < rhs.number || (
+                    lhs.number == rhs.number &&
+                    lhs.color == .white && rhs.color == .black
+                )
+            }
+        }
+    }
+    
 }
 
 /// Represents a chess game.
@@ -72,12 +201,8 @@ public struct MovePair: Hashable {
 ///
 public class Game: ObservableObject {
     
-    @Published public private(set) var moves: [Int: MovePair]
-    var positions: [Position]
-    
-    var currentPosition: Position? {
-        positions.last
-    }
+    @Published public private(set) var moves: MoveTree
+    private(set) var positions: [MoveIndex: Position]
     
     /// Initialize a game with a starting position.
     ///
@@ -85,8 +210,8 @@ public class Game: ObservableObject {
     /// Defaults to the starting position.
     ///
     public init(startingWith position: Position = .standard) {
-        moves = [:]
-        positions = [position]
+        moves = MoveTree()
+        positions = [.minimum: position]
     }
     
     /// Initialize a game with a PGN string.
@@ -104,20 +229,32 @@ public class Game: ObservableObject {
         positions = parsed.positions
     }
     
+    private var lastMainVariationIndex: MoveIndex {
+        moves.indices.filter { $0.variation == 0 }.last ?? .minimum
+    }
+    
     /// Perform the provided move in the game.
     ///
     /// - parameter move: The move to perform.
-    /// - parameter turn: The turn of the move.
-    /// - parameter color: The color of the piece that is performing the move.
+    /// - parameter index: The current move index to make the move from.
+    /// If this parameter is `nil` or omitted, the move is made from the
+    /// last move in the main variation branch.
+    /// - returns: The move index of the resulting position. If the
+    /// move couldn't be made, the provided `index` is returned directly.
     ///
-    public func make(move: Move, turn: Int, for color: Piece.Color) {
-        guard let currentPosition = positions.last else { return }
+    /// This method does not make any move legality assumptions,
+    /// it will attempt to make the move defined by `move` by moving
+    /// pieces at the provided starting/ending squares and making any
+    /// necessary captures, promotions, etc. It is the responsibility
+    /// of the caller to ensure the move is legal, see the `Board` struct.
+    ///
+    @discardableResult
+    public func make(move: Move, from index: MoveIndex? = nil) -> MoveIndex {
+        let index = index ?? lastMainVariationIndex
+        let newIndex = moves.add(move: move, toParentIndex: index)
         
-        switch color {
-        case .white:
-            moves[turn] = MovePair(turnNumber: turn, white: move, black: nil)
-        case .black:
-            moves[turn]?.black = move
+        guard let currentPosition = positions[index] else {
+            return index
         }
         
         var newPosition = currentPosition
@@ -139,23 +276,38 @@ public class Game: ObservableObject {
             newPosition.promote(pieceAt: move.end, to: promotedPiece.kind)
         }
         
-        positions.append(newPosition)
+        newPosition.toggleSideToMove()
+        positions[newIndex] = newPosition
+        return newIndex
+    }
+    
+    @discardableResult
+    public func make(move moveString: String, from index: MoveIndex? = nil) -> MoveIndex {
+        let index = index ?? lastMainVariationIndex
+        
+        guard let position = positions[index],
+              let move = SANParser.parse(move: moveString, in: position)
+        else {
+            return index
+        }
+        
+        return make(move: move, from: index)
+    }
+    
+    @discardableResult
+    public func make(moves moveStrings: [String], from index: MoveIndex? = nil) -> MoveIndex {
+        var index = index ?? lastMainVariationIndex
+        
+        for moveString in moveStrings {
+            index = make(move: moveString, from: index)
+        }
+        
+        return index
     }
     
     /// The PGN represenation of the game.
     public var pgn: String {
         PGNParser.convert(game: self)
-    }
-    
-    /// Annotate the move of a given `color` for a given `turn`.
-    public func annotate(
-        moveAt turn: Int,
-        color: Piece.Color,
-        assessment: Move.Assessment,
-        comment: String = ""
-    ) {
-        moves[turn]?.updateMove(with: color, keyPath: \.assessment, newValue: assessment)
-        moves[turn]?.updateMove(with: color, keyPath: \.comment, newValue: comment)
     }
     
 }
