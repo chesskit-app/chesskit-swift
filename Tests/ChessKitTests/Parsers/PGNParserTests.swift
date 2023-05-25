@@ -28,33 +28,27 @@ class PGNParserTests: XCTestCase {
         
         XCTAssertEqual(game?.moves[.init(
             number: 1,
-            color: .white,
-            variation: 0
+            color: .white
         )]?.assessment, .blunder)
         XCTAssertEqual(game?.moves[.init(
             number: 3,
-            color: .black,
-            variation: 0
+            color: .black
         )]?.comment, "This opening is called the Ruy Lopez.")
         XCTAssertEqual(game?.moves[.init(
             number: 10,
-            color: .white,
-            variation: 0
+            color: .white
         )]?.end, .d4)
         XCTAssertEqual(game?.moves[.init(
             number: 18,
-            color: .black,
-            variation: 0
+            color: .black
         )]?.piece.kind, .queen)
         XCTAssertEqual(game?.moves[.init(
             number: 18,
-            color: .black,
-            variation: 0
+            color: .black
         )]?.end, .e7)
         XCTAssertEqual(game?.moves[.init(
             number: 36,
-            color: .white,
-            variation: 0
+            color: .white
         )]?.checkState, .check)
     }
     

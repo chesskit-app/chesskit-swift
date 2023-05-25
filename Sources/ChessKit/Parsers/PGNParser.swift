@@ -154,7 +154,7 @@ public class PGNParser {
         let game = Game(startingWith: position)
         
         parsedMoves.forEach { move in
-            let whiteIndex = MoveTree.Index(number: move.number, color: .white, variation: 0).previous
+            let whiteIndex = MoveTree.Index(number: move.number, color: .white).previous
             guard let currentPosition = game.positions[whiteIndex] else {
                 return
             }
@@ -168,7 +168,7 @@ public class PGNParser {
             }
             
             // update position resulting from white move
-            let blackIndex = MoveTree.Index(number: move.number, color: .black, variation: 0).previous
+            let blackIndex = MoveTree.Index(number: move.number, color: .black).previous
             guard let updatedPosition = game.positions[blackIndex] else {
                 return
             }

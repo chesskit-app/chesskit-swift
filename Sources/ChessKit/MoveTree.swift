@@ -3,9 +3,15 @@
 //  ChessKit
 //
 
+/// A tree-like data structure that represents the moves of a chess game.
+///
+/// The tree maintains the move order including variations and
+/// provides index-based access for any element in the tree.
 public class MoveTree {
     
+    /// Dictionary representation of the tree for faster access.
     private var dictionary: [Index: Node] = [:]
+    /// The root node of the tree.
     private var root: Node?
     
     /// Returns the move at the specified index.
@@ -14,10 +20,17 @@ public class MoveTree {
     /// - returns: The move at the given index, or `nil` if no
     /// move exists at that index.
     ///
+    /// This value can also be accessed using a subscript on
+    /// the `MoveTree` directly,
+    /// e.g. `tree[.init(number: 2, color: .white)]`
+    ///
     public func move(at index: Index) -> Move? {
         dictionary[index]?.move
     }
     
+    /// Subscript implementation for `MoveTree`.
+    ///
+    /// This method returns the same value as `move(at:)`.
     public subscript(_ index: Index) -> Move? {
         move(at: index)
     }
@@ -72,10 +85,12 @@ public class MoveTree {
         return newIndex
     }
     
+    /// Returns the index of the previous move given an `index`.
     public func previousIndex(for index: Index) -> Index? {
         dictionary[index]?.previous?.index
     }
     
+    /// Returns the index of the next move given an `index`.
     public func nextIndex(for index: Index) -> Index? {
         dictionary[index]?.next?.index
     }
@@ -107,17 +122,19 @@ extension MoveTree {
 extension MoveTree {
     
     /// Object that represents the index of a node in the move tree.
-    public struct Index: Comparable, Hashable, CustomStringConvertible {
+    public struct Index: Comparable, CustomStringConvertible, Hashable {
         
-        public var description: String {
-            "[\(number), \(color), #\(variation)]"
-        }
-        
+        /// The move number.
         public let number: Int
+        /// The color of the piece moved on this move.
         public let color: Piece.Color
-        public var variation: Int
+        /// The variation number of the move.
+        ///
+        /// If multiple moves occur for the same move number and piece color,
+        /// the `variation` is incremented.
+        public var variation: Int = 0
         
-        public init(number: Int, color: Piece.Color, variation: Int) {
+        public init(number: Int, color: Piece.Color, variation: Int = 0) {
             self.number = number
             self.color = color
             self.variation = variation
@@ -129,7 +146,7 @@ extension MoveTree {
         ///
         /// i.e. `MoveTree.Index(number: 1, color: .white)` is returned by `MoveTree.Index.minimum.next`
         /// which is the first move of the game (played by white).
-        public static let minimum = Index(number: 0, color: .black, variation: 0)
+        public static let minimum = Index(number: 0, color: .black)
         
         /// The previous index.
         ///
@@ -171,6 +188,7 @@ extension MoveTree {
             }
         }
         
+        // MARK: Comparable
         public static func < (lhs: Index, rhs: Index) -> Bool {
             if lhs.variation == rhs.variation {
                 return lhs.number < rhs.number || (
@@ -187,6 +205,11 @@ extension MoveTree {
                     )
                 }
             }
+        }
+        
+        // MARK: CustomStringConvertible
+        public var description: String {
+            "[\(number), \(color), #\(variation)]"
         }
         
     }

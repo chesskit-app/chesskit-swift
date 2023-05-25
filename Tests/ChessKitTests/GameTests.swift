@@ -12,11 +12,11 @@ class GameTests: XCTestCase {
         let game = Game()
         game.make(moves: ["e4", "e5", "Nf3", "Nc6", "Bc4"])
         
-        XCTAssertEqual(game.moves[.init(number: 1, color: .white, variation: 0)]?.san, "e4")
-        XCTAssertEqual(game.moves[.init(number: 1, color: .black, variation: 0)]?.san, "e5")
-        XCTAssertEqual(game.moves[.init(number: 2, color: .white, variation: 0)]?.san, "Nf3")
-        XCTAssertEqual(game.moves[.init(number: 2, color: .black, variation: 0)]?.san, "Nc6")
-        XCTAssertEqual(game.moves[.init(number: 3, color: .white, variation: 0)]?.san, "Bc4")
+        XCTAssertEqual(game.moves[.init(number: 1, color: .white)]?.san, "e4")
+        XCTAssertEqual(game.moves[.init(number: 1, color: .black)]?.san, "e5")
+        XCTAssertEqual(game.moves[.init(number: 2, color: .white)]?.san, "Nf3")
+        XCTAssertEqual(game.moves[.init(number: 2, color: .black)]?.san, "Nc6")
+        XCTAssertEqual(game.moves[.init(number: 3, color: .white)]?.san, "Bc4")
     }
     
     func testMoveVariations() {
