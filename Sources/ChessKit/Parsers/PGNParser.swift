@@ -194,18 +194,34 @@ public class PGNParser {
     /// - parameter game: The chess game to convert.
     /// - returns: A string containing the PGN of `game`.
     ///
-    /// WARNING: currently not implemented, returns empty string.
-    ///
     public static func convert(game: Game) -> String {
         var pgn = ""
         
-        for index in game.moves.indices {
-            if let move = game.moves.move(at: index) {
-                pgn += "[\(index.number),\(index.color),(\(index.variation))] \(move.san)\n"
+        for element in game.moves.pgnRepresentation {
+            switch element {
+            case .whiteNumber(let number):
+                pgn += "\(number). "
+            case .blackNumber(let number):
+                pgn += "\(number)... "
+            case .whiteMove(let move), .blackMove(let move):
+                pgn += "\(move.san) "
+                
+                if move.assessment != .null {
+                    pgn += "\(move.assessment.rawValue) "
+                }
+                
+                if !move.comment.isEmpty {
+                    pgn += "{\(move.comment)} "
+                }
+            case .variationStart:
+                pgn += "("
+            case .variationEnd:
+                pgn = pgn.trimmingCharacters(in: .whitespaces)
+                pgn += ") "
             }
         }
         
-        return pgn
+        return pgn.trimmingCharacters(in: .whitespaces)
     }
     
 }

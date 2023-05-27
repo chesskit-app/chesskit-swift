@@ -7,7 +7,11 @@
 ///
 /// The tree maintains the move order including variations and
 /// provides index-based access for any element in the tree.
-public class MoveTree {
+public class MoveTree: Equatable {
+    
+    public static func == (lhs: MoveTree, rhs: MoveTree) -> Bool {
+        lhs.dictionary == rhs.dictionary
+    }
     
     /// Dictionary representation of the tree for faster access.
     private var dictionary: [Index: Node] = [:]
@@ -95,16 +99,114 @@ public class MoveTree {
         dictionary[index]?.next?.index
     }
     
+    public func history(for index: Index) -> [MoveTree.Index] {
+        var currentNode = dictionary[index]
+        var history: [MoveTree.Index] = []
+        
+        while (currentNode != nil) {
+            if let node = currentNode?.previous {
+                history.append(node.index)
+                currentNode = node
+            }
+        }
+        
+        return history
+    }
+    
+    public var isEmpty: Bool {
+        root == nil
+    }
+    
+    public func annotate(moveAt index: MoveTree.Index, assessment: Move.Assessment, comment: String = "") {
+        dictionary[index]?.move.assessment = assessment
+        dictionary[index]?.move.comment = comment
+    }
+    
+    public enum PGNElement {
+        /// e.g. `1.`
+        case whiteNumber(Int)
+        /// e.g. `1...`
+        case blackNumber(Int)
+        /// e.g. `e4`
+        case whiteMove(Move)
+        /// e.g. `e5`
+        case blackMove(Move)
+        /// e.g. `(`
+        case variationStart
+        /// e.g. `)`
+        case variationEnd
+    }
+    
+    private func pgn(for node: Node?) -> [PGNElement] {
+        guard let node else { return [] }
+        var result: [PGNElement] = []
+        
+        switch node.index.color {
+        case .white:
+            result.append(.whiteNumber(node.index.number))
+            result.append(.whiteMove(node.move))
+        case .black:
+            result.append(.blackNumber(node.index.number))
+            result.append(.blackMove(node.move))
+        }
+        
+        var currentNode = node.next
+        var previousIndex = node.index
+        
+        while currentNode != nil {
+            guard let currentIndex = currentNode?.index else { break }
+            
+            switch (previousIndex.number, currentIndex.number) {
+            case let (x, y) where x < y:
+                result.append(.whiteNumber(currentIndex.number))
+            default:
+                break
+            }
+            
+            if let move = currentNode?.move {
+                switch currentIndex.color {
+                case .white:    result.append(.whiteMove(move))
+                case .black:    result.append(.blackMove(move))
+                }
+            }
+            
+            for child in currentNode?.previous?.children ?? [] {
+                result.append(.variationStart)
+                // recursively generate PGN for all child nodes
+                result.append(contentsOf: pgn(for: child))
+                result.append(.variationEnd)
+            }
+            
+            previousIndex = currentIndex
+            currentNode = currentNode?.next
+        }
+        
+        return result
+    }
+    
+    public var pgnRepresentation: [PGNElement] {
+        pgn(for: root)
+    }
+    
 }
 
 extension MoveTree {
     
     /// Object that represents a node in the move tree.
-    private class Node {
+    private class Node: Equatable {
+        
+        static func == (lhs: MoveTree.Node, rhs: MoveTree.Node) -> Bool {
+            lhs.move == rhs.move &&
+            lhs.index == rhs.index &&
+            lhs.previous == rhs.previous &&
+            lhs.next == rhs.next &&
+            lhs.children == rhs.children
+        }
+        
         /// The move for this node.
-        let move: Move
+        var move: Move
         /// The move index for this node.
-        var index: Index = .minimum
+        var index: MoveTree.Index = .minimum
         /// The previous node.
         var previous: Node?
         /// The next node.
@@ -114,102 +216,6 @@ extension MoveTree {
         
         init(move: Move) {
             self.move = move
-        }
-    }
-    
-}
-
-extension MoveTree {
-    
-    /// Object that represents the index of a node in the move tree.
-    public struct Index: Comparable, CustomStringConvertible, Hashable {
-        
-        /// The move number.
-        public let number: Int
-        /// The color of the piece moved on this move.
-        public let color: Piece.Color
-        /// The variation number of the move.
-        ///
-        /// If multiple moves occur for the same move number and piece color,
-        /// the `variation` is incremented.
-        public var variation: Int = 0
-        
-        public init(number: Int, color: Piece.Color, variation: Int = 0) {
-            self.number = number
-            self.color = color
-            self.variation = variation
-        }
-        
-        /// The minimum value of `MoveTree.Index(number: 0, color: .black)`
-        ///
-        /// This represents the starting position of the game.
-        ///
-        /// i.e. `MoveTree.Index(number: 1, color: .white)` is returned by `MoveTree.Index.minimum.next`
-        /// which is the first move of the game (played by white).
-        public static let minimum = Index(number: 0, color: .black)
-        
-        /// The previous index.
-        ///
-        /// This assumes `variation` is constant.
-        public var previous: Index {
-            switch color {
-            case .white:
-                return Index(
-                    number: number - 1,
-                    color: .black,
-                    variation: variation
-                )
-            case .black:
-                return Index(
-                    number: number,
-                    color: .white,
-                    variation: variation
-                )
-            }
-        }
-        
-        /// The next index.
-        ///
-        /// This assumes `variation` is constant.
-        public var next: Index {
-            switch color {
-            case .white:
-                return Index(
-                    number: number,
-                    color: .black,
-                    variation: variation
-                )
-            case .black:
-                return Index(
-                    number: number + 1,
-                    color: .white,
-                    variation: variation
-                )
-            }
-        }
-        
-        // MARK: Comparable
-        public static func < (lhs: Index, rhs: Index) -> Bool {
-            if lhs.variation == rhs.variation {
-                return lhs.number < rhs.number || (
-                    lhs.number == rhs.number &&
-                    lhs.color == .white && rhs.color == .black
-                )
-            } else {
-                if lhs.number == rhs.number {
-                    return lhs.variation < rhs.variation
-                } else {
-                    return lhs.number < rhs.number || (
-                        lhs.number == rhs.number &&
-                        lhs.color == .white && rhs.color == .black
-                    )
-                }
-            }
-        }
-        
-        // MARK: CustomStringConvertible
-        public var description: String {
-            "[\(number), \(color), #\(variation)]"
         }
         
     }

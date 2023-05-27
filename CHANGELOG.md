@@ -8,6 +8,9 @@
 
 * `make(move:index:)` and `make(moves:index:)` with ability to make moves on `Game` with SAN strings for convenience
     * For example: `game.make(moves: ["e4", "e5"])`
+    
+* `PGNParser.convert(game:)` now returns the PGN string for a given game, including variations.
+    * Note: `PGNParser.parse(pgn:)` still does not work with variations, this is coming in a future update.
 
 #### Removed
 * `Game.annotateMove`

@@ -96,6 +96,21 @@ public class Game: ObservableObject {
         return newIndex
     }
     
+    /// Perform the provided move in the game.
+    ///
+    /// - parameter moveString: The SAN string of the move to perform.
+    /// - parameter index: The current move index to make the move from.
+    /// If this parameter is `nil` or omitted, the move is made from the
+    /// last move in the main variation branch.
+    /// - returns: The move index of the resulting position. If the
+    /// move couldn't be made, the provided `index` is returned directly.
+    ///
+    /// This method does not make any move legality assumptions,
+    /// it will attempt to make the move defined by `moveString` by moving
+    /// pieces at the provided starting/ending squares and making any
+    /// necessary captures, promotions, etc. It is the responsibility
+    /// of the caller to ensure the move is legal, see the `Board` struct.
+    ///
     @discardableResult
     public func make(
         move moveString: String,
@@ -112,6 +127,21 @@ public class Game: ObservableObject {
         return make(move: move, from: index)
     }
     
+    /// Perform the provided moves in the game.
+    ///
+    /// - parameter moveStrings: An array of SAN strings of the moves to perform.
+    /// - parameter index: The current move index to make the moves from.
+    /// If this parameter is `nil` or omitted, the move is made from the
+    /// last move in the main variation branch.
+    /// - returns: The move index of the resulting position. If the
+    /// moves couldn't be made, the provided `index` is returned directly.
+    ///
+    /// This method does not make any move legality assumptions,
+    /// it will attempt to make the moves defined by `moveStrings` by moving
+    /// pieces at the provided starting/ending squares and making any
+    /// necessary captures, promotions, etc. It is the responsibility
+    /// of the caller to ensure the moves are legal, see the `Board` struct.
+    ///
     @discardableResult
     public func make(
         moves moveStrings: [String],
