@@ -44,7 +44,7 @@ public class MoveTree: Equatable {
     
     /// The indices of all the moves stored in the tree, sorted ascending.
     public var indices: [Index] {
-        dictionary.keys.sorted(by: <)
+        dictionary.keys.sorted()
     }
     
     /// Adds a move to the move tree.
@@ -107,13 +107,14 @@ public class MoveTree: Equatable {
         var history: [MoveTree.Index] = []
         
         while (currentNode != nil) {
-            if let node = currentNode?.previous {
+            if let node = currentNode {
                 history.append(node.index)
-                currentNode = node
             }
+            
+            currentNode = currentNode?.previous
         }
         
-        return history
+        return history.sorted()
     }
     
     public var isEmpty: Bool {

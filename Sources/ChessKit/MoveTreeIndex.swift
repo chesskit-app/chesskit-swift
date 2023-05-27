@@ -6,7 +6,7 @@
 extension MoveTree {
     
     /// Object that represents the index of a node in the move tree.
-    public struct Index: Comparable, CustomStringConvertible, Hashable {
+    public struct Index: Comparable, Hashable {
         
         /// The move number.
         public let number: Int
@@ -97,11 +97,6 @@ extension MoveTree {
                     )
                 }
             }
-        }
-        
-        // MARK: CustomStringConvertible
-        public var description: String {
-            "[\(number), \(color), #\(variation)]"
         }
         
     }
