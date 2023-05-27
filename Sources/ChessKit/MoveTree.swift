@@ -9,10 +9,6 @@
 /// provides index-based access for any element in the tree.
 public class MoveTree: Equatable {
     
-    public static func == (lhs: MoveTree, rhs: MoveTree) -> Bool {
-        lhs.dictionary == rhs.dictionary
-    }
-    
     /// Dictionary representation of the tree for faster access.
     private var dictionary: [Index: Node] = [:]
     /// The root node of the tree.
@@ -36,7 +32,14 @@ public class MoveTree: Equatable {
     ///
     /// This method returns the same value as `move(at:)`.
     public subscript(_ index: Index) -> Move? {
-        move(at: index)
+        get {
+            move(at: index)
+        }
+        set {
+            if let newValue {
+                dictionary[index]?.move = newValue
+            }
+        }
     }
     
     /// The indices of all the moves stored in the tree, sorted ascending.
@@ -122,6 +125,8 @@ public class MoveTree: Equatable {
         dictionary[index]?.move.comment = comment
     }
     
+    /// An element for representing the `MoveTree` in
+    /// PGN (Portable Game Notation) format.
     public enum PGNElement {
         /// e.g. `1.`
         case whiteNumber(Int)
@@ -184,8 +189,15 @@ public class MoveTree: Equatable {
         return result
     }
     
+    /// Returns the `MoveTree` as an array of PGN
+    /// (Portable Game Format) elements.
     public var pgnRepresentation: [PGNElement] {
         pgn(for: root)
+    }
+    
+    // MARK: Equatable
+    public static func == (lhs: MoveTree, rhs: MoveTree) -> Bool {
+        lhs.dictionary == rhs.dictionary
     }
     
 }
@@ -194,14 +206,6 @@ extension MoveTree {
     
     /// Object that represents a node in the move tree.
     private class Node: Equatable {
-        
-        static func == (lhs: MoveTree.Node, rhs: MoveTree.Node) -> Bool {
-            lhs.move == rhs.move &&
-            lhs.index == rhs.index &&
-            lhs.previous == rhs.previous &&
-            lhs.next == rhs.next &&
-            lhs.children == rhs.children
-        }
         
         /// The move for this node.
         var move: Move
@@ -216,6 +220,11 @@ extension MoveTree {
         
         init(move: Move) {
             self.move = move
+        }
+        
+        // MARK: Equatable
+        static func == (lhs: MoveTree.Node, rhs: MoveTree.Node) -> Bool {
+            lhs.move == rhs.move && lhs.index == rhs.index
         }
         
     }

@@ -11,7 +11,7 @@ import Foundation
 /// chess game within `ChessKit`. It provides methods for
 /// making moves and publishes the played moves in an observable way.
 ///
-public class Game: ObservableObject {
+public class Game: Equatable, ObservableObject {
     
     @Published public private(set) var moves: MoveTree
     private(set) var positions: [MoveTree.Index: Position]
@@ -159,6 +159,11 @@ public class Game: ObservableObject {
     /// The PGN represenation of the game.
     public var pgn: String {
         PGNParser.convert(game: self)
+    }
+    
+    // MARK: Equatable
+    public static func == (lhs: Game, rhs: Game) -> Bool {
+        lhs.moves == rhs.moves && lhs.positions == rhs.positions
     }
     
 }

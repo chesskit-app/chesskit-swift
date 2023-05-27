@@ -22,6 +22,9 @@ class PGNParserTests: XCTestCase {
             """
         
         let game = PGNParser.parse(game: pgn)
+        let gameFromPGN = Game(pgn: pgn)
+        
+        XCTAssertEqual(game, gameFromPGN)
         
         // starting position + 85 ply
         XCTAssertEqual(game?.positions.keys.count, 86)

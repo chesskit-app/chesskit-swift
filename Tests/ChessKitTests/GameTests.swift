@@ -64,9 +64,12 @@ class GameTests: XCTestCase {
             nf3Index
         )
         
+        game.moves[nc3Index]?.assessment = .brilliant
+        game.moves[f5Index]?.comment = "Comment test"
+        
         XCTAssertEqual(
             PGNParser.convert(game: game),
-            "1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4"
+            "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4"
         )
     }
     

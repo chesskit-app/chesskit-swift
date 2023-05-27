@@ -4,7 +4,7 @@
 //
 
 /// Represents the collection of pieces on the chess board.
-public struct Position {
+public struct Position: Equatable {
     
     /// The pieces currently existing on the board in this position.
     public internal(set) var pieces: [Piece]
