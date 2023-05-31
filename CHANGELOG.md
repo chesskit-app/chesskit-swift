@@ -1,4 +1,5 @@
-# [Unreleased]
+# ChessKit 0.2.0
+Released Wednesday, May 31, 2023.
 
 #### Added
 * `MoveTree` and `MoveTree.Index` objects to track move turns and variations.
