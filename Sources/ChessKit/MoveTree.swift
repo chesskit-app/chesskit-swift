@@ -105,7 +105,13 @@ public class MoveTree: Equatable {
     /// Returns the index matching `move` in the next or child moves of the
     /// move contained at `index`.
     public func nextIndex(containing move: Move, for index: Index) -> Index? {
-        guard let node = dictionary[index] else { return nil }
+        guard let node = dictionary[index] else {
+            if index == .minimum, let root, root.move == move {
+                return root.index
+            } else {
+                return nil
+            }
+        }
         
         if let next = node.next, next.move == move {
             return next.index

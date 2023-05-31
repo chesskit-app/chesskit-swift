@@ -8,7 +8,7 @@ import XCTest
 
 class GameTests: XCTestCase {
     
-    private let game = Game()
+    private var game = Game()
     
     // MARK: - Indices used in tests
     
@@ -32,11 +32,22 @@ class GameTests: XCTestCase {
         
         // add another variation to 2... Nf6
         game.make(moves: ["f5", "exf5"], from: nc6Index2.previous)
+        
+        // make repeat moves to test proper handling
+        game.make(move: "e4", from: .minimum)
+        game.make(move: "e5", from: .minimum.next)
+        game.make(moves: ["Nc3", "Nf6"], from: nf3Index.previous)
+    }
+    
+    override func tearDown() {
+        // reset game
+        game = Game()
     }
     
     // MARK: - Test cases
     
     func testMakeMoves() {
+        XCTAssertFalse(game.moves.isEmpty)
         XCTAssertEqual(game.moves[.init(number: 1, color: .white)]?.san, "e4")
         XCTAssertEqual(game.moves[.init(number: 1, color: .black)]?.san, "e5")
         XCTAssertEqual(game.moves[.init(number: 2, color: .white)]?.san, "Nf3")
@@ -91,6 +102,10 @@ class GameTests: XCTestCase {
                 f5Index,
             ]
         )
+    }
+    
+    func testMoveTreeEmptyPath() {
+        XCTAssertTrue(game.moves.path(from: nc3Index, to: nc3Index).isEmpty)
     }
     
     func testMoveTreeSimplePath() {
