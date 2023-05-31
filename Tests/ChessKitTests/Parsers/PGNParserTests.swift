@@ -22,14 +22,37 @@ class PGNParserTests: XCTestCase {
             """
         
         let game = PGNParser.parse(game: pgn)
+        let gameFromPGN = Game(pgn: pgn)
         
-        XCTAssertEqual(game?.moves.count, 43)
-        XCTAssertEqual(game?.moves[1]?.white.assessment, .blunder)
-        XCTAssertEqual(game?.moves[3]?.black?.comment, "This opening is called the Ruy Lopez.")
-        XCTAssertEqual(game?.moves[10]?.white.end, .d4)
-        XCTAssertEqual(game?.moves[18]?.black?.piece.kind, .queen)
-        XCTAssertEqual(game?.moves[18]?.black?.end, .e7)
-        XCTAssertEqual(game?.moves[36]?.white.checkState, .check)
+        XCTAssertEqual(game, gameFromPGN)
+        
+        // starting position + 85 ply
+        XCTAssertEqual(game?.positions.keys.count, 86)
+        
+        XCTAssertEqual(game?.moves[.init(
+            number: 1,
+            color: .white
+        )]?.assessment, .blunder)
+        XCTAssertEqual(game?.moves[.init(
+            number: 3,
+            color: .black
+        )]?.comment, "This opening is called the Ruy Lopez.")
+        XCTAssertEqual(game?.moves[.init(
+            number: 10,
+            color: .white
+        )]?.end, .d4)
+        XCTAssertEqual(game?.moves[.init(
+            number: 18,
+            color: .black
+        )]?.piece.kind, .queen)
+        XCTAssertEqual(game?.moves[.init(
+            number: 18,
+            color: .black
+        )]?.end, .e7)
+        XCTAssertEqual(game?.moves[.init(
+            number: 36,
+            color: .white
+        )]?.checkState, .check)
     }
     
 }

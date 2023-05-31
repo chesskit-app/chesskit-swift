@@ -17,8 +17,8 @@ public class PGNParser {
     
     /// Contains the contents of a single parsed move pair.
     private struct ParsedMove {
-        /// The turn number of the move.
-        let turnNumber: Int
+        /// The number of the move within the game.
+        let number: Int
         /// The white move SAN string, annotation, and comment.
         let whiteMove: (san: String, annotation: Move.Assessment, comment: String)
         /// The black move SAN string, annotation, and comment (can be `nil`).
@@ -72,8 +72,8 @@ public class PGNParser {
         let parsedMoves = moves.compactMap { move -> ParsedMove? in
             let range = NSRange(0..<move.utf16.count)
             
-            guard let turnRange = move.range(of: Regex.turnNumber, options: .regularExpression),
-                  let turnNumber = Int(move[turnRange])
+            guard let moveNumberRange = move.range(of: Regex.moveNumber, options: .regularExpression),
+                  let moveNumber = Int(move[moveNumberRange])
             else {
                 return nil
             }
@@ -144,7 +144,7 @@ public class PGNParser {
             ) : nil
             
             return ParsedMove(
-                turnNumber: turnNumber,
+                number: moveNumber,
                 whiteMove: whiteMove,
                 blackMove: blackMove,
                 result: ParsedMove.Result(rawValue: result ?? "")
@@ -154,29 +154,35 @@ public class PGNParser {
         let game = Game(startingWith: position)
         
         parsedMoves.forEach { move in
-            guard let currentPosition = game.currentPosition else { return }
+            let whiteIndex = MoveTree.Index(number: move.number, color: .white).previous
+            guard let currentPosition = game.positions[whiteIndex] else {
+                return
+            }
             
-            var white = SANParser.parse(move: move.whiteMove.san, for: .white, in: currentPosition)
+            var white = SANParser.parse(move: move.whiteMove.san, in: currentPosition)
             white?.assessment = move.whiteMove.annotation
             white?.comment = move.whiteMove.comment
             
             if let white {
-                game.make(move: white, turn: move.turnNumber, for: .white)
+                game.make(move: white, from: whiteIndex)
             }
             
             // update position resulting from white move
-            guard let updatedPosition = game.currentPosition else { return }
+            let blackIndex = MoveTree.Index(number: move.number, color: .black).previous
+            guard let updatedPosition = game.positions[blackIndex] else {
+                return
+            }
             
             var black: Move?
             
             if let blackMove = move.blackMove {
-                black = SANParser.parse(move: blackMove.san, for: .black, in: updatedPosition)
+                black = SANParser.parse(move: blackMove.san, in: updatedPosition)
                 black?.assessment = move.blackMove?.annotation ?? .null
                 black?.comment = move.blackMove?.comment ?? ""
             }
             
             if let black {
-                game.make(move: black, turn: move.turnNumber, for: .black)
+                game.make(move: black, from: blackIndex)
             }
         }
         
@@ -188,10 +194,44 @@ public class PGNParser {
     /// - parameter game: The chess game to convert.
     /// - returns: A string containing the PGN of `game`.
     ///
-    /// WARNING: currently not implemented, returns empty string.
-    ///
     public static func convert(game: Game) -> String {
-        ""
+        var pgn = ""
+        
+        for element in game.moves.pgnRepresentation {
+            switch element {
+            case .whiteNumber(let number):
+                pgn += "\(number). "
+            case .blackNumber(let number):
+                pgn += "\(number)... "
+            case let .whiteMove(move, _):
+                pgn += movePGN(for: move)
+            case let .blackMove(move, _):
+                pgn += movePGN(for: move)
+            case .variationStart:
+                pgn += "("
+            case .variationEnd:
+                pgn = pgn.trimmingCharacters(in: .whitespaces)
+                pgn += ") "
+            }
+        }
+        
+        return pgn.trimmingCharacters(in: .whitespaces)
+    }
+    
+    private static func movePGN(for move: Move) -> String {
+        var result = ""
+        
+        result += "\(move.san) "
+        
+        if move.assessment != .null {
+            result += "\(move.assessment.rawValue) "
+        }
+        
+        if !move.comment.isEmpty {
+            result += "{\(move.comment)} "
+        }
+        
+        return result
     }
     
 }
