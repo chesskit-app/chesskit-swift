@@ -94,7 +94,7 @@ class GameTests: XCTestCase {
     }
     
     func testMoveTreeSimplePath() {
-        // "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4"
+        // "1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4"
         let f4 = MoveTree.Index(number: 3, color: .white, variation: 2)
         let e5 = MoveTree.Index(number: 1, color: .black, variation: 0)
         
@@ -134,7 +134,7 @@ class GameTests: XCTestCase {
     }
     
     func testMoveTreeComplexPath() {
-        // "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4"
+        // "1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4"
         // 3. f4 to 3. Bc4
         let f4 = MoveTree.Index(number: 3, color: .white, variation: 2)
         let Bc4 = MoveTree.Index(number: 3, color: .white, variation: 0)
@@ -165,6 +165,12 @@ class GameTests: XCTestCase {
                 Bc4
             ]
         )
+    }
+    
+    func testPGN() {
+        let pgn = "1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4"
+        
+        XCTAssertEqual(game.pgn, pgn)
     }
     
 }
