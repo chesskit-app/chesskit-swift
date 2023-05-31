@@ -93,4 +93,78 @@ class GameTests: XCTestCase {
         )
     }
     
+    func testMoveTreeSimplePath() {
+        // "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4"
+        let f4 = MoveTree.Index(number: 3, color: .white, variation: 2)
+        let e5 = MoveTree.Index(number: 1, color: .black, variation: 0)
+        
+        // 3. f4 to 1. e5
+        let path1 = game.moves.path(from: f4, to: e5)
+        
+        XCTAssertEqual(
+            path1.map(\.0),
+            [.reverse, .reverse, .reverse]
+        )
+        
+        XCTAssertEqual(
+            path1.map(\.1),
+            [
+                f4,
+                .init(number: 2, color: .black, variation: 2),
+                .init(number: 2, color: .white, variation: 1)
+            ]
+        )
+        
+        // 1. e5 to 3. f4
+        let path2 = game.moves.path(from: e5, to: f4)
+        
+        XCTAssertEqual(
+            path2.map(\.0),
+            [.forward, .forward, .forward]
+        )
+        
+        XCTAssertEqual(
+            path2.map(\.1),
+            [
+                .init(number: 2, color: .white, variation: 1),
+                .init(number: 2, color: .black, variation: 2),
+                f4
+            ]
+        )
+    }
+    
+    func testMoveTreeComplexPath() {
+        // "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4"
+        // 3. f4 to 3. Bc4
+        let f4 = MoveTree.Index(number: 3, color: .white, variation: 2)
+        let Bc4 = MoveTree.Index(number: 3, color: .white, variation: 0)
+        let path = game.moves.path(from: f4, to: Bc4)
+        
+        XCTAssertEqual(
+            path.map(\.0),
+            [
+                .reverse,
+                .reverse,
+                .reverse,
+                .forward,
+                .forward,
+                .forward,
+                .forward
+            ]
+        )
+        
+        XCTAssertEqual(
+            path.map(\.1),
+            [
+                f4,
+                .init(number: 2, color: .black, variation: 2),
+                .init(number: 2, color: .white, variation: 1),
+                .init(number: 1, color: .black, variation: 0),
+                .init(number: 2, color: .white, variation: 0),
+                .init(number: 2, color: .black, variation: 0),
+                Bc4
+            ]
+        )
+    }
+    
 }

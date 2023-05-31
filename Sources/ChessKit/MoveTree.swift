@@ -138,6 +138,23 @@ public class MoveTree: Equatable {
         return history.reversed()
     }
     
+    private func indices(between start: Index, and end: Index) -> [Index] {
+        var result = [Index]()
+        
+        let endNode = dictionary[end]
+        var currentNode = dictionary[start]
+        
+        while currentNode != endNode {
+            if let currentNode {
+                result.append(currentNode.index)
+            }
+            
+            currentNode = currentNode?.previous
+        }
+        
+        return result
+    }
+    
     /// Provides the shortest path through the move tree
     /// from the given start and end indices.
     ///
@@ -163,29 +180,12 @@ public class MoveTree: Equatable {
         if startIndex == endIndex {
             // keep results array empty
         } else if startHistory.contains(endIndex) {
-            let endNode = dictionary[endIndex]
-            var currentNode = dictionary[startIndex]
-            
-            while currentNode != endNode {
-                if let currentNode {
-                    results.append((.reverse, currentNode.index))
-                }
-                
-                currentNode = currentNode?.previous
-            }
+            results = indices(between: startIndex, and: endIndex)
+                .map { (.reverse, $0) }
         } else if endHistory.contains(startIndex) {
-            let endNode = dictionary[startIndex]
-            var currentNode = dictionary[endIndex]
-            
-            while currentNode != endNode {
-                if let currentNode {
-                    results.append((.forward, currentNode.index))
-                }
-                
-                currentNode = currentNode?.previous
-            }
-            
-            results.reverse()
+            results = indices(between: endIndex, and: startIndex)
+                .map { (.forward, $0) }
+                .reversed()
         } else {
             // lowest common ancestor
             guard let lca = zip(startHistory, endHistory)
@@ -216,8 +216,11 @@ public class MoveTree: Equatable {
         return results
     }
     
+    /// The direction of the `MoveTree` path.
     public enum PathDirection {
+        /// Move forward (i.e. perform a move).
         case forward
+        /// Move backward (i.e. undo a move).
         case reverse
     }
     
