@@ -203,16 +203,10 @@ public class PGNParser {
                 pgn += "\(number). "
             case .blackNumber(let number):
                 pgn += "\(number)... "
-            case .whiteMove(let move), .blackMove(let move):
-                pgn += "\(move.san) "
-                
-                if move.assessment != .null {
-                    pgn += "\(move.assessment.rawValue) "
-                }
-                
-                if !move.comment.isEmpty {
-                    pgn += "{\(move.comment)} "
-                }
+            case let .whiteMove(move, _):
+                pgn += movePGN(for: move)
+            case let .blackMove(move, _):
+                pgn += movePGN(for: move)
             case .variationStart:
                 pgn += "("
             case .variationEnd:
@@ -222,6 +216,22 @@ public class PGNParser {
         }
         
         return pgn.trimmingCharacters(in: .whitespaces)
+    }
+    
+    private static func movePGN(for move: Move) -> String {
+        var result = ""
+        
+        result += "\(move.san) "
+        
+        if move.assessment != .null {
+            result += "\(move.assessment.rawValue) "
+        }
+        
+        if !move.comment.isEmpty {
+            result += "{\(move.comment)} "
+        }
+        
+        return result
     }
     
 }

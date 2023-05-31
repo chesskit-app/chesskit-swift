@@ -42,9 +42,9 @@ public class MoveTree: Equatable {
         }
     }
     
-    /// The indices of all the moves stored in the tree, sorted ascending.
+    /// The indices of all the moves stored in the tree.
     public var indices: [Index] {
-        dictionary.keys.sorted()
+        Array(dictionary.keys)
     }
     
     /// Adds a move to the move tree.
@@ -102,11 +102,32 @@ public class MoveTree: Equatable {
         dictionary[index]?.next?.index
     }
     
+    /// Returns the index matching `move` in the next or child moves of the
+    /// move contained at `index`.
+    public func nextIndex(containing move: Move, for index: Index) -> Index? {
+        guard let node = dictionary[index] else { return nil }
+        
+        if let next = node.next, next.move == move {
+            return next.index
+        } else {
+            return node.children.filter { $0.move == move }.first?.index
+        }
+    }
+    
+    /// Provides a single history for a given index.
+    ///
+    /// - parameter index: The index from which to generate the history.
+    /// - returns: An array of move indices sorted from beginning to end with
+    /// the end being the provided `index`.
+    ///
+    /// For chess this would represent an array of all the move indices
+    /// from the starting move until the move defined by `index`, accounting
+    /// for any branching variations in between.
     public func history(for index: Index) -> [MoveTree.Index] {
         var currentNode = dictionary[index]
         var history: [MoveTree.Index] = []
         
-        while (currentNode != nil) {
+        while currentNode != nil {
             if let node = currentNode {
                 history.append(node.index)
             }
@@ -114,33 +135,109 @@ public class MoveTree: Equatable {
             currentNode = currentNode?.previous
         }
         
-        return history.sorted()
+        return history.reversed()
     }
     
+    /// Provides the shortest path through the move tree
+    /// from the given start and end indices.
+    ///
+    /// - parameter startIndex: The starting index of the path.
+    /// - parameter endIndex: The ending index of the path.
+    /// - returns: An array of indices starting with the index after `startIndex`
+    /// and ending with `endIndex`. If `startIndex` and `endIndex`
+    /// are the same, an empty array is returned.
+    ///
+    /// The purpose of this path is return the indices of the moves required to
+    /// go from the current position at `startIndex` and end up with the
+    /// final position at `endIndex`, so `startIndex` is included in the returned
+    /// array, but `endIndex` is not. The path direction included with the index
+    /// indicates the direction to move to get to the next index.
+    public func path(
+        from startIndex: Index,
+        to endIndex: Index
+    ) -> [(PathDirection, MoveTree.Index)] {
+        var results = [(PathDirection, MoveTree.Index)]()
+        let startHistory = history(for: startIndex)
+        let endHistory = history(for: endIndex)
+        
+        if startIndex == endIndex {
+            // keep results array empty
+        } else if startHistory.contains(endIndex) {
+            let endNode = dictionary[endIndex]
+            var currentNode = dictionary[startIndex]
+            
+            while currentNode != endNode {
+                if let currentNode {
+                    results.append((.reverse, currentNode.index))
+                }
+                
+                currentNode = currentNode?.previous
+            }
+        } else if endHistory.contains(startIndex) {
+            let endNode = dictionary[startIndex]
+            var currentNode = dictionary[endIndex]
+            
+            while currentNode != endNode {
+                if let currentNode {
+                    results.append((.forward, currentNode.index))
+                }
+                
+                currentNode = currentNode?.previous
+            }
+            
+            results.reverse()
+        } else {
+            // lowest common ancestor
+            guard let lca = zip(startHistory, endHistory)
+                .filter({ $0 == $1 })
+                .last?.0
+            else {
+                return []
+            }
+            
+            guard
+                let startLCAIndex = startHistory.firstIndex(where: { $0 == lca }),
+                let endLCAIndex = endHistory.firstIndex(where: { $0 == lca })
+            else {
+                return []
+            }
+            
+            let startToLCAPath = startHistory[startLCAIndex...]
+                .reversed() // reverse since history is in ascending order
+                .dropLast() // drop LCA; to be included in the next array
+                .map { (PathDirection.reverse, $0) }
+            
+            let LCAtoEndPath = endHistory[endLCAIndex...]
+                .map { (PathDirection.forward, $0) }
+            
+            results = startToLCAPath + LCAtoEndPath
+        }
+        
+        return results
+    }
+    
+    public enum PathDirection {
+        case forward
+        case reverse
+    }
+    
+    /// Whether the tree is empty or not.
     public var isEmpty: Bool {
         root == nil
     }
     
-    public func annotate(moveAt index: MoveTree.Index, assessment: Move.Assessment, comment: String = "") {
+    /// Annotates the move at the provided index.
+    ///
+    /// - parameter index: The index of the move to annotate.
+    /// - parameter assessment: The move to annotate the move with.
+    /// - parameter comment: The comment to annotate the move with.
+    public func annotate(
+        moveAt index: MoveTree.Index,
+        assessment: Move.Assessment = .null,
+        comment: String = ""
+    ) {
         dictionary[index]?.move.assessment = assessment
         dictionary[index]?.move.comment = comment
-    }
-    
-    /// An element for representing the `MoveTree` in
-    /// PGN (Portable Game Notation) format.
-    public enum PGNElement {
-        /// e.g. `1.`
-        case whiteNumber(Int)
-        /// e.g. `1...`
-        case blackNumber(Int)
-        /// e.g. `e4`
-        case whiteMove(Move)
-        /// e.g. `e5`
-        case blackMove(Move)
-        /// e.g. `(`
-        case variationStart
-        /// e.g. `)`
-        case variationEnd
     }
     
     private func pgn(for node: Node?) -> [PGNElement] {
@@ -150,10 +247,10 @@ public class MoveTree: Equatable {
         switch node.index.color {
         case .white:
             result.append(.whiteNumber(node.index.number))
-            result.append(.whiteMove(node.move))
+            result.append(.whiteMove(node.move, node.index))
         case .black:
             result.append(.blackNumber(node.index.number))
-            result.append(.blackMove(node.move))
+            result.append(.blackMove(node.move, node.index))
         }
         
         var currentNode = node.next
@@ -171,14 +268,14 @@ public class MoveTree: Equatable {
             
             if let move = currentNode?.move {
                 switch currentIndex.color {
-                case .white:    result.append(.whiteMove(move))
-                case .black:    result.append(.blackMove(move))
+                case .white:    result.append(.whiteMove(move, currentIndex))
+                case .black:    result.append(.blackMove(move, currentIndex))
                 }
             }
             
+            // recursively generate PGN for all child nodes
             for child in currentNode?.previous?.children ?? [] {
                 result.append(.variationStart)
-                // recursively generate PGN for all child nodes
                 result.append(contentsOf: pgn(for: child))
                 result.append(.variationEnd)
             }
@@ -210,13 +307,13 @@ extension MoveTree {
         
         /// The move for this node.
         var move: Move
-        /// The move index for this node.
+        /// The index for this node.
         var index: MoveTree.Index = .minimum
         /// The previous node.
         var previous: Node?
         /// The next node.
         weak var next: Node?
-        /// Children nodes (i.e. variation moves)
+        /// Children nodes (i.e. variation moves).
         var children: [Node] = []
         
         init(move: Move) {
@@ -225,9 +322,30 @@ extension MoveTree {
         
         // MARK: Equatable
         static func == (lhs: MoveTree.Node, rhs: MoveTree.Node) -> Bool {
-            lhs.move == rhs.move && lhs.index == rhs.index
+            lhs.index == rhs.index
         }
         
+    }
+    
+}
+
+extension MoveTree {
+    
+    /// An element for representing the `MoveTree` in
+    /// PGN (Portable Game Notation) format.
+    public enum PGNElement {
+        /// e.g. `1.`
+        case whiteNumber(Int)
+        /// e.g. `1...`
+        case blackNumber(Int)
+        /// e.g. `e4`
+        case whiteMove(Move, Index)
+        /// e.g. `e5`
+        case blackMove(Move, Index)
+        /// e.g. `(`
+        case variationStart
+        /// e.g. `)`
+        case variationEnd
     }
     
 }

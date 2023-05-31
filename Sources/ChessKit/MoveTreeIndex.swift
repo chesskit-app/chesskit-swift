@@ -6,7 +6,7 @@
 extension MoveTree {
     
     /// Object that represents the index of a node in the move tree.
-    public struct Index: Comparable, Hashable {
+    public struct Index: Hashable {
         
         /// The move number.
         public let number: Int
@@ -77,25 +77,6 @@ extension MoveTree {
                     color: .white,
                     variation: variation
                 )
-            }
-        }
-        
-        // MARK: Comparable
-        public static func < (lhs: Index, rhs: Index) -> Bool {
-            if lhs.variation == rhs.variation {
-                return lhs.number < rhs.number || (
-                    lhs.number == rhs.number &&
-                    lhs.color == .white && rhs.color == .black
-                )
-            } else {
-                if lhs.number == rhs.number {
-                    return lhs.variation < rhs.variation
-                } else {
-                    return lhs.number < rhs.number || (
-                        lhs.number == rhs.number &&
-                        lhs.color == .white && rhs.color == .black
-                    )
-                }
             }
         }
         

@@ -11,6 +11,9 @@
     
 * `PGNParser.convert(game:)` now returns the PGN string for a given game, including variations.
     * Note: `PGNParser.parse(pgn:)` still does not work with variations, this is coming in a future update.
+    
+* `Game.positions` is now public
+    * Contains a dictionary of all positions in the game by `MoveTree.Index`, including variations
 
 #### Removed
 * `Game.annotateMove`

@@ -22,7 +22,7 @@ class GameTests: XCTestCase {
     // MARK: - Setup
     
     override func setUp() {
-        game.make(moves: ["e4", "e5", "Nf3", "Nc6", "Bc4"])
+        game.make(moves: ["e4", "e5", "Nf3", "Nc6", "Bc4"], from: .minimum)
         
         // add 2. Nc3 ... variation to 2. Nf3
         game.make(moves: ["Nc3", "Nf6", "Bc4"], from: nf3Index.previous)

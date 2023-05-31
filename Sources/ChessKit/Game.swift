@@ -13,8 +13,10 @@ import Foundation
 ///
 public class Game: Equatable, ObservableObject {
     
+    /// The move tree representing all moves made in the game.
     @Published public private(set) var moves: MoveTree
-    private(set) var positions: [MoveTree.Index: Position]
+    /// A dictionary of every position in the game, keyed by move index.
+    public private(set) var positions: [MoveTree.Index: Position]
     
     /// Initialize a game with a starting position.
     ///
@@ -41,10 +43,6 @@ public class Game: Equatable, ObservableObject {
         positions = parsed.positions
     }
     
-    private var lastMainVariationIndex: MoveTree.Index {
-        moves.indices.filter { $0.variation == 0 }.last ?? .minimum
-    }
-    
     /// Perform the provided move in the game.
     ///
     /// - parameter move: The move to perform.
@@ -60,12 +58,22 @@ public class Game: Equatable, ObservableObject {
     /// necessary captures, promotions, etc. It is the responsibility
     /// of the caller to ensure the move is legal, see the `Board` struct.
     ///
+    /// If `move` is the same as the upcoming move in the
+    /// current variation of `index`, the move is not made, otherwise
+    /// another variation with the same first move as the existing one
+    /// would be created.
+    ///
     @discardableResult
     public func make(
         move: Move,
-        from index: MoveTree.Index? = nil
+        from index: MoveTree.Index
     ) -> MoveTree.Index {
-        let index = index ?? lastMainVariationIndex
+        if let existingMoveIndex = moves.nextIndex(containing: move, for: index) {
+            // if attempted move already exists next in the variation,
+            // skip making it and return the corresponding index
+            return existingMoveIndex
+        }
+        
         let newIndex = moves.add(move: move, toParentIndex: index)
         
         guard let currentPosition = positions[index] else {
@@ -114,10 +122,8 @@ public class Game: Equatable, ObservableObject {
     @discardableResult
     public func make(
         move moveString: String,
-        from index: MoveTree.Index? = nil
+        from index: MoveTree.Index
     ) -> MoveTree.Index {
-        let index = index ?? lastMainVariationIndex
-        
         guard let position = positions[index],
               let move = SANParser.parse(move: moveString, in: position)
         else {
@@ -145,9 +151,9 @@ public class Game: Equatable, ObservableObject {
     @discardableResult
     public func make(
         moves moveStrings: [String],
-        from index: MoveTree.Index? = nil
+        from index: MoveTree.Index
     ) -> MoveTree.Index {
-        var index = index ?? lastMainVariationIndex
+        var index = index
         
         for moveString in moveStrings {
             index = make(move: moveString, from: index)
