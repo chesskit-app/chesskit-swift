@@ -256,11 +256,11 @@ public class MoveTree: Equatable {
         switch node.index.color {
         case .white:
             result.append(.whiteNumber(node.index.number))
-            result.append(.whiteMove(node.move, node.index))
         case .black:
             result.append(.blackNumber(node.index.number))
-            result.append(.blackMove(node.move, node.index))
         }
+        
+        result.append(.move(node.move, node.index))
         
         var currentNode = node.next
         var previousIndex = node.index
@@ -276,10 +276,7 @@ public class MoveTree: Equatable {
             }
             
             if let move = currentNode?.move {
-                switch currentIndex.color {
-                case .white:    result.append(.whiteMove(move, currentIndex))
-                case .black:    result.append(.blackMove(move, currentIndex))
-                }
+                result.append(.move(move, currentIndex))
             }
             
             // recursively generate PGN for all child nodes
@@ -342,15 +339,13 @@ extension MoveTree {
     
     /// An element for representing the `MoveTree` in
     /// PGN (Portable Game Notation) format.
-    public enum PGNElement {
+    public enum PGNElement: Hashable, Equatable {
         /// e.g. `1.`
         case whiteNumber(Int)
         /// e.g. `1...`
         case blackNumber(Int)
         /// e.g. `e4`
-        case whiteMove(Move, Index)
-        /// e.g. `e5`
-        case blackMove(Move, Index)
+        case move(Move, Index)
         /// e.g. `(`
         case variationStart
         /// e.g. `)`

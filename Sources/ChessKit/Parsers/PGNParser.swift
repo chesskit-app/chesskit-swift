@@ -203,9 +203,7 @@ public class PGNParser {
                 pgn += "\(number). "
             case .blackNumber(let number):
                 pgn += "\(number)... "
-            case let .whiteMove(move, _):
-                pgn += movePGN(for: move)
-            case let .blackMove(move, _):
+            case let .move(move, _):
                 pgn += movePGN(for: move)
             case .variationStart:
                 pgn += "("

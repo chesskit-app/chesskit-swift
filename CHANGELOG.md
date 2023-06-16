@@ -1,3 +1,9 @@
+# ChessKit [dev]
+
+#### Changed
+* Simplified `PGNElement` to just contain a single `.move` case.
+	* i.e. `.whiteMove` and `blackMove` have been removed and consolidated.
+
 # ChessKit 0.2.0
 Released Wednesday, May 31, 2023.
 
