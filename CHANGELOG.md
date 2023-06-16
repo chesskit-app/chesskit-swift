@@ -1,5 +1,10 @@
 # ChessKit [dev]
 
+#### New Features
+* Add `future(for:)` and `fullVariation(for:)` methods to `MoveTree`.
+	* `future(for:)` returns the future moves a given index.
+	* `fullVariation(for:)` returns the sum of `history(for:)` and `future(for:)`.
+
 #### Improvements
 * Simplify `PGNElement` to just contain a single `.move` case.
 	* i.e. `.whiteMove` and `blackMove` have been removed and consolidated.
@@ -11,7 +16,7 @@
 # ChessKit 0.2.0
 Released Wednesday, May 31, 2023.
 
-#### Added
+#### New Features
 * `MoveTree` and `MoveTree.Index` objects to track move turns and variations.
     * `Game.moves` is now a `MoveTree` object instead of `[Int: MovePair]`
     * `MoveTree.Index` includes piece color and variation so it can be used to directly identify any single move within a game

@@ -152,6 +152,36 @@ public class MoveTree: Equatable {
         return history.reversed()
     }
     
+    /// Provides a single future for a given index.
+    ///
+    /// - parameter index: The index from which to generate the future.
+    /// - returns: An array of move indices sorted from beginning to end.
+    ///
+    /// For chess this would represent an array of all the move indices
+    /// from the move after the move defined by `index` to the last move
+    /// of the variation.
+    public func future(for index: Index) -> [MoveTree.Index] {
+        var currentNode = dictionary[index]
+        var future: [MoveTree.Index] = []
+        
+        while currentNode != nil {
+            currentNode = currentNode?.next
+            
+            if let node = currentNode {
+                future.append(node.index)
+            }
+        }
+        
+        return future
+    }
+    
+    /// Returns the full variation for a move at the provided `index`.
+    ///
+    /// This returns the sum of `history(for:)` and `future(for:)`.
+    public func fullVariation(for index: Index) -> [MoveTree.Index] {
+        history(for: index) + future(for: index)
+    }
+    
     private func indices(between start: Index, and end: Index) -> [Index] {
         var result = [Index]()
         
