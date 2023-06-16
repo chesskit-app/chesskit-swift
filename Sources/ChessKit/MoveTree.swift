@@ -94,12 +94,20 @@ public class MoveTree: Equatable {
     
     /// Returns the index of the previous move given an `index`.
     public func previousIndex(for index: Index) -> Index? {
-        dictionary[index]?.previous?.index
+        if index == .minimum.next {
+            return .minimum
+        } else {
+            return dictionary[index]?.previous?.index
+        }
     }
     
     /// Returns the index of the next move given an `index`.
     public func nextIndex(for index: Index) -> Index? {
-        dictionary[index]?.next?.index
+        if index == .minimum {
+            return dictionary[.minimum.next]?.index
+        } else {
+            return dictionary[index]?.next?.index
+        }
     }
     
     /// Returns the index matching `move` in the next or child moves of the

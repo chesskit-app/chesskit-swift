@@ -1,8 +1,12 @@
 # ChessKit [dev]
 
-#### Changed
-* Simplified `PGNElement` to just contain a single `.move` case.
+#### Improvements
+* Simplify `PGNElement` to just contain a single `.move` case.
 	* i.e. `.whiteMove` and `blackMove` have been removed and consolidated.
+
+#### Fixes
+* Fix behavior of `previousIndex(for:)` and `nextIndex(for:)` in `MoveTree`.
+	* Especially when the provided `index` is equal to `.minimum`.
 
 # ChessKit 0.2.0
 Released Wednesday, May 31, 2023.
