@@ -1,8 +1,10 @@
-# ChessKit [dev]
+# ChessKit 0.3.0
+Released Wednesday, June 21, 2023.
 
 #### New Features
 * Add `future(for:)` and `fullVariation(for:)` methods to `MoveTree`.
-	* `future(for:)` returns the future moves a given index.
+	* `future(for:)` returns the future moves for a given 
+index.
 	* `fullVariation(for:)` returns the sum of `history(for:)` and `future(for:)`.
 
 #### Improvements
