@@ -91,18 +91,7 @@ class GameTests: XCTestCase {
     }
     
     func testMoveIndexHistory() {
-        let f5Future = game.moves.history(for: f5Index)
-        
-        XCTAssertEqual(
-            f5Future,
-            [
-                .init(number: 3, color: .white, variation: 3)
-            ]
-        )
-    }
-    
-    func testMoveIndexFuture() {
-        let f5History = game.moves.future(for: f5Index)
+        let f5History = game.moves.history(for: f5Index)
         
         XCTAssertEqual(
             f5History,
@@ -111,6 +100,17 @@ class GameTests: XCTestCase {
                 .init(number: 1, color: .black, variation: 0),
                 .init(number: 2, color: .white, variation: 0),
                 f5Index
+            ]
+        )
+    }
+    
+    func testMoveIndexFuture() {
+        let f5Future = game.moves.future(for: f5Index)
+        
+        XCTAssertEqual(
+            f5Future,
+            [
+                .init(number: 3, color: .white, variation: 3)
             ]
         )
     }
