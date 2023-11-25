@@ -7,7 +7,7 @@
 public struct Piece: Equatable, Hashable {
     
     /// Represents the color of a piece.
-    public enum Color: String {
+    public enum Color: String, CaseIterable {
         case black = "b", white = "w"
         
         /// The opposite color of the given color.
@@ -22,7 +22,7 @@ public struct Piece: Equatable, Hashable {
     }
     
     /// Represents the type of piece.
-    public enum Kind: String {
+    public enum Kind: String, CaseIterable {
         case pawn = ""
         case knight = "N", bishop = "B", rook = "R", queen = "Q", king = "K"
         

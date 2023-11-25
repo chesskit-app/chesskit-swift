@@ -1,9 +1,18 @@
+# ChessKit 0.3.1
+Released Friday, November 24, 2023.
+
+#### Improvements
+* Added `CaseIterable` conformance to several `Piece` and `Square` enums:
+    * `Piece.Color`
+    * `Piece.Kind`
+    * `Square.Color`
+
 # ChessKit 0.3.0
 Released Wednesday, June 21, 2023.
 
 #### New Features
 * Add `future(for:)` and `fullVariation(for:)` methods to `MoveTree`.
-	* `future(for:)` returns the future moves for a given 
+	* `future(for:)` returns the future moves for a given
 index.
 	* `fullVariation(for:)` returns the sum of `history(for:)` and `future(for:)`.
 
@@ -26,10 +35,10 @@ Released Wednesday, May 31, 2023.
 
 * `make(move:index:)` and `make(moves:index:)` with ability to make moves on `Game` with SAN strings for convenience
     * For example: `game.make(moves: ["e4", "e5"])`
-    
+
 * `PGNParser.convert(game:)` now returns the PGN string for a given game, including variations.
     * Note: `PGNParser.parse(pgn:)` still does not work with variations, this is coming in a future update.
-    
+
 * `Game.positions` is now public
     * Contains a dictionary of all positions in the game by `MoveTree.Index`, including variations
 
@@ -53,7 +62,7 @@ Released Wednesday, April 12, 2023.
 
 * Downgrade required Swift version to 5.7
 	* Allows use with Xcode 14.2 on GitHub Actions
-		
+
 # ChessKit 0.1.0
 Released Tuesday, April 11, 2023.
 
