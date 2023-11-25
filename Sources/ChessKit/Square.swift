@@ -199,7 +199,7 @@ public enum Square: Equatable, CaseIterable {
     // MARK: - Color
     
     /// Represents the possible colors of each board square.
-    public enum Color {
+    public enum Color: CaseIterable {
         case light, dark
     }
     
