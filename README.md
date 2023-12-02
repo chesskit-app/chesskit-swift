@@ -8,7 +8,7 @@ A Swift package for implementing chess logic.
 
 * Add a package dependency to your Xcode project or Swift Package:
 ``` swift
-.package(url: "https://github.com/chesskit-app/chesskit-swift", from: "0.3.0")
+.package(url: "https://github.com/chesskit-app/chesskit-swift", from: "0.3.2")
 ```
 
 * Next you can import `ChessKit` to use it in your Swift code:

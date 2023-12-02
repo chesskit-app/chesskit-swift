@@ -1,3 +1,9 @@
+# ChessKit 0.3.2
+Released Saturday, December 2, 2023.
+
+#### Fixes
+* Made `file` and `rank` public properties of `Square`.
+
 # ChessKit 0.3.1
 Released Friday, November 24, 2023.
 
