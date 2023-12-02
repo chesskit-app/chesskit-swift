@@ -164,7 +164,7 @@ public enum Square: Equatable, CaseIterable {
     // MARK: - Components
     
     /// The file (column) of the given square, from `a` through `h`.
-    var file: File {
+    public var file: File {
         switch self {
         case .a1, .a2, .a3, .a4, .a5, .a6, .a7, .a8: return .a
         case .b1, .b2, .b3, .b4, .b5, .b6, .b7, .b8: return .b
@@ -178,7 +178,7 @@ public enum Square: Equatable, CaseIterable {
     }
     
     /// The rank (row) of the given square, from `1` to `8`.
-    var rank: Rank {
+    public var rank: Rank {
         switch self {
         case .a1, .b1, .c1, .d1, .e1, .f1, .g1, .h1: return 1
         case .a2, .b2, .c2, .d2, .e2, .f2, .g2, .h2: return 2
