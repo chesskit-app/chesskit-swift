@@ -7,7 +7,18 @@ import XCTest
 @testable import ChessKit
 
 class MoveTests: XCTestCase {
-
+    
+    func testMoveSANInit() {
+        let move = Move(result: .move, piece: .init(.pawn, color: .white, square: .e4), start: .e2, end: .e4)
+        let moveFromSAN = Move(san: "e4", color: .white, position: .standard)
+        
+        XCTAssertEqual(move, moveFromSAN)
+    }
+    
+    func testMoveInvalidSANInit() {
+        XCTAssertNil(Move(san: "e5", color: .white, position: .standard))
+    }
+    
     func testMoveNotation() {
         let pawnD3 = Move(result: .move, piece: Piece(.pawn, color: .white, square: .d3), start: .d2, end: .d3)
         XCTAssertEqual(pawnD3.san, "d3")
@@ -71,5 +82,18 @@ class MoveTests: XCTestCase {
         XCTAssertEqual(checkmate.san, "Rg7#")
         XCTAssertEqual(checkmate.lan, "g4g7")
     }
-
+    
+    func testMoveAssessments() {
+        XCTAssertEqual(Move.Assessment.null.notation, "")
+        XCTAssertEqual(Move.Assessment.good.notation, "!")
+        XCTAssertEqual(Move.Assessment.mistake.notation, "?")
+        XCTAssertEqual(Move.Assessment.brilliant.notation, "!!")
+        XCTAssertEqual(Move.Assessment.blunder.notation, "??")
+        XCTAssertEqual(Move.Assessment.interesting.notation, "!?")
+        XCTAssertEqual(Move.Assessment.dubious.notation, "?!")
+        XCTAssertEqual(Move.Assessment.forced.notation, "□")
+        XCTAssertEqual(Move.Assessment.singular.notation, "")
+        XCTAssertEqual(Move.Assessment.worst.notation, "")
+    }
+    
 }
