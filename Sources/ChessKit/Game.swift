@@ -91,19 +91,17 @@ public class Game: Equatable, ObservableObject {
             newPosition.move(pieceAt: move.start, to: move.end)
             newPosition.resetHalfmoveClock()
         case let .castle(castling):
-            newPosition.move(pieceAt: castling.kingStart, to: castling.kingEnd)
-            newPosition.move(pieceAt: castling.rookStart, to: castling.rookEnd)
+            newPosition.castle(castling)
         }
-        
+
         if let promotedPiece = move.promotedPiece {
             newPosition.promote(pieceAt: move.end, to: promotedPiece.kind)
         }
-        
-        newPosition.toggleSideToMove()
+
         positions[newIndex] = newPosition
         return newIndex
     }
-    
+
     /// Perform the provided move in the game.
     ///
     /// - parameter moveString: The SAN string of the move to perform.

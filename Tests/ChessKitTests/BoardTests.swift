@@ -180,8 +180,8 @@ class BoardTests: XCTestCase {
     func testSideToMove() {
         var position = Position.standard
         XCTAssertEqual(position.sideToMove, .white)
-        
-        position.toggleSideToMove()
+
+        position.move(pieceAt: .e2, to: .e4)
         XCTAssertEqual(position.sideToMove, .black)
     }
 

@@ -10,8 +10,8 @@ public struct Position: Equatable {
     public internal(set) var pieces: [Piece]
 
     /// The side that is set to move next.
-    public internal(set) var sideToMove: Piece.Color
-    
+    public private(set) var sideToMove: Piece.Color
+
     /// Legal castlings based on position only (does not take into account checks, etc.
     ///
     /// This array only contains castlings that are legal based on whether
@@ -49,16 +49,16 @@ public struct Position: Equatable {
         guard let parsed = FENParser.parse(fen: fen) else {
             return nil
         }
-        
+
         self = parsed
     }
-    
+
     /// Toggle the current side to move.
     ///
-    public mutating func toggleSideToMove() {
+    private mutating func toggleSideToMove() {
         sideToMove = sideToMove.opposite
     }
-    
+
     /// Provides the chess piece located at the given square.
     ///
     /// - parameter square: The square of the board to query for a piece.
@@ -67,29 +67,59 @@ public struct Position: Equatable {
     public func piece(at square: Square) -> Piece? {
         pieces.filter { $0.square == square }.first
     }
-    
+
     /// Moves the given piece to the given square.
     ///
     /// - parameter piece: The piece to move in this position.
     /// - parameter end: The square that `piece` should be moved to.
     /// - returns: The updated piece containing the final square as its location, or `nil` if the given piece was not found in this position.
     ///
+    /// - warning: Do not use this function to perform castling moves. To castle a king and rook,
+    /// call `castle(_:)`.
+    ///
     @discardableResult
-    mutating func move(_ piece: Piece, to end: Square) -> Piece? {
+    mutating func move(_ piece: Piece, to end: Square, updateClockAndSideToMove: Bool = true) -> Piece? {
         guard let index = pieces.firstIndex(where: { $0 == piece }) else { return nil }
-        
+
         legalCastlings.invalidateCastling(for: piece)
         pieces[index].square = end
-        
-        clock.halfmoves += 1
-        
-        if piece.color == .black {
-            clock.fullmoves += 1
+
+        if updateClockAndSideToMove {
+            clock.halfmoves += 1
+
+            if piece.color == .black {
+                clock.fullmoves += 1
+            }
+
+            toggleSideToMove()
         }
-        
+
         return pieces[index]
     }
-    
+
+    /// Moves the given piece to the given square.
+    ///
+    /// - parameter castling: The castling object contain associated king and rook square information.
+    /// - returns: The updated king piece containing the final square as its location, or `nil` if the given piece was not found in this position.
+    ///
+    /// This function assumes castling is valid for the provided `castling`. If the the king move is
+    /// valid, it will be performed whether or not there is actually a piece on the `rookStart` square.
+    ///
+    /// - Note: The rook will only be moved if the king move succeeds.
+    ///
+    @discardableResult
+    mutating func castle(_ castling: Castling) -> Piece? {
+        let kingMove = move(pieceAt: castling.kingStart, to: castling.kingEnd)
+
+        defer {
+            if kingMove != nil {
+                move(pieceAt: castling.rookStart, to: castling.rookEnd, updateClockAndSideToMove: false)
+            }
+        }
+
+        return kingMove
+    }
+
     /// Moves a piece from one square to another.
     ///
     /// - parameter start: The square where the piece is currently located.
@@ -97,14 +127,14 @@ public struct Position: Equatable {
     /// - returns: The updated piece containing the final square as its location, or `nil` if the given piece was not found in this position.
     ///
     @discardableResult
-    mutating func move(pieceAt start: Square, to end: Square) -> Piece? {
-        guard let piece = pieces.filter({ $0.square == start }).first else {
+    mutating func move(pieceAt start: Square, to end: Square, updateClockAndSideToMove: Bool = true) -> Piece? {
+        guard let piece = pieces.first(where: { $0.square == start }) else {
             return nil
         }
-        
-        return move(piece, to: end)
+
+        return move(piece, to: end, updateClockAndSideToMove: updateClockAndSideToMove)
     }
-    
+
     /// Removes the given piece from the position.
     ///
     /// - parameter piece: The piece to remove from the position.
