@@ -20,12 +20,12 @@ class PGNParserTests: XCTestCase {
             35. Ra7 g6 36. Ra6+ Kc5 37. Ke1 Nf4 38. g3 Nxh3 39. Kd2 Kb5 40. Rd6 Kc5 41. Ra6
             Nf2 42. g4 Bd3 43. Re6 1/2-1/2
             """
-        
+
         let game = PGNParser.parse(game: pgn)
         let gameFromPGN = Game(pgn: pgn)
-        
+
         XCTAssertEqual(game, gameFromPGN)
-        
+
         // starting position + 85 ply
         XCTAssertEqual(game?.positions.keys.count, 86)
         
@@ -54,5 +54,5 @@ class PGNParserTests: XCTestCase {
             color: .white
         )]?.checkState, .check)
     }
-    
+
 }

@@ -4,10 +4,10 @@
 //
 
 extension MoveTree {
-    
+
     /// Object that represents the index of a node in the move tree.
     public struct Index: Hashable {
-        
+
         /// The move number.
         public let number: Int
         /// The color of the piece moved on this move.
@@ -19,7 +19,7 @@ extension MoveTree {
         ///
         /// `variation = 0` is assumed to be the main variation in a move tree.
         public var variation: Int = 0
-        
+
         /// Creates a `MoveTree.Index` with a given `number`, `color`,
         /// and `variation` (default is `0`).
         public init(number: Int, color: Piece.Color, variation: Int = 0) {
@@ -27,7 +27,7 @@ extension MoveTree {
             self.color = color
             self.variation = variation
         }
-        
+
         /// The minimum value of `MoveTree.Index(number: 0, color: .black)`
         ///
         /// This represents the starting position of the game.
@@ -35,7 +35,7 @@ extension MoveTree {
         /// i.e. `MoveTree.Index(number: 1, color: .white)` is returned by `MoveTree.Index.minimum.next`
         /// which is the first move of the game (played by white).
         public static let minimum = Index(number: 0, color: .black)
-        
+
         /// The previous index.
         ///
         /// This assumes `variation` is constant.
@@ -57,7 +57,7 @@ extension MoveTree {
                 )
             }
         }
-        
+
         /// The next index.
         ///
         /// This assumes `variation` is constant.
@@ -79,7 +79,7 @@ extension MoveTree {
                 )
             }
         }
-        
+
     }
-    
+
 }

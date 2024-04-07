@@ -5,27 +5,27 @@
 
 /// Represents a piece on the chess board.
 public struct Piece: Equatable, Hashable {
-    
+
     /// Represents the color of a piece.
     public enum Color: String, CaseIterable {
         case black = "b", white = "w"
-        
+
         /// The opposite color of the given color.
         public var opposite: Color {
             self == .black ? .white : .black
         }
-        
+
         /// Toggles to the opposite color value.
         public mutating func toggle() {
             self = self.opposite
         }
     }
-    
+
     /// Represents the type of piece.
     public enum Kind: String, CaseIterable {
         case pawn = ""
         case knight = "N", bishop = "B", rook = "R", queen = "Q", king = "K"
-        
+
         /// The relative value of each piece.
         var value: Int {
             switch self {
@@ -36,7 +36,7 @@ public struct Piece: Equatable, Hashable {
             case .king:             return 0
             }
         }
-        
+
         /// The notation of the given piece kind.
         public var notation: String {
             switch self {
@@ -48,16 +48,16 @@ public struct Piece: Equatable, Hashable {
             case .king:             return "K"
             }
         }
-        
+
     }
-    
+
     /// The color of the piece.
     public var color: Color
     /// The kind of piece, e.g. `.pawn`.
     public var kind: Kind
     /// The square where this piece is located on the board.
     public var square: Square
-    
+
     /// Initializes a chess piece with the given kind, color, and square.
     ///
     /// - parameter kind: The kind of piece, e.g. `.pawn`.
@@ -69,7 +69,7 @@ public struct Piece: Equatable, Hashable {
         self.color = color
         self.square = square
     }
-    
+
     /// Initializes a chess piece from its FEN notation.
     ///
     /// - parameter fen: The Forsyth–Edwards Notation of a piece kind
@@ -106,7 +106,7 @@ public struct Piece: Equatable, Hashable {
             return nil
         }
     }
-    
+
     /// The FEN representation of the piece.
     ///
     /// Note: This value does not convey any information regarding
@@ -133,5 +133,5 @@ public struct Piece: Equatable, Hashable {
             }
         }
     }
-    
+
 }

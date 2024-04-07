@@ -5,10 +5,10 @@
 
 /// Represents the collection of pieces on the chess board.
 public struct Position: Equatable {
-    
+
     /// The pieces currently existing on the board in this position.
     public internal(set) var pieces: [Piece]
-    
+
     /// The side that is set to move next.
     public internal(set) var sideToMove: Piece.Color
     
@@ -17,16 +17,16 @@ public struct Position: Equatable {
     /// This array only contains castlings that are legal based on whether
     /// or not the king(s) and rook(s) have moved.
     var legalCastlings: LegalCastlings
-    
+
     /// Contains information about a pawn that can be captured by en passant.
     ///
     /// This property is `nil` if there is no pawn capable of being captured by
     /// en passant.
     var enPassant: EnPassant?
-    
+
     /// Keeps track of the number of moves in a game for the current position.
     public private(set) var clock: Clock
-    
+
     /// Initialize a position with a given array of pieces and characteristics.
     init(
         pieces: [Piece],
@@ -41,7 +41,7 @@ public struct Position: Equatable {
         self.enPassant = enPassant
         self.clock = clock
     }
-    
+
     /// Initialize a move with a provided FEN string.
     ///
     /// This initializer fails if the provided FEN string is invalid.
@@ -114,7 +114,7 @@ public struct Position: Equatable {
     mutating func remove(_ piece: Piece) {
         pieces.removeAll { $0 == piece }
     }
-    
+
     /// Promotes a pawn at the given square to the given piece type.
     ///
     /// - parameter square: The square on which the pawn should be promoted.
@@ -128,7 +128,7 @@ public struct Position: Equatable {
         guard let index = pieces.firstIndex(where: { $0.square == square }) else { return }
         pieces[index].kind = kind
     }
-    
+
     /// Resets the halfmove counter in the `Clock`.
     ///
     /// This should be used whenenever a pawn is moved or a capture is made.
@@ -140,7 +140,7 @@ public struct Position: Equatable {
     public var fen: String {
         FENParser.convert(position: self)
     }
-    
+
 }
 
 extension Position {
@@ -155,7 +155,7 @@ extension Position {
         Piece(.queen,  color: .white, square: .d5),
         Piece(.king,   color: .white, square: .g3)
     ])
-    
+
     /// The standard starting chess position.
     public static let standard = Position(fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")!
 }

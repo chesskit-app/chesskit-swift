@@ -5,9 +5,9 @@
 
 /// Structure that captures legal castling moves.
 struct LegalCastlings: Equatable {
-    
+
     private var legal: [Castling]
-    
+
     /// Initialize a `LegalCastlings` struct with an
     /// array of legal castling moves.
     ///
@@ -16,7 +16,7 @@ struct LegalCastlings: Equatable {
     init(legal: [Castling] = [.bK, .wK, .bQ, .wQ]) {
         self.legal = legal
     }
-    
+
     /// Removes any castling moves associated with `piece` from the
     /// list of legal castlings.
     ///
@@ -33,7 +33,7 @@ struct LegalCastlings: Equatable {
             legal.removeAll { $0.color == piece.color && $0.rookStart == piece.square }
         }
     }
-    
+
     /// Checks if a given castling is currently legal.
     ///
     /// - parameter castling: The castling move to check for legality.
@@ -42,14 +42,14 @@ struct LegalCastlings: Equatable {
     func contains(_ castling: Castling) -> Bool {
         legal.contains(castling)
     }
-    
+
     /// The FEN representation of the legal castlings.
     ///
     /// Examples: `KQkq`, `QK`, `Qkq`, `k`, `-`
     var fen: String {
         legal.isEmpty ? "-" : legal.map(\.fen).sorted().joined()
     }
-    
+
 }
 
 /// Represents a castling move in a standard chess game.
@@ -57,7 +57,7 @@ struct LegalCastlings: Equatable {
 /// Contains various characteristics of the castling move
 /// such as king and rook start and end squares and notation.
 public struct Castling: Equatable, Hashable {
-    
+
     /// Kingside castle for black.
     static let bK = Castling(side: .king, color: .black)
     /// Kingside castle for white.
@@ -66,12 +66,12 @@ public struct Castling: Equatable, Hashable {
     static let bQ = Castling(side: .queen, color: .black)
     /// Queenside castle for white.
     static let wQ = Castling(side: .queen, color: .white)
-    
+
     /// Represents the side of the board from which castling an occur.
     /// Either `king` or `queen`.
     enum Side: CaseIterable {
         case king, queen
-        
+
         var notation: String {
             switch self {
             case .king:     return "O-O"
@@ -79,12 +79,12 @@ public struct Castling: Equatable, Hashable {
             }
         }
     }
-    
+
     /// The side of the board for which this castling object represents.
     var side: Side
     /// The color of the king and rook castling.
     var color: Piece.Color
-    
+
     /// The squares that the king will pass through when castling.
     var squares: [Square] {
         switch color {
@@ -92,7 +92,7 @@ public struct Castling: Equatable, Hashable {
         case .black:    return (side == .queen) ? [.c8, .d8] : [.f8, .g8]
         }
     }
-    
+
     /// The starting square of the king, depending on the color.
     public var kingStart: Square {
         switch color {
@@ -100,7 +100,7 @@ public struct Castling: Equatable, Hashable {
         case .black:    return .e8
         }
     }
-    
+
     /// The ending square of the king, depending on the castle side and color.
     public var kingEnd: Square {
         switch color {
@@ -108,7 +108,7 @@ public struct Castling: Equatable, Hashable {
         case .black:    return (side == .queen) ? .c8 : .g8
         }
     }
-    
+
     /// The starting square of the rook, depending on the castle side and color.
     public var rookStart: Square {
         switch color {
@@ -116,7 +116,7 @@ public struct Castling: Equatable, Hashable {
         case .black:    return (side == .queen) ? .a8 : .h8
         }
     }
-    
+
     /// The ending square of the rook, depending on the castle side and color.
     public var rookEnd: Square {
         switch color {
@@ -124,7 +124,7 @@ public struct Castling: Equatable, Hashable {
         case .black:    return (side == .queen) ? .d8 : .f8
         }
     }
-    
+
     /// The FEN representation of the castling.
     ///
     /// Possible values: `K`, `Q`, `k`, or `q`

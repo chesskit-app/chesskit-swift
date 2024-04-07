@@ -7,7 +7,7 @@ public enum Square: Equatable, CaseIterable {
     /// The file on the chess board, from a to h.
     public enum File: String, CaseIterable  {
         case a, b, c, d, e, f, g, h
-        
+
         /// The number corresponding to the file.
         ///
         /// For example:
@@ -19,7 +19,7 @@ public enum Square: Equatable, CaseIterable {
         public var number: Int {
             File.allCases.firstIndex(of: self)! + 1
         }
-        
+
         /// Initialize a file from a number from 1 through 8.
         ///
         /// - parameter number: The number of the file to set.
@@ -48,15 +48,15 @@ public enum Square: Equatable, CaseIterable {
     public struct Rank: ExpressibleByIntegerLiteral, Equatable, Hashable {
         /// The possible range of Rank numbers.
         public static let range = 1...8
-        
+
         /// The integer value of the Rank.
         public var value: Int
-        
+
         /// Initialize a Rank with a provided integer value.
         public init(_ value: Int) {
             self.value = value.bounded(by: Rank.range)
         }
-        
+
         /// Initialize a Rank with a provided integer literal.
         public init(integerLiteral value: IntegerLiteralType) {
             self.init(value)
@@ -64,7 +64,7 @@ public enum Square: Equatable, CaseIterable {
     }
 
     // MARK: - Squares
-    
+
     case a1, a2, a3, a4, a5, a6, a7, a8
     case b1, b2, b3, b4, b5, b6, b7, b8
     case c1, c2, c3, c4, c5, c6, c7, c8
@@ -73,9 +73,9 @@ public enum Square: Equatable, CaseIterable {
     case f1, f2, f3, f4, f5, f6, f7, f8
     case g1, g2, g3, g4, g5, g6, g7, g8
     case h1, h2, h3, h4, h5, h6, h7, h8
-    
+
     // MARK: - Initializer
-    
+
     /// Initializes a board square from the given notation string.
     ///
     /// - parameter notation: The notation of the square, e.g. `"a1"`.
@@ -85,7 +85,7 @@ public enum Square: Equatable, CaseIterable {
         let rank = Rank(Int(notation.suffix(1)) ?? 1)
         self.init(file, rank)
     }
-    
+
     /// Initializes a board square from the provided file and rank.
     ///
     /// - parameter file: The file (column) of the square, from `a` to `h`.
@@ -160,9 +160,9 @@ public enum Square: Equatable, CaseIterable {
         default:        self = .a1
         }
     }
-    
+
     // MARK: - Components
-    
+
     /// The file (column) of the given square, from `a` through `h`.
     public var file: File {
         switch self {
@@ -176,7 +176,7 @@ public enum Square: Equatable, CaseIterable {
         case .h1, .h2, .h3, .h4, .h5, .h6, .h7, .h8: return .h
         }
     }
-    
+
     /// The rank (row) of the given square, from `1` to `8`.
     public var rank: Rank {
         switch self {
@@ -195,14 +195,14 @@ public enum Square: Equatable, CaseIterable {
     public var notation: String {
         file.rawValue + "\(rank.value)"
     }
-    
+
     // MARK: - Color
-    
+
     /// Represents the possible colors of each board square.
     public enum Color: CaseIterable {
         case light, dark
     }
-    
+
     /// The color of the square on the board, either light or dark.
     public var color: Color {
         if (file.number % 2 == 0 && rank.value % 2 == 0) || (file.number % 2 != 0 && rank.value % 2 != 0) {

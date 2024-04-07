@@ -28,11 +28,11 @@ private func increment(rank: Square.Rank, by spaces: Int) -> Square.Rank {
 private func increment(file: Square.File, by spaces: Int) -> Square.File {
     let currentFileNumber = file.number - 1
     let newFileNumber = currentFileNumber + spaces
-    
+
     guard newFileNumber >= 0, newFileNumber < Square.File.allCases.count else {
         return file
     }
-    
+
     return Square.File.allCases[newFileNumber]
 }
 
@@ -59,7 +59,7 @@ func ↗ (start: Square, spaces: Int) -> Square {
         Square.File.h.number - start.file.number,
         Square.Rank.range.upperBound - start.rank.value
     )
-    
+
     let movement = min(spaces, maxMovement)
     return start ↑ movement → movement
 }
@@ -69,7 +69,7 @@ func ↙ (start: Square, spaces: Int) -> Square {
         start.file.number - Square.File.a.number,
         start.rank.value - Square.Rank.range.lowerBound
     )
-    
+
     let movement = min(spaces, maxMovement)
     return start ↓ movement ← movement
 }
@@ -79,7 +79,7 @@ func ↖ (start: Square, spaces: Int) -> Square {
         start.file.number - Square.File.a.number,
         Square.Rank.range.upperBound - start.rank.value
     )
-    
+
     let movement = min(spaces, maxMovement)
     return start ↑ movement ← movement
 }
@@ -89,7 +89,7 @@ func ↘ (start: Square, spaces: Int) -> Square {
         Square.File.h.number - start.file.number,
         start.rank.value - Square.Rank.range.lowerBound
     )
-    
+
     let movement = min(spaces, maxMovement)
     return start ↓ movement → movement
 }
