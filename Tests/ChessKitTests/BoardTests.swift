@@ -320,13 +320,13 @@ class BBBoardTests: XCTestCase {
         ]))
 
         let rookMoves = boards.legalMoves(for: a1Rook)
-        print(rookMoves.chessString())
+        debugPrint(rookMoves)
 
         let bishopMoves = boards.legalMoves(for: d4Bishop)
-        print(bishopMoves.chessString())
+        debugPrint(bishopMoves)
 
         let queenMoves = boards.legalMoves(for: g3Queen)
-        print(queenMoves.chessString())
+        debugPrint(queenMoves)
     }
 
 }
