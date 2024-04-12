@@ -91,8 +91,8 @@ extension Bitboard: CustomDebugStringConvertible {
     /// - parameter labelFiles: Whether or not to label ranks (i.e. a, b, c, ...).
     /// - returns: A string representing an 8x8 chess board.
     func chessString(
-        _ occupied: Character = "X",
-        _ empty: Character = ".",
+        _ occupied: Character = "⨯",
+        _ empty: Character = "·",
         labelRanks: Bool = true,
         labelFiles: Bool = true
     ) -> String {

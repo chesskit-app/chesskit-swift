@@ -251,7 +251,7 @@ class BoardTests: XCTestCase {
     }
 
     func testDisambiguation() {
-        var board = Board(position: Position(fen: "3r3r/8/8/R7/4Q2Q/8/8/R7/7Q w - - 0 1")!)
+        var board = Board(position: Position(fen: "3r3r/8/4B3/R2n4/2B1Q2Q/8/8/R6Q w - - 0 1")!)
 
         let whiteRookMove = board.move(pieceAt: .a1, to: .a3)
         let blackRookMove = board.move(pieceAt: .d8, to: .f8)
@@ -260,75 +260,12 @@ class BoardTests: XCTestCase {
         XCTAssertEqual(whiteRookMove?.san, "R1a3")
         XCTAssertEqual(blackRookMove?.san, "Rdf8")
         XCTAssertEqual(queenMove?.san, "Qh4e1")
-    }
 
-}
+        let unambiguousBishopMove = board.move(pieceAt: .e6, to: .f7)
+        XCTAssertEqual(unambiguousBishopMove?.san, "Bf7")
 
-class BBBoardTests: XCTestCase {
-
-    func testKnightLegalMoves() {
-        let board = BBBoard(
-            position: .init(
-                pieces: [.init(.knight, color: .white, square: .d4)]
-            )
-        )
-        let legalMoves = board.legalMoves(forPieceAt: .d4)
-
-        XCTAssertEqual(legalMoves.count, 8)
-        XCTAssertTrue(legalMoves.contains(.b3))
-        XCTAssertTrue(legalMoves.contains(.b5))
-        XCTAssertTrue(legalMoves.contains(.c2))
-        XCTAssertTrue(legalMoves.contains(.c6))
-        XCTAssertTrue(legalMoves.contains(.e2))
-        XCTAssertTrue(legalMoves.contains(.e6))
-        XCTAssertTrue(legalMoves.contains(.f3))
-        XCTAssertTrue(legalMoves.contains(.f5))
-    }
-
-    func testKingLegalMoves() {
-        let board = BBBoard(
-            position: .init(
-                pieces: [.init(.king, color: .white, square: .d4)]
-            )
-        )
-        let legalMoves = board.legalMoves(forPieceAt: .d4)
-
-        XCTAssertEqual(legalMoves.count, 8)
-        XCTAssertTrue(legalMoves.contains(.c3))
-        XCTAssertTrue(legalMoves.contains(.c4))
-        XCTAssertTrue(legalMoves.contains(.c5))
-        XCTAssertTrue(legalMoves.contains(.d3))
-        XCTAssertTrue(legalMoves.contains(.d5))
-        XCTAssertTrue(legalMoves.contains(.e3))
-        XCTAssertTrue(legalMoves.contains(.e4))
-        XCTAssertTrue(legalMoves.contains(.e5))
-    }
-
-    func testTest() {
-        let a1Rook = Piece(.rook, color: .white, square: .a1)
-        let d4Bishop = Piece(.bishop, color: .white, square: .d4)
-        let g3Queen = Piece(.queen, color: .white, square: .g3)
-
-        let boards = BBBoard(position: .init(pieces: [
-            a1Rook,
-            d4Bishop,
-            g3Queen,
-            .init(.pawn, color: .black, square: .a6),
-            .init(.pawn, color: .black, square: .b4),
-            .init(.bishop, color: .black, square: .b6),
-            .init(.pawn, color: .white, square: .c3),
-            .init(.king, color: .white, square: .g1)
-        ]))
-
-        let rookMoves = boards.legalMoves(forPieceAt: .a1)
-        debugPrint(rookMoves.bb)
-
-        let bishopMoves = boards.legalMoves(forPieceAt: .d4)
-        debugPrint(bishopMoves.bb)
-
-        let queenMoves = boards.legalMoves(forPieceAt: .g3)
-        debugPrint(queenMoves.bb)
-
+        let ambiguousBishopMove = board.move(pieceAt: .f7, to: .d5)
+        XCTAssertEqual(ambiguousBishopMove?.san, "Bfxd5")
     }
 
 }

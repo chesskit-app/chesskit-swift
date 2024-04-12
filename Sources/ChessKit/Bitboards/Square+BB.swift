@@ -25,8 +25,12 @@ extension [Square] {
 
 extension Square.File {
     var bb: Bitboard { .aFile.east(number - 1) }
+
+    static var bb: [Bitboard] = allCases.map(\.bb)
 }
 
 extension Square.Rank {
     var bb: Bitboard { .rank1.north(value - 1) }
+
+    static var bb: [Bitboard] = range.map(Square.Rank.init(_:)).map(\.bb)
 }
