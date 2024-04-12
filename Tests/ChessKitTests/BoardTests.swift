@@ -309,24 +309,26 @@ class BBBoardTests: XCTestCase {
         let d4Bishop = Piece(.bishop, color: .white, square: .d4)
         let g3Queen = Piece(.queen, color: .white, square: .g3)
 
-        let boards = Bitboards(position: .init(pieces: [
+        let boards = BBBoard(position: .init(pieces: [
             a1Rook,
             d4Bishop,
             g3Queen,
             .init(.pawn, color: .black, square: .a6),
             .init(.pawn, color: .black, square: .b4),
+            .init(.bishop, color: .black, square: .b6),
             .init(.pawn, color: .white, square: .c3),
             .init(.king, color: .white, square: .g1)
         ]))
 
-        let rookMoves = boards.legalMoves(for: a1Rook)
-        debugPrint(rookMoves)
+        let rookMoves = boards.legalMoves(forPieceAt: .a1)
+        debugPrint(rookMoves.bb)
 
-        let bishopMoves = boards.legalMoves(for: d4Bishop)
-        debugPrint(bishopMoves)
+        let bishopMoves = boards.legalMoves(forPieceAt: .d4)
+        debugPrint(bishopMoves.bb)
 
-        let queenMoves = boards.legalMoves(for: g3Queen)
-        debugPrint(queenMoves)
+        let queenMoves = boards.legalMoves(forPieceAt: .g3)
+        debugPrint(queenMoves.bb)
+
     }
 
 }

@@ -4,11 +4,11 @@
 //
 
 /// Structure that captures en passant moves.
-public struct EnPassant: Equatable, Hashable {
+struct EnPassant: Equatable, Hashable {
 
     /// Pawn that is capable of being captured by en passant.
-    public var pawn: Piece
-    
+    var pawn: Piece
+
     /// The square that the capturing pawn will move to after the en passant.
     var captureSquare: Square {
         Square(pawn.square.file, pawn.color == .white ? 3 : 6)

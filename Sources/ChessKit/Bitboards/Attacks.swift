@@ -1,38 +1,116 @@
 //
-//  MagicBitboards.swift
+//  Attacks.swift
 //  ChessKit
 //
 
-/// Stores the magic factors and attacks for a given piece
-/// type (bishop or rook) and square (a1-h8).
+/// Stores pre-generated pseudo-legal attack bitboards
+/// for non-pawn piece types.
 ///
-struct Magic {
-    /// The magic number used to compute the hash key.
-    fileprivate var magic: Bitboard
-    /// The bitmask representing the possible moves on an empty board.
-    fileprivate var mask: Bitboard
+struct Attacks {
 
-    /// The number of zero bits in the mask, used to calculate the hash key.
-    fileprivate var shift: Int {
-        Bitboard.bitWidth - mask.nonzeroBitCount
+    /// Cached king attacks, the dictionary key
+    /// corresponds to `Square.bb`.
+    static var kings = [Bitboard: Bitboard]()
+    /// Cached rook attacks, the array index corresponds
+    /// to `Square.rawValue`.
+    static var rooks = [Magic]()
+    /// Cached bishop attacks, the array index corresponds
+    /// to `Square.rawValue`.
+    static var bishops = [Magic]()
+    /// Cached king attacks, the dictionary key
+    /// corresponds to `Square.bb`.
+    static var knights = [Bitboard: Bitboard]()
+
+    /// Generates and caches attack bitboards for all piece kinds.
+    static func create() {
+        Piece.Kind.allCases.forEach(create)
     }
 
-    /// The dictionary of attack bitboards, keyed by the hash key.
-    fileprivate var attacks: [Bitboard: Bitboard] = [:]
-
-    /// Returns the hash key for a given `subset` of possible moves.
-    fileprivate func key(for subset: Bitboard) -> Bitboard {
-        (subset &* magic) >> shift
+    private static func create(for kind: Piece.Kind) {
+        switch kind {
+        case .king:
+            createKingAttacks()
+        case .queen:
+            break   // uses (rooks | bishops)
+        case .rook:
+            createMagics(for: .rook)
+        case .bishop:
+            createMagics(for: .bishop)
+        case .knight:
+            createKnightAttacks()
+        case .pawn:
+            break
+        }
     }
 
-    /// Returns the attack bitboard for the piece represented
-    /// by the receiver for the given `occupancy`.
-    func attacks(for occupancy: Bitboard) -> Bitboard {
-        attacks[key(for: occupancy & mask)] ?? 0
-    }
-}
+    private static func createKingAttacks() {
+        // ensure attacks are only initialized once
+        guard kings.isEmpty else { return }
 
-struct MagicBitboard {
+        /// King attack bit shifts
+        /// ```
+        ///       +---+---+---+---+---+---+---+---+
+        ///    8  |   |   |   |   |   |   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    7  |   |   |   |   |   |   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    6  |   |   |   |   |   |   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    5  |   |   | +7| +8| +9|   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    4  |   |   | -1|  0| +1|   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    3  |   |   | -7| -8| -9|   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    2  |   |   |   |   |   |   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    1  |   |   |   |   |   |   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///         a   b   c   d   e   f   g   h
+        /// ```
+        Square.allCases.forEach { square in
+            let sq = square.bb
+
+            var attacks = sq.east() | sq.west()
+            let horizontal = sq | attacks
+            attacks |= horizontal.north() | horizontal.south()
+
+            kings[sq] = attacks
+        }
+    }
+
+    private static func createKnightAttacks() {
+        // ensure attacks are only initialized once
+        guard knights.isEmpty else { return }
+
+        /// Knight attack bit shifts
+        /// ```
+        ///       +---+---+---+---+---+---+---+---+
+        ///    8  |   |   |   |   |   |   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    7  |   |   |   |   |   |   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    6  |   |   |+15|   |+17|   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    5  |   | +6|   |   |   |+10|   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    4  |   |   |   | 0 |   |   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    3  |   |-10|   |   |   | -6|   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    2  |   |   |-17|   |-15|   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///    1  |   |   |   |   |   |   |   |   |
+        ///       +---+---+---+---+---+---+---+---+
+        ///         a   b   c   d   e   f   g   h
+        /// ```
+        Square.allCases.forEach { square in
+            let sq = square.bb
+            knights[sq] = [17, 15, 10, 6].reduce(Bitboard(0)) {
+                $0 | sq << $1 | sq >> $1
+            }
+        }
+    }
 
     /// Generates array containing a `Magic` object for each
     /// square on the chess board.
@@ -40,16 +118,23 @@ struct MagicBitboard {
     /// Uses a similar techique as Stockfish (see [`Stockfish/init_magics`](https://github.com/official-stockfish/Stockfish/blob/0716b845fdef8a20102b07eaec074b8da8162523/src/bitboard.cpp#L139)) except with hardcoded magics rather than
     /// seeded random generation.
     ///
-    static func create(for kind: Piece.Kind) -> [Magic] {
-        guard let magics = magicNumbers[kind] else { return [] }
+    private static func createMagics(for kind: Piece.Kind) {
+        guard let magicNumbers = magicNumbers[kind] else { return }
 
-        return Square.allCases.map { sq in
+        // ensure magics are only initialized once
+        switch kind {
+        case .bishop:   guard bishops.isEmpty else { return }
+        case .rook:     guard rooks.isEmpty else { return }
+        default:        break
+        }
+
+        let magics = Square.allCases.map { sq in
             // determine board edges not including current square
             let edges: Bitboard = ((.rank1 | .rank8) & ~sq.rank.bb) | ((.aFile | .hFile) & ~sq.file.bb)
 
             // calculate magic bitboard factors
             var m = Magic(
-                magic: magics[sq.rawValue],
+                magic: magicNumbers[sq.rawValue],
                 mask: slidingAttacks(for: kind, from: sq, occupancy: 0) & ~edges
             )
 
@@ -75,6 +160,12 @@ struct MagicBitboard {
             } while subset != 0
 
             return m
+        }
+
+        switch kind {
+        case .rook:     rooks = magics
+        case .bishop:   bishops = magics
+        default:        break
         }
     }
 
@@ -107,11 +198,11 @@ struct MagicBitboard {
             []
         }
 
-        for direction in directions {
+        directions.forEach { d in
             var nextSquare = square.bb
 
             repeat {
-                nextSquare = direction(nextSquare)
+                nextSquare = d(nextSquare)
                 attacks |= nextSquare
             } while nextSquare != 0 && (occupancy & nextSquare) == 0
         }
@@ -161,4 +252,40 @@ struct MagicBitboard {
         ]
     ]
 
+}
+
+/// Stores the magic factors and attacks for a given piece
+/// type (bishop or rook) and square (a1-h8).
+///
+struct Magic {
+    /// The magic number used to compute the hash key.
+    fileprivate var magic: Bitboard
+    /// The bitmask representing the possible moves on an empty board
+    /// excluding edges.
+    fileprivate var mask: Bitboard
+
+    /// The number of zero bits in the mask, used to calculate the hash key.
+    fileprivate var shift: Int {
+        Bitboard.bitWidth - mask.nonzeroBitCount
+    }
+
+    /// The dictionary of attack bitboards, keyed by the hash key.
+    fileprivate var attacks: [Bitboard: Bitboard] = [:]
+
+    /// Returns the hash key for a given `subset` of possible moves.
+    fileprivate func key(for subset: Bitboard) -> Bitboard {
+        (subset &* magic) >> shift
+    }
+
+    /// Returns the attack bitboard for the piece represented
+    /// by the receiver for the given `occupancy`.
+    fileprivate func attacks(for occupancy: Bitboard) -> Bitboard {
+        attacks[key(for: occupancy & mask)] ?? 0
+    }
+}
+
+extension [Magic] {
+    func attacks(from square: Square, for occupancy: Bitboard) -> Bitboard {
+        self[square.rawValue].attacks(for: occupancy)
+    }
 }

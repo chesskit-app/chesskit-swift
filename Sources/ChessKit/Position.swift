@@ -7,7 +7,12 @@
 public struct Position: Equatable {
 
     /// The pieces currently existing on the board in this position.
-    public internal(set) var pieces: [Piece]
+    public var pieces: [Piece] {
+        pieceSet.pieces
+    }
+
+    /// Bitboard-based piece set used to manage piece positions.
+    private(set) var pieceSet: PieceSet
 
     /// The side that is set to move next.
     public private(set) var sideToMove: Piece.Color
@@ -35,7 +40,7 @@ public struct Position: Equatable {
         enPassant: EnPassant? = nil,
         clock: Clock = Clock()
     ) {
-        self.pieces = pieces
+        self.pieceSet = .init(pieces: pieces)
         self.sideToMove = sideToMove
         self.legalCastlings = legalCastlings
         self.enPassant = enPassant
@@ -65,7 +70,7 @@ public struct Position: Equatable {
     /// - returns: The piece located at `square`, or `nil` if the square is empty.
     ///
     public func piece(at square: Square) -> Piece? {
-        pieces.filter { $0.square == square }.first
+        pieceSet.get(square)
     }
 
     /// Moves the given piece to the given square.
@@ -74,15 +79,15 @@ public struct Position: Equatable {
     /// - parameter end: The square that `piece` should be moved to.
     /// - returns: The updated piece containing the final square as its location, or `nil` if the given piece was not found in this position.
     ///
-    /// - warning: Do not use this function to perform castling moves. To castle a king and rook,
-    /// call `castle(_:)`.
+    /// - warning: Do not use this function to perform castling moves.
+    /// To castle a king and rook, call `castle(_:)`.
     ///
     @discardableResult
     mutating func move(_ piece: Piece, to end: Square, updateClockAndSideToMove: Bool = true) -> Piece? {
-        guard let index = pieces.firstIndex(where: { $0 == piece }) else { return nil }
+        guard pieceSet.get(piece.square) != nil else { return nil }
 
         legalCastlings.invalidateCastling(for: piece)
-        pieces[index].square = end
+        pieceSet.move(piece, to: end)
 
         if updateClockAndSideToMove {
             clock.halfmoves += 1
@@ -94,7 +99,7 @@ public struct Position: Equatable {
             toggleSideToMove()
         }
 
-        return pieces[index]
+        return pieceSet.get(end)
     }
 
     /// Moves the given piece to the given square.
@@ -128,7 +133,7 @@ public struct Position: Equatable {
     ///
     @discardableResult
     mutating func move(pieceAt start: Square, to end: Square, updateClockAndSideToMove: Bool = true) -> Piece? {
-        guard let piece = pieces.first(where: { $0.square == start }) else {
+        guard let piece = pieceSet.get(start) else {
             return nil
         }
 
@@ -142,7 +147,7 @@ public struct Position: Equatable {
     /// If the piece is not currently located in the position, this method has no effect.
     ///
     mutating func remove(_ piece: Piece) {
-        pieces.removeAll { $0 == piece }
+        pieceSet.remove(piece)
     }
 
     /// Promotes a pawn at the given square to the given piece type.
@@ -155,8 +160,8 @@ public struct Position: Equatable {
     /// promoted, and such checks should be done before calling this method.
     ///
     mutating func promote(pieceAt square: Square, to kind: Piece.Kind) {
-        guard let index = pieces.firstIndex(where: { $0.square == square }) else { return }
-        pieces[index].kind = kind
+        guard let piece = pieceSet.get(square) else { return }
+        pieceSet.replace(kind, for: piece)
     }
 
     /// Resets the halfmove counter in the `Clock`.

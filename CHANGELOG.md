@@ -1,5 +1,8 @@
 # [unreleased]
 
+#### Breaking Changes
+* `EnPassant` has been made an `internal struct`. It is used interally by `Position` and `Board`.
+
 #### Internal Changes
 * `Position.toggleSideToMove()` is now private and handled automatically when calling `move()`.
 * `Position.castle(_:)` function has been added to handle castling.

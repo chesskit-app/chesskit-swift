@@ -113,3 +113,28 @@ extension Bitboard: CustomDebugStringConvertible {
     }
 
 }
+
+extension Bitboard {
+    var squares: [Square] {
+        var indices: [Int] = []
+        var bb = self
+
+        while bb != 0 {
+            let index = bb.trailingZeroBitCount
+            indices.append(index)
+            bb &= bb &- 1
+        }
+
+        return indices.compactMap(Square.init)
+    }
+}
+
+extension [Bitboard: Bitboard] {
+    /// Allows non-nil indexing of the dictionary.
+    ///
+    /// If a value is not found for the provided
+    /// key, an empty bitboard is returned.
+    subscript(safe bb: Bitboard) -> Bitboard {
+        self[bb] ?? 0
+    }
+}

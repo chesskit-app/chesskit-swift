@@ -5,6 +5,22 @@
 
 extension Square {
     var bb: Bitboard { 1 << rawValue }
+
+    init?(_ bb: Bitboard) {
+        self.init(rawValue: bb.trailingZeroBitCount)
+    }
+}
+
+extension [Square] {
+    var bb: Bitboard {
+        var bb = Bitboard(0)
+
+        self.forEach {
+            bb |= $0.bb
+        }
+
+        return bb
+    }
 }
 
 extension Square.File {
