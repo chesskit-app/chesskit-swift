@@ -172,7 +172,6 @@ public struct Board {
         updatedMove.promotedPiece = promotedPiece
 
         position.promote(pieceAt: move.end, to: kind)
-
         return process(move: updatedMove)
     }
 
@@ -221,13 +220,13 @@ public struct Board {
     }
 
     private func disambiguate(move: Move, in set: PieceSet) -> Move {
-        let piece = move.piece
+        let movePiece = move.piece
 
         let disambiguationCandidates =
-        set.get(piece.color)            // same color as move piece
-        & set.get(piece.kind)           // same kind as move piece
-        & ~(set.pawns | set.kings)      // not pawns & kings
-        & ~move.start.bb                // not piece making move
+        set.get(movePiece.color)    // same color as move piece
+        & set.get(movePiece.kind)   // same kind as move piece
+        & ~(set.pawns | set.kings)  // not pawns & kings
+        & ~move.start.bb            // not piece making move
 
         let ambiguousPieces = disambiguationCandidates.squares.filter { square in
             guard let piece = set.get(square) else { return false }
@@ -239,9 +238,9 @@ public struct Board {
         } else {
             var newMove = move
 
-            if ambiguousPieces.allSatisfy({ $0.file != move.end.file }) {
+            if ambiguousPieces.allSatisfy({ $0.file != move.start.file }) {
                 newMove.disambiguation = .byFile(move.start.file)
-            } else if ambiguousPieces.allSatisfy({ $0.rank != move.end.rank }) {
+            } else if ambiguousPieces.allSatisfy({ $0.rank != move.start.rank }) {
                 newMove.disambiguation = .byRank(move.start.rank)
             } else {
                 newMove.disambiguation = .bySquare(move.start)
