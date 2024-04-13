@@ -278,4 +278,62 @@ class BoardTests: XCTestCase {
         XCTAssertEqual(bfxd5?.san, "Bfxd5")
     }
 
+    func testPrint() {
+        let board = Board()
+
+        ChessKitConfiguration.printMode = .letter
+        XCTAssertEqual(String(describing: board),
+        """
+        8 r n b q k b n r
+        7 p p p p p p p p
+        6 · · · · · · · ·
+        5 · · · · · · · ·
+        4 · · · · · · · ·
+        3 · · · · · · · ·
+        2 P P P P P P P P
+        1 R N B Q K B N R
+          a b c d e f g h
+        """)
+
+        ChessKitConfiguration.printMode = .graphic
+        XCTAssertEqual(String(describing: board),
+        """
+        8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        6 · · · · · · · ·
+        5 · · · · · · · ·
+        4 · · · · · · · ·
+        3 · · · · · · · ·
+        2 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        1 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+          a b c d e f g h
+        """)
+
+        let bb = board.position.pieceSet.all
+        XCTAssertEqual(bb.chessString(),
+        """
+        8 ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
+        7 ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
+        6 · · · · · · · ·
+        5 · · · · · · · ·
+        4 · · · · · · · ·
+        3 · · · · · · · ·
+        2 ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
+        1 ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
+          a b c d e f g h
+        """)
+
+        XCTAssertEqual(bb.chessString(labelRanks: false, labelFiles: false),
+        """
+        ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
+        ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
+        · · · · · · · ·
+        · · · · · · · ·
+        · · · · · · · ·
+        · · · · · · · ·
+        ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
+        ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
+        """)
+    }
+
 }

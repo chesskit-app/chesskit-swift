@@ -99,17 +99,19 @@ extension Bitboard: CustomDebugStringConvertible {
         var s = ""
 
         for rank in Square.Rank.range.reversed() {
-            s += labelRanks ? "\(rank)" : ""
+            s += labelRanks ? "\(rank) " : ""
+            var newLine = ""
 
             for file in Square.File.allCases {
                 let sq = Square(file, .init(rank)).bb
-                s += (self & sq != 0) ? " \(occupied)" : " \(empty)"
+                newLine += (self & sq != 0) ? "\(occupied) " : "\(empty) "
             }
 
-            s += "\n"
+            s += newLine.trimmingCharacters(in: .whitespaces) + "\n"
         }
 
-        return s + (labelFiles ? "  a b c d e f g h" : "")
+        let fileLabels = (labelFiles ? "\n  a b c d e f g h" : "")
+        return s.trimmingCharacters(in: .whitespacesAndNewlines) + fileLabels
     }
 
 }

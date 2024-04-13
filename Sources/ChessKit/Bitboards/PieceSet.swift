@@ -171,3 +171,29 @@ struct PieceSet: Equatable {
         add(piece, to: square)
     }
 }
+
+extension PieceSet: CustomStringConvertible {
+
+    var description: String {
+        var s = ""
+
+        for rank in Square.Rank.range.reversed() {
+            s += "\(rank)"
+
+            for file in Square.File.allCases {
+                let sq = Square(file, .init(rank))
+
+                if let piece = get(sq) {
+                    s += " \(ChessKitConfiguration.printMode == .graphic ? piece.graphic : piece.fen)" 
+                } else {
+                    s += " ·"
+                }
+            }
+
+            s += "\n"
+        }
+
+        return s + "  a b c d e f g h"
+    }
+
+}

@@ -540,3 +540,11 @@ extension Board {
         }
     }
 }
+
+extension Board: CustomStringConvertible {
+
+    public var description: String {
+        String(describing: position)
+    }
+
+}

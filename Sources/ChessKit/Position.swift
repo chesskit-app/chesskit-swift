@@ -201,3 +201,11 @@ extension Position {
     /// The standard starting chess position.
     public static let standard = Position(fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")!
 }
+
+extension Position: CustomStringConvertible {
+
+    public var description: String {
+        String(describing: pieceSet)
+    }
+
+}

@@ -112,25 +112,36 @@ public struct Piece: Equatable, Hashable {
     /// Note: This value does not convey any information regarding
     /// the piece's location on the board (only kind and color).
     var fen: String {
-        switch color {
-        case .black:
-            switch kind {
-            case .pawn:     return "p"
-            case .bishop:   return "b"
-            case .knight:   return "n"
-            case .rook:     return "r"
-            case .queen:    return "q"
-            case .king:     return "k"
-            }
-        case .white:
-            switch kind {
-            case .pawn:     return "P"
-            case .bishop:   return "B"
-            case .knight:   return "N"
-            case .rook:     return "R"
-            case .queen:    return "Q"
-            case .king:     return "K"
-            }
+        switch (color, kind) {
+        case (.black, .pawn):   "p"
+        case (.black, .bishop): "b"
+        case (.black, .knight): "n"
+        case (.black, .rook):   "r"
+        case (.black, .queen):  "q"
+        case (.black, .king):   "k"
+        case (.white, .pawn):   "P"
+        case (.white, .bishop): "B"
+        case (.white, .knight): "N"
+        case (.white, .rook):   "R"
+        case (.white, .queen):  "Q"
+        case (.white, .king):   "K"
+        }
+    }
+
+    var graphic: String {
+        switch (color, kind) {
+        case (.black, .pawn):   "♟"
+        case (.black, .bishop): "♝"
+        case (.black, .knight): "♞"
+        case (.black, .rook):   "♜"
+        case (.black, .queen):  "♛"
+        case (.black, .king):   "♚"
+        case (.white, .pawn):   "♙"
+        case (.white, .bishop): "♗"
+        case (.white, .knight): "♘"
+        case (.white, .rook):   "♖"
+        case (.white, .queen):  "♕"
+        case (.white, .king):   "♔"
         }
     }
 

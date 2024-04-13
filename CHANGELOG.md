@@ -4,6 +4,9 @@
 * `Board` move calculation and validation performance has greatly increased.
   * Performance has improved by over 250x when simulating a full game using `Board`.
   * Underlying board representation has been replaced with much faster bitboard structures and algorithms.
+* Add `CustomStringConvertible` conformance to `Board` and `Position` to allow for printing chess board representations, useful for debugging.
+* Add `ChessKitConfiguration` with static configuration properties for the package.
+  * Currently the only option is `printMode` to determine how pieces should be represented when printing `Board` and `Position` objects (see previous item).
 
 #### Breaking Changes
 * `EnPassant` has been made an `internal struct`. It is used interally by `Position` and `Board`.
@@ -21,7 +24,7 @@ Released Saturday, December 2, 2023.
 Released Friday, November 24, 2023.
 
 #### Improvements
-* Added `CaseIterable` conformance to several `Piece` and `Square` enums:
+* Add `CaseIterable` conformance to several `Piece` and `Square` enums:
     * `Piece.Color`
     * `Piece.Kind`
     * `Square.Color`
