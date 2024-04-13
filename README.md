@@ -2,13 +2,13 @@
 
 [![Test ChessKit](https://github.com/chesskit-app/chesskit-swift/actions/workflows/test-chesskit.yml/badge.svg)](https://github.com/chesskit-app/chesskit-swift/actions/workflows/test-chesskit.yml) [![codecov](https://codecov.io/gh/chesskit-app/chesskit-swift/branch/master/graph/badge.svg?token=676EP0N8XF)](https://codecov.io/gh/chesskit-app/chesskit-swift)
 
-A Swift package for implementing chess logic.
+A Swift package for efficiently implementing chess logic.
 
 ## Usage
 
 * Add a package dependency to your Xcode project or Swift Package:
 ``` swift
-.package(url: "https://github.com/chesskit-app/chesskit-swift", from: "0.3.2")
+.package(url: "https://github.com/chesskit-app/chesskit-swift", from: "0.4.0")
 ```
 
 * Next you can import `ChessKit` to use it in your Swift code:
@@ -27,6 +27,7 @@ import ChessKit
     * `Move`
     * `Position`
     * `Board`
+    * `Clock`
     * `Game`
     * Special moves (castling, en passant)
 * Move validation
@@ -34,7 +35,7 @@ import ChessKit
     * PGN
     * FEN
     * SAN
-    
+
 ## Examples
 
 * Create a board with the standard starting position:
@@ -46,7 +47,20 @@ let board = Board()
 ``` swift
 if let position = Position(fen: "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2") {
     let board = Board(position: position)
+    print(board)
 }
+
+// 8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+// 7 ♟ ♟ · ♟ ♟ ♟ ♟ ♟
+// 6 · · · · · · · ·
+// 5 · · ♟ · · · · ·
+// 4 · · · · ♙ · · ·
+// 3 · · · · · ♘ · ·
+// 2 ♙ ♙ ♙ ♙ · ♙ ♙ ♙
+// 1 ♖ ♘ ♗ ♕ ♔ ♗ · ♖
+//   a b c d e f g h
+//
+// (see `ChessKitConfiguration` for printing options)
 ```
 
 * Move pieces on the board
@@ -67,26 +81,28 @@ let board = Board()
 print(board.legalMoves(forPieceAt: .e2))    // returns [.e3, .e4]
 ```
 
-* Parse FEN into a `Position` object
+* Parse [FEN](https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation) into a `Position` object
 ``` swift
+// use Position initializer
 let fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
-
-// use parser directly...
-let position = FENParser.parse(fen: fen)
-
-// ... or use Position initializer
 let position = Position(fen: fen)
 
 // convert Position to FEN string
-let fenString = FENParser.convert(position: .standard)
+let fenString = Position.standard.fen
 ```
 
-* Similarly parse PGN (into `Game`) or SAN (into `Move`).
+* Similarly parse [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) (into `Game`) or [SAN](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) (into `Move`).
 ``` swift
-PGNParser.parse(pgn: "1. e4 e5 2. Nf3")
+let game = Game(pgn: "1. e4 e5 2. Nf3")
 
-// Parse the move text "e4" for white from the starting position
-SANParser.parse(san: "e4", color: .white, in: .standard)
+// convert Game to PGN string
+let pgnString = game.pgn
+
+// parse the move text "e4" for white from the starting position
+let move = Move(san: "e4", color: .white, in: .standard)
+
+// convert Move to SAN string
+let sanString = move.san
 ```
 
 ## Author

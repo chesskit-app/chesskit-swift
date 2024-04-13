@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.4.0
+Released Saturday, April 13, 2024.
 
 #### Improvements
 * `Board` move calculation and validation performance has greatly increased.
