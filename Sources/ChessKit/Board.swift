@@ -24,6 +24,7 @@ public struct Board {
     /// The current position represented on the board.
     public var position: Position
 
+    /// Convenience accessor for the pieces in `position`.
     private var set: PieceSet {
         position.pieceSet
     }
@@ -106,7 +107,15 @@ public struct Board {
         // captures & moves
 
         if let endPiece = position.piece(at: end), endPiece.color == piece.color.opposite {
-            let move = disambiguate(move: Move(result: .capture(endPiece), piece: piece, start: start, end: end), in: set)
+            let move = disambiguate(
+                move: Move(
+                    result: .capture(endPiece),
+                    piece: piece,
+                    start: start,
+                    end: end
+                ),
+                in: set
+            )
 
             position.remove(endPiece)
             position.move(piece, to: end)
@@ -120,7 +129,15 @@ public struct Board {
                 return nil
             }
 
-            let move = disambiguate(move: Move(result: .move, piece: updatedPiece, start: start, end: end), in: previousSet)
+            let move = disambiguate(
+                move: Move(
+                    result: .move,
+                    piece: updatedPiece,
+                    start: start,
+                    end: end
+                ),
+                in: previousSet
+            )
 
             if updatedPiece.kind == .pawn {
                 position.resetHalfmoveClock()
@@ -177,6 +194,9 @@ public struct Board {
 
     // MARK: - Move Processing
 
+    /// Determines check state and handles pawn promotion for
+    /// provided `move`.
+    ///
     private func process(move: Move) -> Move {
         var processedMove = move
 
@@ -203,6 +223,9 @@ public struct Board {
         return processedMove
     }
 
+    /// Determines the current check state for the
+    /// provided `color`.
+    ///
     private func checkState(for color: Piece.Color) -> Move.CheckState {
         var checkState: Move.CheckState = .none
 
@@ -219,6 +242,12 @@ public struct Board {
         return checkState
     }
 
+    /// Disambiguates any moves in `set` as they relate to `move`.
+    ///
+    /// For example, if two identical pieces can legally move
+    /// to a given square, this method determines whether to
+    /// disambiguate them by starting file, rank, or square.
+    ///
     private func disambiguate(move: Move, in set: PieceSet) -> Move {
         let movePiece = move.piece
 
@@ -470,6 +499,9 @@ public struct Board {
         return kingAttacks[safe: sq] + castleMoves.bb
     }
 
+    /// Determines whether the king of the provided `color` can
+    /// castle according to `castling` given `set`.
+    ///
     private func canCastle(_ color: Piece.Color, castling: Castling, set: PieceSet) -> Bool {
         let us = set.get(color)
 

@@ -1,7 +1,8 @@
 # [unreleased]
 
 #### Improvements
-* `Board.swift` move calculation and validation has greatly increased performance.
+* `Board` move calculation and validation performance has greatly increased.
+  * Performance has improved by over 250x when simulating a full game using `Board`.
   * Underlying board representation has been replaced with much faster bitboard structures and algorithms.
 
 #### Breaking Changes
@@ -9,10 +10,6 @@
 
 #### Deprecations
 * `Position.toggleSideToMove()` is now private and handled automatically when calling `move()`. The public-facing `toggleSideToMove()` has been deprecated.
-
-#### Internal Changes
-* `Position.castle(_:)` function has been added to handle castling.
-* Test coverage has been greatly improved.
 
 # ChessKit 0.3.2
 Released Saturday, December 2, 2023.
