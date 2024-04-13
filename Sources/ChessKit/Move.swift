@@ -4,21 +4,21 @@
 //
 
 public struct Move: Equatable, Hashable {
-    
+
     /// The result of the move.
     public enum Result: Equatable, Hashable {
         case move
         case capture(Piece)
         case castle(Castling)
     }
-    
+
     /// The check state resulting from the move.
     public enum CheckState: String {
         case none
         case check
         case checkmate
         case stalemate
-        
+
         var notation: String {
             switch self {
             case .none, .stalemate: return ""
@@ -27,14 +27,14 @@ public struct Move: Equatable, Hashable {
             }
         }
     }
-    
+
     /// Rank, file, or square disambiguation of moves.
     public enum Disambiguation: Equatable, Hashable {
         case byFile(Square.File)
         case byRank(Square.Rank)
         case bySquare(Square)
     }
-    
+
     /// The result of the move.
     public internal(set) var result: Result
     /// The piece that made the move.
@@ -53,7 +53,7 @@ public struct Move: Equatable, Hashable {
     public var assessment: Assessment
     /// The comment associated with a move.
     public var comment: String
-    
+
     /// Initialize a move with the given characteristics.
     public init(
         result: Result,
@@ -72,7 +72,7 @@ public struct Move: Equatable, Hashable {
         self.assessment = assessment
         self.comment = comment
     }
-    
+
     /// Initialize a move with a given SAN string.
     ///
     /// This initializer fails if the provided SAN string is invalid.
@@ -80,15 +80,15 @@ public struct Move: Equatable, Hashable {
         guard let move = SANParser.parse(move: san, in: position) else {
             return nil
         }
-        
+
         self = move
     }
-    
+
     /// The SAN represenation of the move.
     public var san: String {
         SANParser.convert(move: self)
     }
-    
+
     /// The engine LAN represenation of the move.
     ///
     /// NOTE: This is intended for engine communication
@@ -96,11 +96,11 @@ public struct Move: Equatable, Hashable {
     public var lan: String {
         EngineLANParser.convert(move: self)
     }
-    
+
 }
 
 extension Move {
-    
+
     /// Single move assessments.
     ///
     /// The raw String value corresponds to what is displayed
@@ -116,7 +116,7 @@ extension Move {
         case forced = "$7"
         case singular = "$8"
         case worst = "$9"
-        
+
         /// The human-readable move assessment notation.
         public var notation: String {
             switch self {
@@ -133,5 +133,5 @@ extension Move {
             }
         }
     }
-    
+
 }

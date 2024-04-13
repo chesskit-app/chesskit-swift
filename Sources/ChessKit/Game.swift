@@ -12,12 +12,12 @@ import Foundation
 /// making moves and publishes the played moves in an observable way.
 ///
 public class Game: Equatable, ObservableObject {
-    
+
     /// The move tree representing all moves made in the game.
     @Published public private(set) var moves: MoveTree
     /// A dictionary of every position in the game, keyed by move index.
     public private(set) var positions: [MoveTree.Index: Position]
-    
+
     /// Initialize a game with a starting position.
     ///
     /// - parameter position: The starting position of the game.
@@ -27,7 +27,7 @@ public class Game: Equatable, ObservableObject {
         moves = MoveTree()
         positions = [.minimum: position]
     }
-    
+
     /// Initialize a game with a PGN string.
     ///
     /// - parameter pgn: A string containing a PGN representation of
@@ -38,11 +38,11 @@ public class Game: Equatable, ObservableObject {
         guard let parsed = PGNParser.parse(game: pgn) else {
             return nil
         }
-        
+
         moves = parsed.moves
         positions = parsed.positions
     }
-    
+
     /// Perform the provided move in the game.
     ///
     /// - parameter move: The move to perform.
@@ -73,15 +73,15 @@ public class Game: Equatable, ObservableObject {
             // skip making it and return the corresponding index
             return existingMoveIndex
         }
-        
+
         let newIndex = moves.add(move: move, toParentIndex: index)
-        
+
         guard let currentPosition = positions[index] else {
             return index
         }
-        
+
         var newPosition = currentPosition
-        
+
         switch move.result {
         case .move:
             newPosition.move(pieceAt: move.start, to: move.end)
@@ -91,19 +91,17 @@ public class Game: Equatable, ObservableObject {
             newPosition.move(pieceAt: move.start, to: move.end)
             newPosition.resetHalfmoveClock()
         case let .castle(castling):
-            newPosition.move(pieceAt: castling.kingStart, to: castling.kingEnd)
-            newPosition.move(pieceAt: castling.rookStart, to: castling.rookEnd)
+            newPosition.castle(castling)
         }
-        
+
         if let promotedPiece = move.promotedPiece {
             newPosition.promote(pieceAt: move.end, to: promotedPiece.kind)
         }
-        
-        newPosition.toggleSideToMove()
+
         positions[newIndex] = newPosition
         return newIndex
     }
-    
+
     /// Perform the provided move in the game.
     ///
     /// - parameter moveString: The SAN string of the move to perform.
@@ -129,10 +127,10 @@ public class Game: Equatable, ObservableObject {
         else {
             return index
         }
-        
+
         return make(move: move, from: index)
     }
-    
+
     /// Perform the provided moves in the game.
     ///
     /// - parameter moveStrings: An array of SAN strings of the moves to perform.
@@ -154,22 +152,22 @@ public class Game: Equatable, ObservableObject {
         from index: MoveTree.Index
     ) -> MoveTree.Index {
         var index = index
-        
+
         for moveString in moveStrings {
             index = make(move: moveString, from: index)
         }
-        
+
         return index
     }
-    
+
     /// The PGN represenation of the game.
     public var pgn: String {
         PGNParser.convert(game: self)
     }
-    
+
     // MARK: Equatable
     public static func == (lhs: Game, rhs: Game) -> Bool {
         lhs.moves == rhs.moves && lhs.positions == rhs.positions
     }
-    
+
 }

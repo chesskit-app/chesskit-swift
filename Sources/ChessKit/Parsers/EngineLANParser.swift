@@ -19,9 +19,9 @@
 /// for more information.
 ///
 public class EngineLANParser {
-    
+
     private init() {}
-    
+
     /// Parses a LAN string and returns a move.
     ///
     /// - parameter lan: The (engine) LAN string of a move.
@@ -39,35 +39,35 @@ public class EngineLANParser {
         in position: Position
     ) -> Move? {
         guard isValid(lan: lan) else { return nil }
-        
+
         let startSquareIndex = lan.index(lan.startIndex, offsetBy: 2)
         let startSquareString = String(lan[..<startSquareIndex])
         let start = Square(startSquareString)
-        
+
         let endSquareIndex = lan.index(startSquareIndex, offsetBy: 2)
         let endSquareString = String(lan[startSquareIndex..<endSquareIndex])
         let end = Square(endSquareString)
-        
+
         var promotedPiece: Piece?
-        
+
         if lan.count == 5,
-            let pieceString = lan.last?.uppercased(),
-            let pieceKind = Piece.Kind(rawValue: pieceString)
+           let pieceString = lan.last?.uppercased(),
+           let pieceKind = Piece.Kind(rawValue: pieceString)
         {
             promotedPiece = .init(pieceKind, color: color, square: end)
         }
-        
+
         let board = Board(position: position)
-        
+
         guard
             board.canMove(pieceAt: start, to: end),
             let piece = position.piece(at: start)
         else {
             return nil
         }
-        
+
         var moveResult: Move.Result
-        
+
         if let capturedPiece = position.piece(at: end) {
             moveResult = .capture(capturedPiece)
         } else if let castling = Castling(engineLAN: lan) {
@@ -75,7 +75,7 @@ public class EngineLANParser {
         } else {
             moveResult = .move
         }
-        
+
         var move = Move(
             result: moveResult,
             piece: piece,
@@ -83,11 +83,11 @@ public class EngineLANParser {
             end: end,
             checkState: .none
         )
-        
+
         move.promotedPiece = promotedPiece
         return move
     }
-    
+
     /// Converts a `Move` object into an engine LAN string.
     ///
     /// - parameter move: The chess move to convert.
@@ -96,9 +96,9 @@ public class EngineLANParser {
     public static func convert(move: Move) -> String {
         move.start.notation + move.end.notation + (move.promotedPiece?.fen.lowercased() ?? "")
     }
-    
+
     // MARK: - Private
-    
+
     /// Returns whether the provided engine LAN is valid.
     ///
     /// - parameter lan: The LAN string to check.
@@ -107,11 +107,11 @@ public class EngineLANParser {
     private static func isValid(lan: String) -> Bool {
         lan.range(of: EngineLANParser.Regex.full, options: .regularExpression) != nil
     }
-    
+
 }
 
 private extension Castling {
-    
+
     init?(engineLAN: String) {
         switch engineLAN {
         case "e1g1":    self = .wK
@@ -121,5 +121,5 @@ private extension Castling {
         default:        return nil
         }
     }
-    
+
 }

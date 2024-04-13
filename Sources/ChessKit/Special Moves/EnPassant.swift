@@ -4,16 +4,16 @@
 //
 
 /// Structure that captures en passant moves.
-public struct EnPassant: Equatable, Hashable {
-    
+struct EnPassant: Equatable, Hashable {
+
     /// Pawn that is capable of being captured by en passant.
-    public var pawn: Piece
-    
+    var pawn: Piece
+
     /// The square that the capturing pawn will move to after the en passant.
     var captureSquare: Square {
         Square(pawn.square.file, pawn.color == .white ? 3 : 6)
     }
-    
+
     /// Determines whether or not the pawn can be captured by en passant.
     ///
     /// - parameter capturingPiece: The piece that is capturing the contained pawn.
@@ -26,9 +26,9 @@ public struct EnPassant: Equatable, Hashable {
     ///
     func canBeCaptured(by capturingPiece: Piece) -> Bool {
         capturingPiece.kind == .pawn &&
-            capturingPiece.color == pawn.color.opposite &&
-            capturingPiece.square.rank == pawn.square.rank &&
-            abs(capturingPiece.square.file.number - pawn.square.file.number) == 1
+        capturingPiece.color == pawn.color.opposite &&
+        capturingPiece.square.rank == pawn.square.rank &&
+        abs(capturingPiece.square.file.number - pawn.square.file.number) == 1
     }
-    
+
 }

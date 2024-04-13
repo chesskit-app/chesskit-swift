@@ -5,6 +5,6 @@
 
 extension Comparable {
     func bounded(by limits: ClosedRange<Self>) -> Self {
-        return min(max(self, limits.lowerBound), limits.upperBound)
+        min(max(self, limits.lowerBound), limits.upperBound)
     }
 }
