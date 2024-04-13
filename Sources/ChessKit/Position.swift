@@ -60,8 +60,15 @@ public struct Position: Equatable {
 
     /// Toggle the current side to move.
     ///
-    private mutating func toggleSideToMove() {
+    private mutating func _toggleSideToMove() {
         sideToMove = sideToMove.opposite
+    }
+
+    /// Toggle the current side to move.
+    ///
+    @available(*, deprecated, message: "This function is no longer has any effect. `sideToMove` is toggled automatically as needed.")
+    public mutating func toggleSideToMove() {
+
     }
 
     /// Provides the chess piece located at the given square.
@@ -96,7 +103,7 @@ public struct Position: Equatable {
                 clock.fullmoves += 1
             }
 
-            toggleSideToMove()
+            _toggleSideToMove()
         }
 
         return pieceSet.get(end)
