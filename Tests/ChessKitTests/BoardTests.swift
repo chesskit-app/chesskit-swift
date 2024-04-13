@@ -217,7 +217,17 @@ class BoardTests: XCTestCase {
     }
 
     func testLegalKingMoves() {
+        let position = Position(fen: "8/8/8/4p3/4K3/8/8/8 w - - 0 1")!
+        let board = Board(position: position)
 
+        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .d5))
+        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .d3))
+        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .f5))
+        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .f3))
+        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .e5))
+        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .e3))
+        XCTAssertFalse(board.canMove(pieceAt: .e4, to: .d4))
+        XCTAssertFalse(board.canMove(pieceAt: .e4, to: .f4))
     }
 
     func testLegalMovePiece() {
@@ -253,19 +263,19 @@ class BoardTests: XCTestCase {
     func testDisambiguation() {
         var board = Board(position: Position(fen: "3r3r/8/4B3/R2n4/2B1Q2Q/8/8/R6Q w - - 0 1")!)
 
-        let whiteRookMove = board.move(pieceAt: .a1, to: .a3)
-        let blackRookMove = board.move(pieceAt: .d8, to: .f8)
-        let queenMove = board.move(pieceAt: .h4, to: .e1)
+        let r1a3 = board.move(pieceAt: .a1, to: .a3)
+        let rdf8 = board.move(pieceAt: .d8, to: .f8)
+        let qh4e1 = board.move(pieceAt: .h4, to: .e1)
 
-        XCTAssertEqual(whiteRookMove?.san, "R1a3")
-        XCTAssertEqual(blackRookMove?.san, "Rdf8")
-        XCTAssertEqual(queenMove?.san, "Qh4e1")
+        XCTAssertEqual(r1a3?.san, "R1a3")
+        XCTAssertEqual(rdf8?.san, "Rdf8")
+        XCTAssertEqual(qh4e1?.san, "Qh4e1")
 
-        let unambiguousBishopMove = board.move(pieceAt: .e6, to: .f7)
-        XCTAssertEqual(unambiguousBishopMove?.san, "Bf7")
+        let bf7 = board.move(pieceAt: .e6, to: .f7)
+        XCTAssertEqual(bf7?.san, "Bf7")
 
-        let ambiguousBishopMove = board.move(pieceAt: .f7, to: .d5)
-        XCTAssertEqual(ambiguousBishopMove?.san, "Bfxd5")
+        let bfxd5 = board.move(pieceAt: .f7, to: .d5)
+        XCTAssertEqual(bfxd5?.san, "Bfxd5")
     }
 
 }

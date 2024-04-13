@@ -205,17 +205,16 @@ public struct Board {
     }
 
     private func checkState(for color: Piece.Color) -> Move.CheckState {
-        let enemyKing = set.get(color.opposite) & set.get(.king)
         var checkState: Move.CheckState = .none
 
+        let legalMoves = set.get(color.opposite)
+            .squares
+            .flatMap(legalMoves(forPieceAt:))
+
         if isKingInCheck(color.opposite, set: set) {
-            if let square = Square(enemyKing) {
-                checkState = legalMoves(forPieceAt: square).isEmpty ? .checkmate : .check
-            }
+            checkState = legalMoves.isEmpty ? .checkmate : .check
         } else {
-            if let square = Square(enemyKing) {
-                checkState = legalMoves(forPieceAt: square).isEmpty ? .stalemate : .none
-            }
+            checkState = legalMoves.isEmpty ? .stalemate : .none
         }
 
         return checkState
@@ -319,8 +318,8 @@ public struct Board {
         | rookAttacks(from: square, occupancy: set.all) & set.lines
         | bishopAttacks(from: square, occupancy: set.all) & set.diagonals
         | knightAttacks[safe: sq] & set.knights
-        | pawnCaptures(.white, from: sq, set: set) & set.P
-        | pawnCaptures(.black, from: sq, set: set) & set.p
+        | pawnCaptures(.white, from: sq) & set.p
+        | pawnCaptures(.black, from: sq) & set.P
     }
 
     /// Determines if the king of the given piece color is in check.
@@ -397,12 +396,11 @@ public struct Board {
     ///
     private func pawnCaptures(
         _ color: Piece.Color,
-        from sq: Bitboard,
-        set: PieceSet
+        from sq: Bitboard
     ) -> Bitboard {
         switch color {
-        case .white: (sq.northWest() | sq.northEast()) & set.black
-        case .black: (sq.southWest() | sq.southEast()) & set.white
+        case .white: (sq.northWest() | sq.northEast())
+        case .black: (sq.southWest() | sq.southEast())
         }
     }
 
@@ -418,7 +416,7 @@ public struct Board {
         from sq: Bitboard,
         set: PieceSet
     ) -> Bitboard {
-        pawnMoves(color, from: sq, set: set) | pawnCaptures(color, from: sq, set: set)
+        pawnMoves(color, from: sq, set: set) | pawnCaptures(color, from: sq) & set.get(color.opposite)
     }
 
     /// Cached knight attack bitboards by square.

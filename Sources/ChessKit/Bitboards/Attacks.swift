@@ -107,9 +107,33 @@ struct Attacks {
         Square.allCases.forEach { square in
             let sq = square.bb
             knights[sq] = [17, 15, 10, 6].reduce(Bitboard(0)) {
-                $0 | sq << $1 | sq >> $1
+                var result = $0
+
+                let up = sq << $1
+                if distance(sq, up) <= 2 {
+                    result |= up
+                }
+
+                let down = sq >> $1
+                if distance(sq, down) <= 2 {
+                    result |= down
+                }
+
+                return result
             }
         }
+    }
+
+    /// Computes the Chebyshev Distance between two bitboard squares.
+    private static func distance(_ sq1: Bitboard, _ sq2: Bitboard) -> Int {
+        guard let s1 = Square(sq1), let s2 = Square(sq2) else {
+            return .max
+        }
+
+        return max(
+            abs(s1.file.number - s2.file.number),
+            abs(s1.rank.value - s2.rank.value)
+        )
     }
 
     /// Generates array containing a `Magic` object for each

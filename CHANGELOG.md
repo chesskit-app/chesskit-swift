@@ -1,11 +1,18 @@
 # [unreleased]
 
+#### Improvements
+* `Board.swift` move calculation and validation has greatly increased performance.
+  * Underlying board representation has been replaced with much faster bitboard structures and algorithms.
+
 #### Breaking Changes
 * `EnPassant` has been made an `internal struct`. It is used interally by `Position` and `Board`.
 
+#### Deprecations
+* `Position.toggleSideToMove()` is now private and handled automatically when calling `move()`. The public-facing `toggleSideToMove()` has been deprecated.
+
 #### Internal Changes
-* `Position.toggleSideToMove()` is now private and handled automatically when calling `move()`.
 * `Position.castle(_:)` function has been added to handle castling.
+* Test coverage has been greatly improved.
 
 # ChessKit 0.3.2
 Released Saturday, December 2, 2023.
