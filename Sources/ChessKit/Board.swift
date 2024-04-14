@@ -34,7 +34,7 @@ public struct Board {
     /// Initializes a board with the given `position`.
     ///
     /// - parameter position: The starting position of the board.
-    /// Defaults to `Position.standard` which is the starting position
+    /// The default is `Position.standard` which is the starting position
     /// for a standard chess game.
     ///
     public init(position: Position = .standard) {
@@ -48,6 +48,7 @@ public struct Board {
     ///
     /// - parameter start: The starting square of the piece.
     /// - parameter end: The ending square of the piece.
+    ///
     /// - returns: The `Move` object representing the move.
     ///
     /// If `start` doesn't contain a piece or `end` is not a valid legal move
@@ -155,7 +156,9 @@ public struct Board {
     ///
     /// - parameter square: The square currently containing the piece.
     /// - parameter newSquare: The new square for the piece.
+    ///
     /// - returns: Whether or not the move is valid.
+    ///
     public func canMove(pieceAt square: Square, to newSquare: Square) -> Bool {
         guard let piece = set.get(square) else { return false }
         return legalMoves(for: piece, in: set) & newSquare.bb != 0
@@ -164,8 +167,10 @@ public struct Board {
     /// Returns the possible legal moves for a piece at a given square.
     ///
     /// - parameter square: The square containing the piece to check.
+    ///
     /// - returns: An array of squares containing legal moves or an empty
     /// array if there are no legal moves or if there is no piece at `square`.
+    ///
     public func legalMoves(forPieceAt square: Square) -> [Square] {
         guard let piece = set.get(square) else { return [] }
         return legalMoves(for: piece, in: set).squares
@@ -175,6 +180,7 @@ public struct Board {
     ///
     /// - parameter move: The move that triggered the promotion.
     /// - parameter kind: The piece kind to promote a pawn to.
+    ///
     /// - returns: The final move containing the promoted piece.
     ///
     /// Call this when a pawn reaches the opposite side of the board
@@ -196,7 +202,6 @@ public struct Board {
 
     /// Determines check state and handles pawn promotion for
     /// provided `move`.
-    ///
     private func process(move: Move) -> Move {
         var processedMove = move
 
@@ -223,9 +228,7 @@ public struct Board {
         return processedMove
     }
 
-    /// Determines the current check state for the
-    /// provided `color`.
-    ///
+    /// Determines the current check state for the provided `color`.
     private func checkState(for color: Piece.Color) -> Move.CheckState {
         var checkState: Move.CheckState = .none
 
@@ -281,6 +284,7 @@ public struct Board {
 
     // MARK: - Move Validation
 
+    /// Determines the legal moves for the given `piece` in `set`.
     private func legalMoves(for piece: Piece, in set: PieceSet) -> Bitboard {
         let attacks = switch piece.kind {
         case .king:
@@ -312,6 +316,7 @@ public struct Board {
     ///
     /// - parameter piece: The piece to move.
     /// - parameter square: The square to move the piece to.
+    ///
     /// - returns: Whether the move is valid.
     /// 
     private func validate(moveFor piece: Piece, to square: Square) -> Bool {
@@ -333,6 +338,7 @@ public struct Board {
     ///
     /// - parameter sq: A bitboard corresponding to the square of interest.
     /// - parameter set: The piece set for which to calculate attackers.
+    ///
     /// - returns: A bitboard with the locations of the pieces in `set`
     /// that attack `sq`.
     ///
@@ -354,6 +360,7 @@ public struct Board {
     ///
     /// - parameter color: The color of the king.
     /// - parameter set: The set of pieces on the board.
+    ///
     /// - returns: Whether or not the king with `color` is in check.
     ///
     private func isKingInCheck(_ color: Piece.Color, set: PieceSet) -> Bool {
@@ -395,10 +402,7 @@ public struct Board {
         let singleMove = movement(1)
 
         // double pawn push for starting move
-        var extraMove = Bitboard(0)
-        if isOnStartingRank {
-            extraMove = movement(2)
-        }
+        let extraMove = isOnStartingRank ? movement(2) : 0
 
         // en passant move
         var enPassantMove = Bitboard(0)
@@ -418,6 +422,7 @@ public struct Board {
     /// - parameter color: The color of the pawn.
     /// - parameter sq: A bitboard representing the square the pawn is currently on.
     /// - parameter set: The set of pieces active on the board.
+    ///
     /// - returns: A bitboard of the possible capturing pawn moves.
     ///
     /// For the purposes of `Board`, en-passant is not considered a capturing move.
@@ -437,6 +442,7 @@ public struct Board {
     /// - parameter color: The color of the pawn.
     /// - parameter sq: A bitboard representing the square the pawn is currently on.
     /// - parameter set: The set of pieces active on the board.
+    ///
     /// - returns: A bitboard of the possible pawn moves.
     ///
     private func pawnAttacks(
@@ -501,7 +507,6 @@ public struct Board {
 
     /// Determines whether the king of the provided `color` can
     /// castle according to `castling` given `set`.
-    ///
     private func canCastle(_ color: Piece.Color, castling: Castling, set: PieceSet) -> Bool {
         let us = set.get(color)
 
@@ -512,10 +517,13 @@ public struct Board {
             attackers(to: $0.bb, set: set) & ~us == 0
         }
 
+        let notInCheck = !isKingInCheck(color, set: set)
+
         return position.legalCastlings.contains(castling)
         && validKing != 0
         && validRook != 0
         && notCastlingThroughCheck
+        && notInCheck
     }
 
 }

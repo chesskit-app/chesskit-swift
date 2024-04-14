@@ -61,6 +61,28 @@ class BoardTests: XCTestCase {
         XCTAssertEqual(bkMove.result, .castle(.bK))
     }
 
+    func testInvalidCastling() {
+        let position = Position(
+            pieces: [
+                .init(.queen, color: .black, square: .e8),
+                .init(.king, color: .white, square: .e1),
+                .init(.rook, color: .white, square: .h1)
+            ]
+        )
+        var board = Board(position: position)
+
+        // attempt to castle while in check
+        XCTAssertFalse(board.canMove(pieceAt: .e1, to: .g1))
+
+        // attempt to castle through check
+        board.move(pieceAt: .e8, to: .f8)
+        XCTAssertFalse(board.canMove(pieceAt: .e1, to: .g1))
+
+        // valid castling move
+        board.move(pieceAt: .f8, to: .h8)
+        XCTAssertTrue(board.canMove(pieceAt: .e1, to: .g1))
+    }
+
     func testPromotion() {
         let pawn = Piece(.pawn, color: .white, square: .e7)
         let queen = Piece(.queen, color: .white, square: .e8)

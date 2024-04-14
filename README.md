@@ -83,16 +83,17 @@ print(board.legalMoves(forPieceAt: .e2))    // returns [.e3, .e4]
 
 * Parse [FEN](https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation) into a `Position` object
 ``` swift
-// use Position initializer
+// parse FEN using Position initializer
 let fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
 let position = Position(fen: fen)
 
 // convert Position to FEN string
-let fenString = Position.standard.fen
+let fenString = position.fen
 ```
 
-* Similarly parse [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) (into `Game`) or [SAN](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) (into `Move`).
+* Similarly, parse [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) (into `Game`) or [SAN](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) (into `Move`).
 ``` swift
+// parse PGN using Game initializer
 let game = Game(pgn: "1. e4 e5 2. Nf3")
 
 // convert Game to PGN string
