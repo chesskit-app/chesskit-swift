@@ -2,13 +2,13 @@ name: ChessKit Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: master
   pull_request:
-    branches: [ master ]
+    branches: master
 
 jobs:
   test:
-    uses: chesskit-app/workflows/.github/workflows/test-swift-package.yml@master
+    uses: chesskit-app/workflows/.github/workflows/test-swift-package.yaml@master
     secrets: inherit
     with:
        test_bundle: ChessKitPackageTests
