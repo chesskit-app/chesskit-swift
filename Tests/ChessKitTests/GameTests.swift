@@ -222,6 +222,37 @@ class GameTests: XCTestCase {
         XCTAssertEqual(game.pgn, pgn)
     }
 
+    func testValidTagPairs() {
+        let pgn =
+        """
+        [Event "Test Event"]
+        [Site "Barrow, Alaska USA"]
+        [Date "2000.01.01"]
+        [Round "5"]
+        [White "Player One"]
+        [Black "Player Two"]
+        [Result "1-0"]
+
+        1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
+        """
+
+        let game = Game(pgn: pgn)!
+        XCTAssertTrue(game.tags.isValid)
+    }
+
+    func testInValidTagPairs() {
+        let pgn =
+        """
+        [Event "Test Event"]
+
+        1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
+        """
+
+        let game = Game(pgn: pgn)!
+        XCTAssertFalse(game.tags.isValid)
+        XCTAssertTrue(game.tags.$site.pgn.isEmpty)
+    }
+
 }
 
 extension GameTests {
