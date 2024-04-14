@@ -213,7 +213,7 @@ class GameTests: XCTestCase {
         [Mode "OTB"]
         [FEN "\(Position.standard.fen)"]
         [SetUp "1"]
-        [TestKey1 "Test Value 2"]
+        [TestKey1 "Test Value 1"]
         [TestKey2 "Test Value 2"]
 
         1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
@@ -243,7 +243,7 @@ extension GameTests {
         fen: Position.standard.fen,
         setUp: "1",
         other: [
-            "TestKey1": "Test Value 2",
+            "TestKey1": "Test Value 1",
             "TestKey2": "Test Value 2"
         ]
     )

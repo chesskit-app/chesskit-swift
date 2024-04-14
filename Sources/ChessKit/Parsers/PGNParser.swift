@@ -236,23 +236,26 @@ public class PGNParser {
 
         // tags
 
-        pgn += game.tags.$event.pgn + "\n"
-        pgn += game.tags.$site.pgn + "\n"
-        pgn += game.tags.$date.pgn + "\n"
-        pgn += game.tags.$round.pgn + "\n"
-        pgn += game.tags.$white.pgn + "\n"
-        pgn += game.tags.$black.pgn + "\n"
-        pgn += game.tags.$result.pgn + "\n"
-        pgn += game.tags.$annotator.pgn + "\n"
-        pgn += game.tags.$plyCount.pgn + "\n"
-        pgn += game.tags.$timeControl.pgn + "\n"
-        pgn += game.tags.$time.pgn + "\n"
-        pgn += game.tags.$termination.pgn + "\n"
-        pgn += game.tags.$mode.pgn + "\n"
-        pgn += game.tags.$fen.pgn + "\n"
-        pgn += game.tags.$setUp.pgn + "\n"
+        [game.tags.$event,
+         game.tags.$site,
+         game.tags.$date,
+         game.tags.$round,
+         game.tags.$white,
+         game.tags.$black,
+         game.tags.$result,
+         game.tags.$annotator,
+         game.tags.$plyCount,
+         game.tags.$timeControl,
+         game.tags.$time,
+         game.tags.$termination,
+         game.tags.$mode,
+         game.tags.$fen,
+         game.tags.$setUp]
+            .map(\.pgn)
+            .filter { !$0.isEmpty }
+            .forEach { pgn += $0 + "\n" }
 
-        game.tags.other.forEach { key, value in
+        game.tags.other.sorted(by: <).forEach { key, value in
             pgn += "[\(key) \"\(value)\"]\n"
         }
 

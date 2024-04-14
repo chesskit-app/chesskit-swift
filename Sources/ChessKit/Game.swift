@@ -11,7 +11,9 @@ import Foundation
 /// chess game within `ChessKit`. It provides methods for
 /// making moves and publishes the played moves in an observable way.
 ///
-public class Game: Equatable, ObservableObject {
+public class Game: ObservableObject {
+
+    // MARK: - Properties
 
     /// The move tree representing all moves made in the game.
     @Published public private(set) var moves: MoveTree
@@ -20,6 +22,8 @@ public class Game: Equatable, ObservableObject {
 
     /// Contains the tag pairs for this game.
     public var tags: Tags
+
+    // MARK: - Initializer
 
     /// Initialize a game with a starting position.
     ///
@@ -47,6 +51,8 @@ public class Game: Equatable, ObservableObject {
         positions = parsed.positions
         tags = parsed.tags
     }
+
+    // MARK: - Moves
 
     /// Perform the provided move in the game.
     ///
@@ -170,12 +176,19 @@ public class Game: Equatable, ObservableObject {
         PGNParser.convert(game: self)
     }
 
-    // MARK: Equatable
+}
+
+// MARK: - Equatable
+
+extension Game: Equatable {
+
     public static func == (lhs: Game, rhs: Game) -> Bool {
         lhs.moves == rhs.moves && lhs.positions == rhs.positions
     }
 
 }
+
+// MARK: - Tags
 
 extension Game {
 
@@ -194,14 +207,21 @@ extension Game {
         /// corresponding `name`, within brackets.
         public var wrappedValue: String = ""
 
+        /// The projected value of this `Tag` object.
         public var projectedValue: Tag { self }
 
+        /// The PGN representation of this tag.
+        ///
+        /// Formatted as `[Name "Value"]`.
         public var pgn: String {
-            "[\(name) \"\(wrappedValue)\"]"
+            if wrappedValue.isEmpty {
+                return ""
+            } else {
+                return "[\(name) \"\(wrappedValue)\"]"
+            }
         }
 
     }
-
 
     /// Contains the PGN tag pairs for a game.
     public struct Tags {
@@ -310,28 +330,29 @@ extension Game {
         ///
         /// The key will be used as the tag name in the PGN.
         public var other: [String: String] = [:]
-
-        public init() {
-
-        }
         
+        /// Initializes a `Game.Tags` object with the provided
+        /// values.
+        ///
+        /// For initialization purposes, all values are optional,
+        /// and any omitted values will be set to empty strings.
         public init(
-            event: String,
-            site: String,
-            date: String,
-            round: String,
-            white: String,
-            black: String,
-            result: String,
-            annotator: String,
-            plyCount: String,
-            timeControl: String,
-            time: String,
-            termination: String,
-            mode: String,
-            fen: String,
-            setUp: String,
-            other: [String : String]
+            event: String = "",
+            site: String = "",
+            date: String = "",
+            round: String = "",
+            white: String = "",
+            black: String = "",
+            result: String = "",
+            annotator: String = "",
+            plyCount: String = "",
+            timeControl: String = "",
+            time: String = "",
+            termination: String = "",
+            mode: String = "",
+            fen: String = "",
+            setUp: String = "",
+            other: [String : String] = [:]
         ) {
             self.event = event
             self.site = site
