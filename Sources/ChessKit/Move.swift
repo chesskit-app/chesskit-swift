@@ -76,7 +76,7 @@ public struct Move: Equatable, Hashable {
     /// Initialize a move with a given SAN string.
     ///
     /// This initializer fails if the provided SAN string is invalid.
-    public init?(san: String, color: Piece.Color, position: Position) {
+    public init?(san: String, position: Position) {
         guard let move = SANParser.parse(move: san, in: position) else {
             return nil
         }

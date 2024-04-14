@@ -6,6 +6,7 @@
 import Foundation
 
 /// Positional assessments.
+// periphery:ignore
 enum PositionAnnotation {
     // <TBD>
 }
@@ -220,6 +221,10 @@ public class PGNParser {
 
             if let black {
                 game.make(move: black, from: blackIndex)
+            }
+
+            if let result = move.result {
+                game.tags.result = result.rawValue
             }
         }
 

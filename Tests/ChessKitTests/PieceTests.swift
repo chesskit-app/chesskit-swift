@@ -10,27 +10,21 @@ class PieceTests: XCTestCase {
 
     func testNotation() {
         let pawn = Piece.Kind.pawn
-        XCTAssertEqual(pawn.value, 1)
         XCTAssertEqual(pawn.notation, "")
 
         let bishop = Piece.Kind.bishop
-        XCTAssertEqual(bishop.value, 3)
         XCTAssertEqual(bishop.notation, "B")
 
         let knight = Piece.Kind.knight
-        XCTAssertEqual(knight.value, 3)
         XCTAssertEqual(knight.notation, "N")
 
         let rook = Piece.Kind.rook
-        XCTAssertEqual(rook.value, 5)
         XCTAssertEqual(rook.notation, "R")
 
         let queen = Piece.Kind.queen
-        XCTAssertEqual(queen.value, 9)
         XCTAssertEqual(queen.notation, "Q")
 
         let king = Piece.Kind.king
-        XCTAssertEqual(king.value, 0)
         XCTAssertEqual(king.notation, "K")
     }
 
