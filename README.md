@@ -1,6 +1,6 @@
 # ♟️ ChessKit
 
-[![ChessKit Checks](https://github.com/chesskit-app/chesskit-swift/actions/workflows/check-chesskit.yaml/badge.svg)](https://github.com/chesskit-app/chesskit-swift/actions/workflows/check-chesskit.yaml) [![codecov](https://codecov.io/gh/chesskit-app/chesskit-swift/branch/master/graph/badge.svg?token=676EP0N8XF)](https://codecov.io/gh/chesskit-app/chesskit-swift)
+[![checks](https://github.com/chesskit-app/chesskit-swift/actions/workflows/checks.yaml/badge.svg)](https://github.com/chesskit-app/chesskit-swift/actions/workflows/checks.yaml) [![codecov](https://codecov.io/gh/chesskit-app/chesskit-swift/branch/master/graph/badge.svg?token=676EP0N8XF)](https://codecov.io/gh/chesskit-app/chesskit-swift)
 
 A Swift package for efficiently implementing chess logic.
 

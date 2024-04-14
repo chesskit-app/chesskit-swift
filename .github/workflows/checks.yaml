@@ -1,5 +1,5 @@
 
-name: ChessKit Checks
+name: checks
 
 on:
   push:
