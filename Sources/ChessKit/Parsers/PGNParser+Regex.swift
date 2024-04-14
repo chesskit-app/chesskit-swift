@@ -7,6 +7,10 @@ extension PGNParser {
 
     /// Contains useful regex strings for PGN parsing.
     struct Regex {
+        // tag pair components
+        static let tags = #"\[[^\]]+\]"#
+        static let tagPair = #"\[([^"]+?)\s"([^"]+)"\]"#
+
         // move pair components
         static let number = #"\d{1,}\.{1,3}"#
         static let castle = #"[Oo0]-[Oo0](-[Oo0])"#

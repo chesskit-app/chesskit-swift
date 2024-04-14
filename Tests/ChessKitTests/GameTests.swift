@@ -22,6 +22,8 @@ class GameTests: XCTestCase {
     // MARK: - Setup
 
     override func setUp() {
+        game.tags = Self.mockTags
+
         game.make(moves: ["e4", "e5", "Nf3", "Nc6", "Bc4"], from: .minimum)
 
         // add 2. Nc3 ... variation to 2. Nf3
@@ -85,7 +87,7 @@ class GameTests: XCTestCase {
         game.moves[f5Index]?.comment = "Comment test"
 
         XCTAssertEqual(
-            PGNParser.convert(game: game),
+            PGNParser.convert(game: game).split(separator: "\n").last,
             "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4"
         )
     }
@@ -194,9 +196,87 @@ class GameTests: XCTestCase {
     }
 
     func testPGN() {
-        let pgn = "1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4"
+        let pgn = 
+        """
+        [Event "Test Event"]
+        [Site "Barrow, Alaska USA"]
+        [Date "2000.01.01"]
+        [Round "5"]
+        [White "Player One"]
+        [Black "Player Two"]
+        [Result "1-0"]
+        [Annotator "Annotator"]
+        [PlyCount "15"]
+        [TimeControl "40/7200:3600"]
+        [Time "12:00"]
+        [Termination "abandoned"]
+        [Mode "OTB"]
+        [FEN "\(Position.standard.fen)"]
+        [SetUp "1"]
+        [TestKey1 "Test Value 1"]
+        [TestKey2 "Test Value 2"]
+
+        1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
+        """
 
         XCTAssertEqual(game.pgn, pgn)
     }
+
+    func testValidTagPairs() {
+        let pgn =
+        """
+        [Event "Test Event"]
+        [Site "Barrow, Alaska USA"]
+        [Date "2000.01.01"]
+        [Round "5"]
+        [White "Player One"]
+        [Black "Player Two"]
+        [Result "1-0"]
+
+        1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
+        """
+
+        let game = Game(pgn: pgn)!
+        XCTAssertTrue(game.tags.isValid)
+    }
+
+    func testInValidTagPairs() {
+        let pgn =
+        """
+        [Event "Test Event"]
+
+        1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
+        """
+
+        let game = Game(pgn: pgn)!
+        XCTAssertFalse(game.tags.isValid)
+        XCTAssertTrue(game.tags.$site.pgn.isEmpty)
+    }
+
+}
+
+extension GameTests {
+
+    private static let mockTags = Game.Tags(
+        event: "Test Event",
+        site: "Barrow, Alaska USA",
+        date: "2000.01.01",
+        round: "5",
+        white: "Player One",
+        black: "Player Two",
+        result: "1-0",
+        annotator: "Annotator",
+        plyCount: "15",
+        timeControl: "40/7200:3600",
+        time: "12:00",
+        termination: "abandoned",
+        mode: "OTB",
+        fen: Position.standard.fen,
+        setUp: "1",
+        other: [
+            "TestKey1": "Test Value 1",
+            "TestKey2": "Test Value 2"
+        ]
+    )
 
 }
