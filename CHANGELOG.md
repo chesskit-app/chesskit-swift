@@ -1,3 +1,8 @@
+# [unreleased]
+
+#### Improvements
+* PGN parsing now supports tag pairs (for example `[Event "Name"]`) located at the top of the PGN format, see [Issue #8](https://github.com/chesskit-app/chesskit-swift/issues/8).
+
 # ChessKit 0.4.0
 Released Saturday, April 13, 2024.
 

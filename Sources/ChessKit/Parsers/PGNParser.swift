@@ -56,10 +56,47 @@ public class PGNParser {
             .replacingOccurrences(of: "\r", with: " ")
 
         let range = NSRange(0..<processedPGN.utf16.count)
+
+        // tags
+
+        let tags: [(String, String)]? = try? NSRegularExpression(pattern: Regex.tags)
+            .matches(in: processedPGN, range: range)
+            .map {
+                NSString(string: pgn).substring(with: $0.range)
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+
+            .compactMap { tag in
+            let tagRange = NSRange(0..<tag.utf16.count)
+
+            let matches = try? NSRegularExpression(pattern: Regex.tagPair)
+                .matches(in: tag, range: tagRange)
+
+            if let matches,
+               matches.count >= 1,
+               matches[0].numberOfRanges >= 3 {
+                let key = matches[0].range(at: 1)
+                let value = matches[0].range(at: 2)
+
+                return (
+                    NSString(string: tag).substring(with: key)
+                        .trimmingCharacters(in: .whitespacesAndNewlines),
+                    NSString(string: tag).substring(with: value)
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                )
+            } else {
+                return nil
+            }
+        }
+
+        let parsedTags = parsed(tags: Dictionary<String, String>(tags ?? []) { a, _ in a })
+
+        // movetext
+
         let moves: [String]
 
         do {
-            moves = try NSRegularExpression(pattern: PGNParser.Regex.full)
+            moves = try NSRegularExpression(pattern: Regex.full)
                 .matches(in: processedPGN, range: range)
                 .map {
                     NSString(string: pgn).substring(with: $0.range)
@@ -151,7 +188,7 @@ public class PGNParser {
             )
         }
 
-        let game = Game(startingWith: position)
+        let game = Game(startingWith: position, tags: parsedTags)
 
         parsedMoves.forEach { move in
             let whiteIndex = MoveTree.Index(number: move.number, color: .white).previous
@@ -197,6 +234,34 @@ public class PGNParser {
     public static func convert(game: Game) -> String {
         var pgn = ""
 
+        // tags
+
+        pgn += game.tags.$event.pgn + "\n"
+        pgn += game.tags.$site.pgn + "\n"
+        pgn += game.tags.$date.pgn + "\n"
+        pgn += game.tags.$round.pgn + "\n"
+        pgn += game.tags.$white.pgn + "\n"
+        pgn += game.tags.$black.pgn + "\n"
+        pgn += game.tags.$result.pgn + "\n"
+        pgn += game.tags.$annotator.pgn + "\n"
+        pgn += game.tags.$plyCount.pgn + "\n"
+        pgn += game.tags.$timeControl.pgn + "\n"
+        pgn += game.tags.$time.pgn + "\n"
+        pgn += game.tags.$termination.pgn + "\n"
+        pgn += game.tags.$mode.pgn + "\n"
+        pgn += game.tags.$fen.pgn + "\n"
+        pgn += game.tags.$setUp.pgn + "\n"
+
+        game.tags.other.forEach { key, value in
+            pgn += "[\(key) \"\(value)\"]\n"
+        }
+
+        if !pgn.isEmpty {
+            pgn += "\n" // extra line between tags and movetext
+        }
+
+        // movetext
+        
         for element in game.moves.pgnRepresentation {
             switch element {
             case .whiteNumber(let number):
@@ -230,6 +295,33 @@ public class PGNParser {
         }
 
         return result
+    }
+
+    private static func parsed(tags: [String: String]) -> Game.Tags {
+        var gameTags = Game.Tags()
+
+        tags.forEach { key, value in
+            switch key.lowercased() {
+            case "event":       gameTags.event = value
+            case "site":        gameTags.site = value
+            case "date":        gameTags.date = value
+            case "round":       gameTags.round = value
+            case "white":       gameTags.white = value
+            case "black":       gameTags.black = value
+            case "result":      gameTags.result = value
+            case "annotator":   gameTags.annotator = value
+            case "plyCount":    gameTags.plyCount = value
+            case "timeControl": gameTags.timeControl = value
+            case "time":        gameTags.time = value
+            case "termination": gameTags.termination = value
+            case "mode":        gameTags.mode = value
+            case "fen":         gameTags.fen = value
+            case "setUp":       gameTags.setUp = value
+            default:            gameTags.other[key] = value
+            }
+        }
+
+        return gameTags
     }
 
 }

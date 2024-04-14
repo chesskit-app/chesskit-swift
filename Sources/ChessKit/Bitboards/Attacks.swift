@@ -310,6 +310,7 @@ struct Magic {
 
 extension [Magic] {
     func attacks(from square: Square, for occupancy: Bitboard) -> Bitboard {
-        self[square.rawValue].attacks(for: occupancy)
+        guard square.rawValue < count else { return 0 }
+        return self[square.rawValue].attacks(for: occupancy)
     }
 }
