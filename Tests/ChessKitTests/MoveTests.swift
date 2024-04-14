@@ -10,13 +10,13 @@ class MoveTests: XCTestCase {
     
     func testMoveSANInit() {
         let move = Move(result: .move, piece: .init(.pawn, color: .white, square: .e4), start: .e2, end: .e4)
-        let moveFromSAN = Move(san: "e4", color: .white, position: .standard)
+        let moveFromSAN = Move(san: "e4", position: .standard)
         
         XCTAssertEqual(move, moveFromSAN)
     }
     
     func testMoveInvalidSANInit() {
-        XCTAssertNil(Move(san: "e5", color: .white, position: .standard))
+        XCTAssertNil(Move(san: "e5", position: .standard))
     }
     
     func testMoveNotation() {

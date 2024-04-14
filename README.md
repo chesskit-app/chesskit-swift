@@ -1,6 +1,6 @@
 # ♟️ ChessKit
 
-[![Test ChessKit](https://github.com/chesskit-app/chesskit-swift/actions/workflows/test-chesskit.yml/badge.svg)](https://github.com/chesskit-app/chesskit-swift/actions/workflows/test-chesskit.yml) [![codecov](https://codecov.io/gh/chesskit-app/chesskit-swift/branch/master/graph/badge.svg?token=676EP0N8XF)](https://codecov.io/gh/chesskit-app/chesskit-swift)
+[![ChessKit Checks](https://github.com/chesskit-app/chesskit-swift/actions/workflows/check-chesskit.yaml/badge.svg)](https://github.com/chesskit-app/chesskit-swift/actions/workflows/check-chesskit.yaml) [![codecov](https://codecov.io/gh/chesskit-app/chesskit-swift/branch/master/graph/badge.svg?token=676EP0N8XF)](https://codecov.io/gh/chesskit-app/chesskit-swift)
 
 A Swift package for efficiently implementing chess logic.
 
@@ -98,8 +98,8 @@ let game = Game(pgn: "1. e4 e5 2. Nf3")
 // convert Game to PGN string
 let pgnString = game.pgn
 
-// parse the move text "e4" for white from the starting position
-let move = Move(san: "e4", color: .white, in: .standard)
+// parse the move text "e4" from the starting position
+let move = Move(san: "e4", in: .standard)
 
 // convert Move to SAN string
 let sanString = move.san

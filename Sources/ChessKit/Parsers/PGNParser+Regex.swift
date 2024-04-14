@@ -12,7 +12,6 @@ extension PGNParser {
         static let tagPair = #"\[([^"]+?)\s"([^"]+)"\]"#
 
         // move pair components
-        static let number = #"\d{1,}\.{1,3}"#
         static let castle = #"[Oo0]-[Oo0](-[Oo0])"#
         static let move = #"[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](\=[QRBN])?[+#]"#
         static let annotation = #"\$\d"#

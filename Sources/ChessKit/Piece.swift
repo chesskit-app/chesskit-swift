@@ -26,17 +26,6 @@ public struct Piece: Equatable, Hashable {
         case pawn = ""
         case knight = "N", bishop = "B", rook = "R", queen = "Q", king = "K"
 
-        /// The relative value of each piece.
-        var value: Int {
-            switch self {
-            case .pawn:             return 1
-            case .bishop, .knight:  return 3
-            case .rook:             return 5
-            case .queen:            return 9
-            case .king:             return 0
-            }
-        }
-
         /// The notation of the given piece kind.
         public var notation: String {
             switch self {

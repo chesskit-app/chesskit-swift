@@ -54,8 +54,6 @@ struct PieceSet: Equatable {
     /// Bitboard for all the pawn pieces.
     var pawns: Bitboard     { p | P }
 
-    /// Bitboard for all the sliding pieces.
-    var sliders: Bitboard   { Q | q | B | b | R | r }
     /// Bitboard for all the diagonal sliding pieces.
     var diagonals: Bitboard { Q | q | B | b }
     /// Bitboard for all the vertical/horizontal sliding pieces.
