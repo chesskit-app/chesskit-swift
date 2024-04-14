@@ -1,12 +1,10 @@
-# [unreleased]
+# ChessKit 0.5.0
+Released Sunday, April 14, 2024.
 
 #### Improvements
 * PGN parsing now supports tag pairs (for example `[Event "Name"]`) located at the top of the PGN format, see [Issue #8](https://github.com/chesskit-app/chesskit-swift/issues/8).
 
-#### Bug Fixes
-* Fix issue where king is allowed to castle in check, see [Issue #11](https://github.com/chesskit-app/chesskit-swift/issues/11).
-
-#### Breaking Changes
+### Breaking Changes
 * Remove `color` parameter from `Move.init(san:color:position:)` initializer.
   * It was not being used, can be removed from any initializer call where it was included.
   * The new initializer is simply `Move.init(san:position:)`.
