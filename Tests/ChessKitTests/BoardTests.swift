@@ -303,7 +303,7 @@ class BoardTests: XCTestCase {
     func testPrint() {
         let board = Board()
 
-        ChessKitConfiguration.printMode = .letter
+        ChessKitConfiguration.printOptions.mode = .letter
         XCTAssertEqual(String(describing: board),
         """
         8 r n b q k b n r
@@ -317,7 +317,7 @@ class BoardTests: XCTestCase {
           a b c d e f g h
         """)
 
-        ChessKitConfiguration.printMode = .graphic
+        ChessKitConfiguration.printOptions.mode = .graphic
         XCTAssertEqual(String(describing: board),
         """
         8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
