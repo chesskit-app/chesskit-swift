@@ -1,3 +1,9 @@
+# [unreleased]
+
+#### Improvements
+* Enabled `chesskit-swift` to run on oldest platform possible without code changes.
+  * Now works on iOS 13+, macOS 10.15+, tvOS 13+, watchOS 6+
+
 # ChessKit 0.5.0
 Released Sunday, April 14, 2024.
 
