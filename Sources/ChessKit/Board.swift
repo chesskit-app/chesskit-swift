@@ -200,8 +200,8 @@ public struct Board {
 
     // MARK: - Move Processing
 
-    /// Determines check state and handles pawn promotion for
-    /// provided `move`.
+    /// Determines end game state and
+    /// handles pawn promotion for provided `move`.
     private func process(move: Move) -> Move {
         var processedMove = move
 
@@ -543,7 +543,7 @@ extension Board {
             case agreement
             case insufficientMaterial
             case fiftyMoves
-            case repitition
+            case repetition
             case stalemate
         }
     }
