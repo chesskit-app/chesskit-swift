@@ -7,7 +7,7 @@
 ///
 /// The tree maintains the move order including variations and
 /// provides index-based access for any element in the tree.
-public class MoveTree: Equatable {
+public struct MoveTree {
 
     /// Dictionary representation of the tree for faster access.
     private var dictionary: [Index: Node] = [:]
@@ -56,7 +56,7 @@ public class MoveTree: Equatable {
     ///
     /// - returns: The move index resulting from the addition of the move.
     @discardableResult
-    public func add(
+    public mutating func add(
         move: Move,
         toParentIndex moveIndex: Index? = nil
     ) -> Index {
@@ -278,7 +278,7 @@ public class MoveTree: Equatable {
     /// - parameter index: The index of the move to annotate.
     /// - parameter assessment: The move to annotate the move with.
     /// - parameter comment: The comment to annotate the move with.
-    public func annotate(
+    public mutating func annotate(
         moveAt index: MoveTree.Index,
         assessment: Move.Assessment = .null,
         comment: String = ""
@@ -286,6 +286,8 @@ public class MoveTree: Equatable {
         dictionary[index]?.move.assessment = assessment
         dictionary[index]?.move.comment = comment
     }
+
+    // MARK: - PGN
 
     private func pgn(for node: Node?) -> [PGNElement] {
         guard let node else { return [] }
@@ -337,7 +339,11 @@ public class MoveTree: Equatable {
         pgn(for: root)
     }
 
-    // MARK: Equatable
+}
+
+// MARK: - Equatable
+extension MoveTree: Equatable {
+
     public static func == (lhs: MoveTree, rhs: MoveTree) -> Bool {
         lhs.dictionary == rhs.dictionary
     }

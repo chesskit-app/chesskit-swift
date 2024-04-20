@@ -171,6 +171,20 @@ public class Game: ObservableObject {
         return index
     }
 
+    /// Annotates the move at the provided `index`.
+    ///
+    /// - parameter index: The index of the move within the `MoveTree`.
+    /// - parameter assessment: The move assessment annotation.
+    /// - parameter comment: The move comment annotation.
+    /// 
+    public func annotate(
+        moveAt index: MoveTree.Index,
+        assessment: Move.Assessment = .null,
+        comment: String = ""
+    ) {
+        moves.annotate(moveAt: index, assessment: assessment, comment: comment)
+    }
+
     /// The PGN represenation of the game.
     public var pgn: String {
         PGNParser.convert(game: self)

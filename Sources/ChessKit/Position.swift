@@ -61,12 +61,12 @@ public struct Position: Equatable {
     /// Toggle the current side to move.
     ///
     private mutating func _toggleSideToMove() {
-        sideToMove = sideToMove.opposite
+        sideToMove.toggle()
     }
 
     /// Toggle the current side to move.
     ///
-    @available(*, deprecated, message: "This function is no longer has any effect. `sideToMove` is toggled automatically as needed.")
+    @available(*, deprecated, message: "This function no longer has any effect. `sideToMove` is toggled automatically as needed.")
     public mutating func toggleSideToMove() {
 
     }

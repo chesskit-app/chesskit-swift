@@ -83,8 +83,8 @@ class GameTests: XCTestCase {
     }
 
     func testMoveAnnotation() {
-        game.moves.annotate(moveAt: nc3Index, assessment: .brilliant)
-        game.moves[f5Index]?.comment = "Comment test"
+        game.annotate(moveAt: nc3Index, assessment: .brilliant)
+        game.annotate(moveAt: f5Index, comment: "Comment test")
 
         XCTAssertEqual(
             PGNParser.convert(game: game).split(separator: "\n").last,
