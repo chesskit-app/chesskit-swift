@@ -1,14 +1,15 @@
-# [unreleased]
+# ChessKit 0.6.0
+Released Friday, April 19, 2024.
 
 #### Improvements
 * Enable `chesskit-swift` to run on oldest platform possible without code changes.
-  * Now works on iOS 13+, macOS 10.15+, tvOS 13+, watchOS 6+
+  * Now works on iOS 13+, macOS 10.15+, tvOS 13+, watchOS 6+.
+* Annotations on moves in the `MoveTree` can now also be updated via `Game.annotate(moveAt:assessment:comment:)`.
 
 #### Bug Fixes
 * Fix `MoveTree` not properly publishing changes via `Game`.
 * Fix `Board.EndResult.repetition` spelling.
   * This isn't made available yet but will be implemented in an upcoming release.
-
 
 # ChessKit 0.5.0
 Released Sunday, April 14, 2024.
