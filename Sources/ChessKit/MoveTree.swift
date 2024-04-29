@@ -9,6 +9,8 @@
 /// provides index-based access for any element in the tree.
 public struct MoveTree {
 
+    var minimumIndex: Index = .minimum
+
     /// Dictionary representation of the tree for faster access.
     private var dictionary: [Index: Node] = [:]
     /// The root node of the tree.
@@ -63,7 +65,7 @@ public struct MoveTree {
         let newNode = Node(move: move)
 
         guard let root, let moveIndex else {
-            let index = Index.minimum.next
+            let index = minimumIndex.next
 
             newNode.index = index
             self.root = newNode
@@ -94,8 +96,8 @@ public struct MoveTree {
 
     /// Returns the index of the previous move given an `index`.
     public func previousIndex(for index: Index) -> Index? {
-        if index == .minimum.next {
-            return .minimum
+        if index == minimumIndex {
+            return minimumIndex
         } else {
             return dictionary[index]?.previous?.index
         }
@@ -103,8 +105,8 @@ public struct MoveTree {
 
     /// Returns the index of the next move given an `index`.
     public func nextIndex(for index: Index) -> Index? {
-        if index == .minimum {
-            return dictionary[.minimum.next]?.index
+        if index == minimumIndex {
+            return dictionary[minimumIndex.next]?.index
         } else {
             return dictionary[index]?.next?.index
         }
@@ -114,7 +116,7 @@ public struct MoveTree {
     /// move contained at `index`.
     public func nextIndex(containing move: Move, for index: Index) -> Index? {
         guard let node = dictionary[index] else {
-            if index == .minimum, let root, root.move == move {
+            if index == minimumIndex, let root, root.move == move {
                 return root.index
             } else {
                 return nil
