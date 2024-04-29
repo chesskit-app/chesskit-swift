@@ -1,3 +1,8 @@
+# [unreleased]
+
+* Add `startingIndex` and `startingPosition` to `Game`.
+  * `startingIndex` takes into account the `sideToMove` of `startingPosition`.
+
 # ChessKit 0.6.0
 Released Friday, April 19, 2024.
 
