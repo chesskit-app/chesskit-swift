@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.7.0
+Released Monday, April 29, 2024.
 
 #### Improvements
 * Add `startingIndex` and `startingPosition` to `Game`.
