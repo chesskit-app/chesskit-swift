@@ -321,15 +321,18 @@ public struct Board {
     /// 
     private func validate(moveFor piece: Piece, to square: Square) -> Bool {
         // attempt move in test set
-        //
-        // to-do: prune pseudo legal moves for sliding pieces
-        // based on diagonals, lines, etc if pinned
         var testSet = set
         testSet.remove(piece)
 
         var movedPiece = piece
         movedPiece.square = square
         testSet.add(movedPiece)
+
+        if let enPassant = position.enPassant {
+            if enPassant.canBeCaptured(by: piece) && enPassant.captureSquare == square {
+                testSet.remove(enPassant.pawn)
+            }
+        }
 
         return !isKingInCheck(piece.color, set: testSet)
     }
