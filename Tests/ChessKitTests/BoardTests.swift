@@ -45,6 +45,12 @@ class BoardTests: XCTestCase {
         XCTAssertEqual(move.result, .capture(ep.pawn))
     }
 
+    func testIllegalEnPassant() {
+        // fen position contains illegal en passant move
+        let board = Board(position: .init(fen: "1nbqkbnr/1pp1pppp/8/r1Pp3K/p7/5P2/PP1PP1PP/RNBQ1BNR w k d6 0 8")!)
+        XCTAssertFalse(board.canMove(pieceAt: .c5, to: .d6))
+    }
+
     func testCastling() {
         var board = Board(position: .castling)
         XCTAssertTrue(board.position.legalCastlings.contains(.bK))

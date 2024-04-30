@@ -1,7 +1,11 @@
 # [unreleased]
 
+#### Improvements
 * Add `startingIndex` and `startingPosition` to `Game`.
   * `startingIndex` takes into account the `sideToMove` of `startingPosition`.
+
+#### Bug Fixes
+* Fix rare en passant issue that could allow the king to be left in check, see [Issue #18](https://github.com/chesskit-app/chesskit-swift/issues/18).
 
 # ChessKit 0.6.0
 Released Friday, April 19, 2024.
