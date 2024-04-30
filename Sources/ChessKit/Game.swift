@@ -17,11 +17,17 @@ public class Game: ObservableObject {
 
     /// The move tree representing all moves made in the game.
     @Published public private(set) var moves: MoveTree
+    /// The move tree index of the starting position in the game.
+    public private(set) var startingIndex: MoveTree.Index
     /// A dictionary of every position in the game, keyed by move index.
     public private(set) var positions: [MoveTree.Index: Position]
-
     /// Contains the tag pairs for this game.
     public var tags: Tags
+
+    /// The starting position of the game.
+    public var startingPosition: Position? {
+        positions[startingIndex]
+    }
 
     // MARK: - Initializer
 
@@ -32,8 +38,11 @@ public class Game: ObservableObject {
     ///
     public init(startingWith position: Position = .standard, tags: Tags? = nil) {
         moves = MoveTree()
-        positions = [.minimum: position]
+        startingIndex = position.sideToMove == .white ? .minimum : .minimum.next
+        positions = [startingIndex: position]
         self.tags = tags ?? .init()
+
+        moves.minimumIndex = startingIndex
     }
 
     /// Initialize a game with a PGN string.
@@ -48,6 +57,7 @@ public class Game: ObservableObject {
         }
 
         moves = parsed.moves
+        startingIndex = .minimum
         positions = parsed.positions
         tags = parsed.tags
     }

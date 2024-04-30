@@ -4,14 +4,18 @@
 
 A Swift package for efficiently implementing chess logic.
 
+For a related Swift package that contains chess engines such as [Stockfish](https://stockfishchess.org), see [chesskit-engine](https://github.com/chesskit-app/chesskit-engine).
+
 ## Usage
 
-* Add a package dependency to your Xcode project or Swift Package:
+1. Add `chesskit-swift` as a dependency
+	* In an [app built in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app),
+	* or [as a dependency to another Swift Package](https://www.swift.org/documentation/package-manager/#importing-dependencies).
 ``` swift
 .package(url: "https://github.com/chesskit-app/chesskit-swift", from: "0.6.0")
 ```
 
-* Next you can import `ChessKit` to use it in your Swift code:
+2. Next, import `ChessKit` to use it in Swift code:
 ``` swift
 import ChessKit
 
@@ -31,6 +35,9 @@ import ChessKit
     * `Game`
     * Special moves (castling, en passant)
 * Move validation
+    * Implemented using highly performant `UInt64` [bitboards](https://www.chessprogramming.org/Bitboards).
+* Pawn promotion handling
+* Game states (check, stalemate, checkmate, etc.)
 * Chess notation string parsing
     * PGN
     * FEN
@@ -72,13 +79,13 @@ board.move(pieceAt: .e2, to: .e4)           // move pawn at e2 to e4
 * Check move legality
 ``` swift
 let board = Board()
-print(board.canMove(pieceAt: .a1, to: .a8)) // returns false
+print(board.canMove(pieceAt: .a1, to: .a8)) // false
 ```
 
 * Check legal moves
 ``` swift
 let board = Board()
-print(board.legalMoves(forPieceAt: .e2))    // returns [.e3, .e4]
+print(board.legalMoves(forPieceAt: .e2))    // [.e3, .e4]
 ```
 
 * Parse [FEN](https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation) into a `Position` object
@@ -105,10 +112,6 @@ let move = Move(san: "e4", in: .standard)
 // convert Move to SAN string
 let sanString = move.san
 ```
-
-## Author
-
-[@pdil](https://github.com/pdil)
 
 ## License
 

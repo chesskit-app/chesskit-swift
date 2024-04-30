@@ -48,6 +48,33 @@ class GameTests: XCTestCase {
 
     // MARK: - Test cases
 
+    func testStartingPosition() {
+        let game1 = Game(startingWith: .standard)
+        XCTAssertEqual(
+            game1.startingIndex,
+            .init(number: 0, color: .black, variation: 0)
+        )
+        XCTAssertEqual(game1.startingPosition, .standard)
+
+        let fen = "r1bqkb1r/pp1ppppp/2n2n2/8/2B1P3/2N2N2/PP3PPP/R1BQK2R b KQkq - 4 6"
+        let game2 = Game(startingWith: .init(fen: fen)!)
+
+        XCTAssertEqual(
+            game2.startingIndex,
+            .init(number: 1, color: .white, variation: 0)
+        )
+        XCTAssertEqual(game2.startingPosition, .init(fen: fen)!)
+        game2.make(move: "O-O", from: game2.startingIndex)
+        XCTAssertEqual(
+            game2.moves.nextIndex(for: game2.moves.minimumIndex),
+            .init(number: 1, color: .black, variation: 0)
+        )
+        XCTAssertEqual(
+            game2.moves.move(at: .init(number: 1, color: .black, variation: 0)),
+            .init(san: "O-O", position: .init(fen: fen)!)
+        )
+    }
+
     func testMakeMoves() {
         XCTAssertFalse(game.moves.isEmpty)
         XCTAssertEqual(game.moves[.init(number: 1, color: .white)]?.san, "e4")
@@ -80,6 +107,9 @@ class GameTests: XCTestCase {
             ),
             nf3Index
         )
+
+        XCTAssertEqual(game.moves.previousIndex(for: .minimum), .minimum)
+        XCTAssertEqual(game.moves.nextIndex(for: nc3Index), nf6Index)
     }
 
     func testMoveAnnotation() {
