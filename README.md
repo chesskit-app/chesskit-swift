@@ -11,6 +11,9 @@ For a related Swift package that contains chess engines such as [Stockfish](http
 1. Add `chesskit-swift` as a dependency
 	* In an [app built in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app),
 	* or [as a dependency to another Swift Package](https://www.swift.org/documentation/package-manager/#importing-dependencies).
+``` swift
+.package(url: "https://github.com/chesskit-app/chesskit-swift", from: "0.6.0")
+```
 
 2. Next, import `ChessKit` to use it in Swift code:
 ``` swift
