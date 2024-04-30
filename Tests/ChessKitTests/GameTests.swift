@@ -64,6 +64,15 @@ class GameTests: XCTestCase {
             .init(number: 1, color: .white, variation: 0)
         )
         XCTAssertEqual(game2.startingPosition, .init(fen: fen)!)
+        game2.make(move: "O-O", from: game2.startingIndex)
+        XCTAssertEqual(
+            game2.moves.nextIndex(for: game2.moves.minimumIndex),
+            .init(number: 1, color: .black, variation: 0)
+        )
+        XCTAssertEqual(
+            game2.moves.move(at: .init(number: 1, color: .black, variation: 0)),
+            .init(san: "O-O", position: .init(fen: fen)!)
+        )
     }
 
     func testMakeMoves() {
@@ -98,6 +107,9 @@ class GameTests: XCTestCase {
             ),
             nf3Index
         )
+
+        XCTAssertEqual(game.moves.previousIndex(for: .minimum), .minimum)
+        XCTAssertEqual(game.moves.nextIndex(for: nc3Index), nf6Index)
     }
 
     func testMoveAnnotation() {
