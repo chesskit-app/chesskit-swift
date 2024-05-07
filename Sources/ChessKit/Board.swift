@@ -226,14 +226,23 @@ public struct Board {
                     // 3 pieces -> 2 kings + minor piece = draw
                 case 0, 1, 2, 3:
                     delegate?.didEnd(with: .draw(.insufficientMaterial))
-                    
-                    // 4...20 pieces -> no knight + all bishops on same square color = draw
+
+                    // N pieces -> no knight + all bishops on same square color = draw
                 default:
                     if !position.pieces.contains(where: {$0.kind == .knight}){
                         let darkSquareBishops = position.pieces.filter({$0.kind != .king && $0.square.color == .dark}).count
                         
                         if darkSquareBishops == 0 || darkSquareBishops == (position.pieces.count - 2){
                             delegate?.didEnd(with: .draw(.insufficientMaterial))
+                        }
+                    } else {
+                        // specific 4 pieces case -> king + 2 knights VS king = draw
+                        if position.pieces.count == 4 {
+                            if !position.pieces.contains(where: {$0.kind == .bishop}){
+                                if position.pieces.filter({$0.kind == .knight && $0.color == .black}).count % 2 == 0 {
+                                    delegate?.didEnd(with: .draw(.insufficientMaterial))
+                                }
+                            }
                         }
                     }
                 }
