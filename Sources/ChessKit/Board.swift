@@ -215,6 +215,31 @@ public struct Board {
             delegate?.didEnd(with: .draw(.stalemate))
         } else if position.clock.halfmoves >= Clock.halfMoveMaximum {
             delegate?.didEnd(with: .draw(.fiftyMoves))
+            
+            // position doesn't contain any pawn/rook/queen -> possible draw
+        } else if !position.pieces.contains(where: {$0.kind == .pawn || $0.kind == .rook || $0.kind == .queen}) {
+            // 20 = 2 kings + 2 bishop on same square color + 16 pawn that can promote to bishop on same square color
+            // HIGHLY IMPROBABLE, but still possible
+            if position.pieces.count < 21 {
+                switch position.pieces.count {
+                    
+                    // 0, 1 -> impossible, but still checking
+                    // 2 pieces -> 2 kings = draw
+                    // 3 pieces -> 2 kings + minor piece = draw
+                case 0, 1, 2, 3:
+                    delegate?.didEnd(with: .draw(.insufficientMaterial))
+                    
+                    // 4...20 pieces -> no knight + all bishops on same square color = draw
+                default:
+                    if !position.pieces.contains(where: {$0.kind == .knight}){
+                        let darkSquareBishops = position.pieces.filter({$0.kind != .king && $0.square.color == .dark}).count
+                        
+                        if darkSquareBishops == 0 || darkSquareBishops == (position.pieces.count - 2){
+                            delegate?.didEnd(with: .draw(.insufficientMaterial))
+                        }
+                    }
+                }
+            }
         }
         
         // pawn promotion
