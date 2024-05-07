@@ -1,3 +1,7 @@
+# [unreleased]
+
+* Fix `MoveTree.previousIndex(for:)` when provided index is one after `minimumIndex`.
+
 # ChessKit 0.7.0
 Released Monday, April 29, 2024.
 
