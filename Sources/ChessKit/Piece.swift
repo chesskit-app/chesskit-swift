@@ -119,7 +119,7 @@ public struct Piece: Equatable, Hashable {
 
     var graphic: String {
         switch (color, kind) {
-        case (.black, .pawn):   "♟"
+        case (.black, .pawn):   "♟\u{FE0E}"
         case (.black, .bishop): "♝"
         case (.black, .knight): "♞"
         case (.black, .rook):   "♜"
