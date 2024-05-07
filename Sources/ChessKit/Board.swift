@@ -235,15 +235,6 @@ public struct Board {
                         if darkSquareBishops == 0 || darkSquareBishops == (position.pieces.count - 2){
                             delegate?.didEnd(with: .draw(.insufficientMaterial))
                         }
-                    } else {
-                        // specific 4 pieces case -> king + 2 knights VS king = draw
-                        if position.pieces.count == 4 {
-                            if !position.pieces.contains(where: {$0.kind == .bishop}){
-                                if position.pieces.filter({$0.kind == .knight && $0.color == .black}).count % 2 == 0 {
-                                    delegate?.didEnd(with: .draw(.insufficientMaterial))
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -349,7 +340,7 @@ public struct Board {
     /// - parameter square: The square to move the piece to.
     ///
     /// - returns: Whether the move is valid.
-    /// 
+    ///
     private func validate(moveFor piece: Piece, to square: Square) -> Bool {
         // attempt move in test set
         var testSet = set
