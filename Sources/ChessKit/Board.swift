@@ -218,9 +218,7 @@ public struct Board {
             
             // position doesn't contain any pawn/rook/queen -> possible draw
         } else if !position.pieces.contains(where: {$0.kind == .pawn || $0.kind == .rook || $0.kind == .queen}) {
-            // 20 = 2 kings + 2 bishop on same square color + 16 pawn that can promote to bishop on same square color
-            // HIGHLY IMPROBABLE, but still possible
-            if position.pieces.count < 21 {
+            
                 switch position.pieces.count {
                     
                     // 0, 1 -> impossible, but still checking
@@ -240,8 +238,7 @@ public struct Board {
                     }
                 }
             }
-        }
-        
+          
         // pawn promotion
         if move.piece.kind == .pawn {
             if (move.end.rank == 8 && move.piece.color == .white) ||
