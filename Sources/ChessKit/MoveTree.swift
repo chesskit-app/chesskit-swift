@@ -96,7 +96,7 @@ public struct MoveTree {
 
     /// Returns the index of the previous move given an `index`.
     public func previousIndex(for index: Index) -> Index? {
-        if index == minimumIndex {
+        if index == minimumIndex.next {
             return minimumIndex
         } else {
             return dictionary[index]?.previous?.index

@@ -108,7 +108,7 @@ class GameTests: XCTestCase {
             nf3Index
         )
 
-        XCTAssertEqual(game.moves.previousIndex(for: .minimum), .minimum)
+        XCTAssertEqual(game.moves.previousIndex(for: .minimum.next), .minimum)
         XCTAssertEqual(game.moves.nextIndex(for: nc3Index), nf6Index)
     }
 
