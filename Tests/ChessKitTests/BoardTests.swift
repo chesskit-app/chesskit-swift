@@ -327,7 +327,7 @@ class BoardTests: XCTestCase {
         XCTAssertEqual(String(describing: board),
         """
         8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
-        7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+        7 ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E}
         6 · · · · · · · ·
         5 · · · · · · · ·
         4 · · · · · · · ·
