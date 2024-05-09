@@ -19,6 +19,11 @@ extension Bitboard {
     /// Bitboard representing all the squares on the 8th rank.
     static let rank8: Bitboard = rank1 << (8 * 7)
 
+    /// Bitboard representing all the dark squares on the board.
+    static let dark: Bitboard = 0xAA55AA55AA55AA55
+    /// Bitboard representing all the light squares on the board.
+    static let light: Bitboard = ~dark
+    
     /// Translates the receiver `n` column "east" on an 8x8 grid.
     ///
     /// `n` should be in the range `[1, 7]`.
