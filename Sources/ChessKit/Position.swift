@@ -75,8 +75,8 @@ public struct Position: Equatable {
                 return true
             }
             
-            return set.knights.nonzeroBitCount == 0
-            && set.bishops.squares.allSatisfy({ $0.color == .dark || $0.color == .light })
+            return set.knights == 0
+            && ((set.bishops & .dark == 0) || (set.bishops & .light == 0))
         }
         
         return false
