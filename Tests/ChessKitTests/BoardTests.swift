@@ -137,6 +137,54 @@ class BoardTests: XCTestCase {
         waitForExpectations(timeout: 1.0)
     }
 
+    func testInsufficientMaterial() {
+        // different promotions
+        let fen = "k7/7P/8/8/8/8/8/K7 w - - 0 1"
+        
+        let validPieces: [Piece.Kind] = [.rook, .queen]
+        let invalidPieces: [Piece.Kind] = [.bishop, .knight]
+        
+        for p in validPieces {
+            var board = Board(position: .init(fen: fen)!)
+            let move = board.move(pieceAt: .h7, to: .h8)!
+            
+            board.completePromotion(of: move , to: p)
+            XCTAssertFalse(board.position.hasInsufficientMaterial())
+        }
+        
+        for p in invalidPieces {
+            var board = Board(position: .init(fen: fen)!)
+            let move = board.move(pieceAt: .h7, to: .h8)!
+            
+            board.completePromotion(of: move , to: p)
+            XCTAssertTrue(board.position.hasInsufficientMaterial())
+        }
+        
+        // opposite color bishops VS same color bishops
+        let fen2 = "k7/1b5P/8/8/8/8/8/K7 w - - 0 1"
+        let fen3 = "k7/b6P/8/8/8/8/8/K7 w - - 0 1"
+        
+        var board2 = Board(position: .init(fen: fen2)!)
+        var board3 = Board(position: .init(fen: fen3)!)
+        
+        let move2 = board2.move(pieceAt: .h7, to: .h8)!
+        let move3 = board3.move(pieceAt: .h7, to: .h8)!
+        
+        board2.completePromotion(of: move2 , to: .bishop)
+        board3.completePromotion(of: move3 , to: .bishop)
+        
+        XCTAssertFalse(board2.position.hasInsufficientMaterial())
+        XCTAssertTrue(board3.position.hasInsufficientMaterial())
+        
+        // before and after king takes Queen
+        let fen4 = "k7/1Q6/8/8/8/8/8/K7 w - - 0 1"
+        var board4 = Board(position: .init(fen: fen4)!)
+        
+        XCTAssertFalse(board4.position.hasInsufficientMaterial())
+        board4.move(pieceAt: .a8, to: .b7)
+        XCTAssertTrue(board4.position.hasInsufficientMaterial())
+    }
+    
     func testLegalMovesForNonexistentPiece() {
         let board = Board(position: .standard)
         // no piece at d4
