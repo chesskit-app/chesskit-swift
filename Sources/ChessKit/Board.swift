@@ -215,11 +215,10 @@ public struct Board {
             delegate?.didEnd(with: .draw(.stalemate))
         } else if position.clock.halfmoves >= Clock.halfMoveMaximum {
             delegate?.didEnd(with: .draw(.fiftyMoves))
-        } else if position.hasInsufficientMaterial() {
+        } else if position.hasInsufficientMaterial {
             delegate?.didEnd(with: .draw(.insufficientMaterial))
         }
-        
-        
+
         // pawn promotion
         if move.piece.kind == .pawn {
             if (move.end.rank == 8 && move.piece.color == .white) ||
@@ -547,8 +546,8 @@ extension Board {
         /// The type of draw represented on the board.
         public enum DrawType: String {
             case agreement
-            case insufficientMaterial
             case fiftyMoves
+            case insufficientMaterial
             case repetition
             case stalemate
         }

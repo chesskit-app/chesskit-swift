@@ -17,6 +17,8 @@ extension Position {
     static let castling = Position(fen: "4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1")!
 
     static let fiftyMove = Position(fen: "8/5k2/3p4/1p1Pp2p/pP2Pp1P/P4P1K/8/8 b - - 99 50")!
+
+    static let insufficientMaterial = Position(fen: "k7/1b5P/8/8/8/8/8/K7 w - - 0 1")!
 }
 
 class MockBoardDelegate: BoardDelegate {
@@ -138,6 +140,28 @@ class BoardTests: XCTestCase {
     }
 
     func testInsufficientMaterial() {
+        var board = Board(position: .insufficientMaterial)
+        let delegate = MockBoardDelegate()
+        board.delegate = delegate
+
+        var expectation: XCTestExpectation? = self.expectation(description: "Board returns insufficient material draw result")
+        delegate.didEnd = { result in
+            if case .draw(let drawType) = result {
+                if drawType == .insufficientMaterial {
+                    expectation?.fulfill()
+                    expectation = nil
+                }
+            } else {
+                XCTFail()
+            }
+        }
+
+        let move = board.move(pieceAt: .h7, to: .h8)!
+        board.completePromotion(of: move, to: .bishop)
+        waitForExpectations(timeout: 1.0)
+    }
+
+    func testInsufficientMaterialScenarios() {
         // different promotions
         let fen = "k7/7P/8/8/8/8/8/K7 w - - 0 1"
         
@@ -149,7 +173,7 @@ class BoardTests: XCTestCase {
             let move = board.move(pieceAt: .h7, to: .h8)!
             
             board.completePromotion(of: move , to: p)
-            XCTAssertFalse(board.position.hasInsufficientMaterial())
+            XCTAssertFalse(board.position.hasInsufficientMaterial)
         }
         
         for p in invalidPieces {
@@ -157,32 +181,32 @@ class BoardTests: XCTestCase {
             let move = board.move(pieceAt: .h7, to: .h8)!
             
             board.completePromotion(of: move , to: p)
-            XCTAssertTrue(board.position.hasInsufficientMaterial())
+            XCTAssertTrue(board.position.hasInsufficientMaterial)
         }
         
         // opposite color bishops VS same color bishops
-        let fen2 = "k7/1b5P/8/8/8/8/8/K7 w - - 0 1"
-        let fen3 = "k7/b6P/8/8/8/8/8/K7 w - - 0 1"
-        
+        let fen2 = "k5B1/b6P/8/8/8/8/8/K7 w - - 0 1"
+        let fen3 = "k5B1/b7/1b6/8/8/8/8/K7 w - - 0 1"
+        let fen4 = "k5B1/1b6/2b5/8/8/8/8/K7 w - - 0 1"
+
         var board2 = Board(position: .init(fen: fen2)!)
-        var board3 = Board(position: .init(fen: fen3)!)
-        
         let move2 = board2.move(pieceAt: .h7, to: .h8)!
-        let move3 = board3.move(pieceAt: .h7, to: .h8)!
-        
         board2.completePromotion(of: move2 , to: .bishop)
-        board3.completePromotion(of: move3 , to: .bishop)
-        
-        XCTAssertFalse(board2.position.hasInsufficientMaterial())
-        XCTAssertTrue(board3.position.hasInsufficientMaterial())
-        
+
+        let board3 = Board(position: .init(fen: fen3)!)
+        let board4 = Board(position: .init(fen: fen4)!)
+
+        XCTAssertFalse(board2.position.hasInsufficientMaterial)
+        XCTAssertTrue(board3.position.hasInsufficientMaterial)
+        XCTAssertTrue(board4.position.hasInsufficientMaterial)
+
         // before and after king takes Queen
-        let fen4 = "k7/1Q6/8/8/8/8/8/K7 w - - 0 1"
-        var board4 = Board(position: .init(fen: fen4)!)
-        
-        XCTAssertFalse(board4.position.hasInsufficientMaterial())
-        board4.move(pieceAt: .a8, to: .b7)
-        XCTAssertTrue(board4.position.hasInsufficientMaterial())
+        let fen5 = "k7/1Q6/8/8/8/8/8/K7 w - - 0 1"
+        var board5 = Board(position: .init(fen: fen5)!)
+
+        XCTAssertFalse(board5.position.hasInsufficientMaterial)
+        board5.move(pieceAt: .a8, to: .b7)
+        XCTAssertTrue(board5.position.hasInsufficientMaterial)
     }
     
     func testLegalMovesForNonexistentPiece() {

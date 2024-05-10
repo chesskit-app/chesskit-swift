@@ -1,3 +1,10 @@
+# [unreleased]
+
+#### Improvements
+* Add support for draw by insufficient material (by [@joee-ca](https://github.com/joee-ca)).
+  * Once this condition is reached `.draw(.insufficientMaterial)` will be published via the `BoardDelegate.didEnd(with:)` method.
+* Add unicode variant selector when printing black pawn icon to avoid displaying emoji (by [@joee-ca](https://github.com/joee-ca)).
+
 # ChessKit 0.7.1
 Released Monday, May 6, 2024.
 

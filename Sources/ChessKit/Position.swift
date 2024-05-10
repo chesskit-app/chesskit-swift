@@ -63,25 +63,7 @@ public struct Position: Equatable {
     private mutating func _toggleSideToMove() {
         sideToMove.toggle()
     }
-    
-    /// Checks if in the current position has insufficient material
-    public func hasInsufficientMaterial() -> Bool {
-        let set = self.pieceSet
-        let pawnsRooksQueens = set.pawns | set.rooks | set.queens
-        
-        if pawnsRooksQueens.nonzeroBitCount == 0 {
-            
-            if set.all.nonzeroBitCount <= 3 {
-                return true
-            }
-            
-            return set.knights == 0
-            && ((set.bishops & .dark == 0) || (set.bishops & .light == 0))
-        }
-        
-        return false
-    }
-    
+
     /// Toggle the current side to move.
     ///
     @available(*, deprecated, message: "This function no longer has any effect. `sideToMove` is toggled automatically as needed.")
@@ -195,7 +177,37 @@ public struct Position: Equatable {
     mutating func resetHalfmoveClock() {
         clock.halfmoves = 0
     }
-    
+
+    /// Indicates whether the current position has insufficient material.
+    public var hasInsufficientMaterial: Bool {
+        let set = pieceSet
+        let pawnsRooksQueens = set.pawns | set.rooks | set.queens
+
+        if pawnsRooksQueens == 0 {
+            if set.all.nonzeroBitCount <= 3 {
+                // 3 pieces in this scenario means two kings and either
+                // 1 bishop or 1 knight, i.e. insufficient material
+                return true
+            } else {
+                // check if no knights and all bishops of the same
+                // color are on the same color square, i.e. insufficient material
+                let allWBLight = set.B & .dark == 0 // all white bishops on light squares
+                let allWBDark = set.B & .light == 0 // all white bishops on dark squares
+                let allBBLight = set.b & .dark == 0 // all black bishops on light squares
+                let allBBDark = set.b & .light == 0 // all black bishops on dark squares
+
+                return set.knights == 0 && (
+                    (allWBLight && (allBBDark || allBBLight))
+                    || (allWBDark && (allBBDark || allBBLight))
+                )
+            }
+        } else {
+            // not insufficient material if pawns, rooks, or queens
+            // are on the board
+            return false
+        }
+    }
+
     /// The FEN represenation of the position.
     public var fen: String {
         FENParser.convert(position: self)
