@@ -215,7 +215,10 @@ public struct Board {
             delegate?.didEnd(with: .draw(.stalemate))
         } else if position.clock.halfmoves >= Clock.halfMoveMaximum {
             delegate?.didEnd(with: .draw(.fiftyMoves))
+        } else if position.hasInsufficientMaterial() {
+            delegate?.didEnd(with: .draw(.insufficientMaterial))
         }
+        
         
         // pawn promotion
         if move.piece.kind == .pawn {
@@ -318,7 +321,7 @@ public struct Board {
     /// - parameter square: The square to move the piece to.
     ///
     /// - returns: Whether the move is valid.
-    /// 
+    ///
     private func validate(moveFor piece: Piece, to square: Square) -> Bool {
         // attempt move in test set
         var testSet = set

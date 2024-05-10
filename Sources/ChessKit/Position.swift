@@ -63,7 +63,25 @@ public struct Position: Equatable {
     private mutating func _toggleSideToMove() {
         sideToMove.toggle()
     }
-
+    
+    /// Checks if in the current position has insufficient material
+    public func hasInsufficientMaterial() -> Bool {
+        let set = self.pieceSet
+        let pawnsRooksQueens = set.pawns | set.rooks | set.queens
+        
+        if pawnsRooksQueens.nonzeroBitCount == 0 {
+            
+            if set.all.nonzeroBitCount <= 3 {
+                return true
+            }
+            
+            return set.knights == 0
+            && ((set.bishops & .dark == 0) || (set.bishops & .light == 0))
+        }
+        
+        return false
+    }
+    
     /// Toggle the current side to move.
     ///
     @available(*, deprecated, message: "This function no longer has any effect. `sideToMove` is toggled automatically as needed.")
