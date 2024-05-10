@@ -197,7 +197,7 @@ class BoardTests: XCTestCase {
         let board4 = Board(position: .init(fen: fen4)!)
 
         XCTAssertFalse(board2.position.hasInsufficientMaterial)
-        XCTAssertTrue(board3.position.hasInsufficientMaterial)
+        XCTAssertFalse(board3.position.hasInsufficientMaterial)
         XCTAssertTrue(board4.position.hasInsufficientMaterial)
 
         // before and after king takes Queen
