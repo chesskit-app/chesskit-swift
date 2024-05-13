@@ -18,7 +18,7 @@ extension Position {
 
     static let fiftyMove = Position(fen: "8/5k2/3p4/1p1Pp2p/pP2Pp1P/P4P1K/8/8 b - - 99 50")!
 
-    static let insufficientMaterial = Position(fen: "k7/1b5P/8/8/8/8/8/K7 w - - 0 1")!
+    static let insufficientMaterial = Position(fen: "k7/b6P/8/8/8/8/8/K7 w - - 0 1")!
 }
 
 class MockBoardDelegate: BoardDelegate {
