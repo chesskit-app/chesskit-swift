@@ -189,17 +189,13 @@ public struct Position: Equatable {
                 // 1 bishop or 1 knight, i.e. insufficient material
                 return true
             } else {
-                // check if no knights and all bishops of the same
-                // color are on the same color square, i.e. insufficient material
-                let allWBLight = set.B & .dark == 0 // all white bishops on light squares
-                let allWBDark = set.B & .light == 0 // all white bishops on dark squares
-                let allBBLight = set.b & .dark == 0 // all black bishops on light squares
-                let allBBDark = set.b & .light == 0 // all black bishops on dark squares
+                // check if no knights and all bishops
+                // are on the same color square, i.e. insufficient material
+                let allBLight = set.bishops & .dark == 0 // all bishops on light squares
+                let allBDark = set.bishops & .light == 0 // all bishops on dark squares
 
-                return set.knights == 0 && (
-                    (allWBLight && (allBBDark || allBBLight))
-                    || (allWBDark && (allBBDark || allBBLight))
-                )
+                return set.knights == 0
+                && (allBLight || allBDark)
             }
         } else {
             // not insufficient material if pawns, rooks, or queens
