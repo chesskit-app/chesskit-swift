@@ -518,6 +518,10 @@ public struct Board {
         let validKing = us & set.get(.king) & castling.kingStart.bb
         let validRook = us & set.get(.rook) & castling.rookStart.bb
 
+        let pathClear = castling.path.allSatisfy {
+            set.get($0) == nil
+        }
+        
         let notCastlingThroughCheck = castling.squares.allSatisfy {
             attackers(to: $0.bb, set: set) & ~us == 0
         }
@@ -527,6 +531,7 @@ public struct Board {
         return position.legalCastlings.contains(castling)
         && validKing != 0
         && validRook != 0
+        && pathClear
         && notCastlingThroughCheck
         && notInCheck
     }
