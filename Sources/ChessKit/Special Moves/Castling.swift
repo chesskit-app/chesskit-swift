@@ -93,6 +93,14 @@ public struct Castling: Equatable, Hashable {
         }
     }
 
+    /// The squares between the king and rook that must be clear for castling.
+    var path: [Square] {
+        switch color {
+            case .white:    return (side == .queen) ? [.b1, .c1, .d1] : [.f1, .g1]
+            case .black:    return (side == .queen) ? [.b8, .c8, .d8] : [.f8, .g8]
+        }
+    }
+
     /// The starting square of the king, depending on the color.
     public var kingStart: Square {
         switch color {
