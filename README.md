@@ -73,7 +73,26 @@ if let position = Position(fen: "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB
 * Move pieces on the board
 ``` swift
 let board = Board()
+// 8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+// 7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+// 6 · · · · · · · ·
+// 5 · · · · · · · ·
+// 4 · · · · · · · ·
+// 3 · · · · · · · ·
+// 2 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+// 1 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+//   a b c d e f g h
+
 board.move(pieceAt: .e2, to: .e4)           // move pawn at e2 to e4
+// 8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+// 7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+// 6 · · · · · · · ·
+// 5 · · · · · · · ·
+// 4 · · · · ♙ · · ·
+// 3 · · · · · · · ·
+// 2 ♙ ♙ ♙ ♙ · ♙ ♙ ♙
+// 1 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+//   a b c d e f g h
 ```
 
 * Check move legality
