@@ -74,8 +74,8 @@ public struct Castling: Equatable, Hashable {
 
         var notation: String {
             switch self {
-            case .king:     return "O-O"
-            case .queen:    return "O-O-O"
+            case .king:  "O-O"
+            case .queen: "O-O-O"
             }
         }
     }
@@ -88,48 +88,48 @@ public struct Castling: Equatable, Hashable {
     /// The squares that the king will pass through when castling.
     var squares: [Square] {
         switch color {
-        case .white:    return (side == .queen) ? [.c1, .d1] : [.f1, .g1]
-        case .black:    return (side == .queen) ? [.c8, .d8] : [.f8, .g8]
+        case .white: (side == .queen) ? [.c1, .d1] : [.f1, .g1]
+        case .black: (side == .queen) ? [.c8, .d8] : [.f8, .g8]
         }
     }
 
     /// The squares between the king and rook that must be clear for castling.
     var path: [Square] {
         switch color {
-            case .white:    return (side == .queen) ? [.b1, .c1, .d1] : [.f1, .g1]
-            case .black:    return (side == .queen) ? [.b8, .c8, .d8] : [.f8, .g8]
+        case .white: (side == .queen) ? [.b1, .c1, .d1] : [.f1, .g1]
+        case .black: (side == .queen) ? [.b8, .c8, .d8] : [.f8, .g8]
         }
     }
 
     /// The starting square of the king, depending on the color.
     public var kingStart: Square {
         switch color {
-        case .white:    return .e1
-        case .black:    return .e8
+        case .white: .e1
+        case .black: .e8
         }
     }
 
     /// The ending square of the king, depending on the castle side and color.
     public var kingEnd: Square {
         switch color {
-        case .white:    return (side == .queen) ? .c1 : .g1
-        case .black:    return (side == .queen) ? .c8 : .g8
+        case .white: (side == .queen) ? .c1 : .g1
+        case .black: (side == .queen) ? .c8 : .g8
         }
     }
 
     /// The starting square of the rook, depending on the castle side and color.
     public var rookStart: Square {
         switch color {
-        case .white:    return (side == .queen) ? .a1 : .h1
-        case .black:    return (side == .queen) ? .a8 : .h8
+        case .white: (side == .queen) ? .a1 : .h1
+        case .black: (side == .queen) ? .a8 : .h8
         }
     }
 
     /// The ending square of the rook, depending on the castle side and color.
     public var rookEnd: Square {
         switch color {
-        case .white:    return (side == .queen) ? .d1 : .f1
-        case .black:    return (side == .queen) ? .d8 : .f8
+        case .white: (side == .queen) ? .d1 : .f1
+        case .black: (side == .queen) ? .d8 : .f8
         }
     }
 
@@ -138,8 +138,8 @@ public struct Castling: Equatable, Hashable {
     /// Possible values: `K`, `Q`, `k`, or `q`
     var fen: String {
         switch color {
-        case .white:    return (side == .queen) ? "Q" : "K"
-        case .black:    return (side == .queen) ? "q" : "k"
+        case .white: (side == .queen) ? "Q" : "K"
+        case .black: (side == .queen) ? "q" : "k"
         }
     }
 }
