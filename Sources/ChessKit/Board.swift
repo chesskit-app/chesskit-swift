@@ -298,7 +298,7 @@ public struct Board {
         case .bishop:
             bishopAttacks(from: piece.square, occupancy: set.all)
         case .knight:
-            knightAttacks[safe: piece.square.bb]
+            knightAttacks[piece.square.bb, default: 0]
         case .pawn:
             pawnAttacks(piece.color, from: piece.square.bb, set: set)
         }
@@ -353,10 +353,10 @@ public struct Board {
     ) -> Bitboard {
         guard let square = Square(sq) else { return 0 }
 
-        return kingAttacks[safe: sq] & set.kings
+        return kingAttacks[sq, default: 0] & set.kings
         | rookAttacks(from: square, occupancy: set.all) & set.lines
         | bishopAttacks(from: square, occupancy: set.all) & set.diagonals
-        | knightAttacks[safe: sq] & set.knights
+        | knightAttacks[sq, default: 0] & set.knights
         | pawnCaptures(.white, from: sq) & set.p
         | pawnCaptures(.black, from: sq) & set.P
     }
@@ -507,7 +507,7 @@ public struct Board {
             castleMoves.append(queenSide.kingEnd)
         }
 
-        return kingAttacks[safe: sq] + castleMoves.bb
+        return kingAttacks[sq, default: 0] + castleMoves.bb
     }
 
     /// Determines whether the king of the provided `color` can

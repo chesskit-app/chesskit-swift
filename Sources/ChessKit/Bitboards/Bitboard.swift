@@ -131,13 +131,3 @@ extension Bitboard {
         return indices.compactMap(Square.init)
     }
 }
-
-extension [Bitboard: Bitboard] {
-    /// Allows non-nil indexing of the dictionary.
-    ///
-    /// If a value is not found for the provided
-    /// key, an empty bitboard is returned.
-    subscript(safe bb: Bitboard) -> Bitboard {
-        self[bb] ?? 0
-    }
-}
