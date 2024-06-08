@@ -1,3 +1,8 @@
+# [unreleased]
+
+* Removed `CustomDebugStringConvertible` conformance from `Bitboard` to avoid affecting all `UInt64` debug prints.
+  * To print the string representation of `Bitboard` use `Bitboard.chessString()`.
+
 # ChessKit 0.8.0
 Released Friday, June 7, 2024.
 

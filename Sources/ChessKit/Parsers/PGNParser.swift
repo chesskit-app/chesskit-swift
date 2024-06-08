@@ -231,7 +231,7 @@ public class PGNParser {
         return game
     }
 
-    /// Converts a `Game` object into a PGN string.
+    /// Converts a ``Game`` object into a PGN string.
     ///
     /// - parameter game: The chess game to convert.
     /// - returns: A string containing the PGN of `game`.

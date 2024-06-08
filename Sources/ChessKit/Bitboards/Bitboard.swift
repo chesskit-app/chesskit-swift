@@ -82,11 +82,7 @@ extension Bitboard {
 
 }
 
-extension Bitboard: CustomDebugStringConvertible {
-
-    public var debugDescription: String {
-        chessString()
-    }
+extension Bitboard {
 
     /// Converts the `Bitboard` to an 8x8 board representation string.
     ///
@@ -95,6 +91,8 @@ extension Bitboard: CustomDebugStringConvertible {
     /// - parameter labelRanks: Whether or not to label ranks (i.e. 1, 2, 3, ...).
     /// - parameter labelFiles: Whether or not to label ranks (i.e. a, b, c, ...).
     /// - returns: A string representing an 8x8 chess board.
+    /// 
+    // periphery:ignore
     func chessString(
         _ occupied: Character = "⨯",
         _ empty: Character = "·",
@@ -133,15 +131,5 @@ extension Bitboard {
         }
 
         return indices.compactMap(Square.init)
-    }
-}
-
-extension [Bitboard: Bitboard] {
-    /// Allows non-nil indexing of the dictionary.
-    ///
-    /// If a value is not found for the provided
-    /// key, an empty bitboard is returned.
-    subscript(safe bb: Bitboard) -> Bitboard {
-        self[bb] ?? 0
     }
 }

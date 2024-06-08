@@ -6,7 +6,6 @@
 /// Delegate protocol that allows the implementer to receive
 /// events related to changes in position on the board such
 /// as pawn promotions and end results.
-///
 public protocol BoardDelegate: AnyObject {
     func didPromote(with move: Move)
     func didEnd(with result: Board.EndResult)
@@ -14,7 +13,6 @@ public protocol BoardDelegate: AnyObject {
 
 /// Manages the state of the chess board and validates
 /// legal moves and game rules.
-///
 public struct Board {
 
     // MARK: - Properties
@@ -49,7 +47,7 @@ public struct Board {
     /// - parameter start: The starting square of the piece.
     /// - parameter end: The ending square of the piece.
     ///
-    /// - returns: The `Move` object representing the move.
+    /// - returns: The ``Move`` object representing the move.
     ///
     /// If `start` doesn't contain a piece or `end` is not a valid legal move
     /// for the piece at `start`, `nil` is returned.
@@ -64,7 +62,6 @@ public struct Board {
     /// - Moving the king in a castling move will also move the
     /// corresponding rook.
     /// - Moving to capture a piece removes the captured piece from the board.
-    ///
     @discardableResult
     public mutating func move(pieceAt start: Square, to end: Square) -> Move? {
         guard canMove(pieceAt: start, to: end), let piece = set.get(start) else {
@@ -186,7 +183,6 @@ public struct Board {
     /// Call this when a pawn reaches the opposite side of the board
     /// and a piece to promote to is selected to complete the promotion
     /// move.
-    ///
     @discardableResult
     public mutating func completePromotion(of move: Move, to kind: Piece.Kind) -> Move {
         let promotedPiece = Piece(kind, color: move.piece.color, square: move.end)
@@ -252,7 +248,6 @@ public struct Board {
     /// For example, if two identical pieces can legally move
     /// to a given square, this method determines whether to
     /// disambiguate them by starting file, rank, or square.
-    ///
     private func disambiguate(move: Move, in set: PieceSet) -> Move {
         let movePiece = move.piece
 
@@ -298,7 +293,7 @@ public struct Board {
         case .bishop:
             bishopAttacks(from: piece.square, occupancy: set.all)
         case .knight:
-            knightAttacks[safe: piece.square.bb]
+            knightAttacks[piece.square.bb, default: 0]
         case .pawn:
             pawnAttacks(piece.color, from: piece.square.bb, set: set)
         }
@@ -353,10 +348,10 @@ public struct Board {
     ) -> Bitboard {
         guard let square = Square(sq) else { return 0 }
 
-        return kingAttacks[safe: sq] & set.kings
+        return kingAttacks[sq, default: 0] & set.kings
         | rookAttacks(from: square, occupancy: set.all) & set.lines
         | bishopAttacks(from: square, occupancy: set.all) & set.diagonals
-        | knightAttacks[safe: sq] & set.knights
+        | knightAttacks[sq, default: 0] & set.knights
         | pawnCaptures(.white, from: sq) & set.p
         | pawnCaptures(.black, from: sq) & set.P
     }
@@ -384,8 +379,7 @@ public struct Board {
     /// - parameter set: The set of pieces active on the board.
     /// - returns: A bitboard of the possible non-capturing pawn moves.
     ///
-    /// For the purposes of `Board`, en-passant is considered a non-capturing move.
-    ///
+    /// For the purposes of ``Board``, en-passant is considered a non-capturing move.
     private func pawnMoves(
         _ color: Piece.Color,
         from sq: Bitboard,
@@ -430,8 +424,7 @@ public struct Board {
     ///
     /// - returns: A bitboard of the possible capturing pawn moves.
     ///
-    /// For the purposes of `Board`, en-passant is not considered a capturing move.
-    ///
+    /// For the purposes of ``Board``, en-passant is not considered a capturing move.
     private func pawnCaptures(
         _ color: Piece.Color,
         from sq: Bitboard
@@ -507,7 +500,7 @@ public struct Board {
             castleMoves.append(queenSide.kingEnd)
         }
 
-        return kingAttacks[safe: sq] + castleMoves.bb
+        return kingAttacks[sq, default: 0] + castleMoves.bb
     }
 
     /// Determines whether the king of the provided `color` can

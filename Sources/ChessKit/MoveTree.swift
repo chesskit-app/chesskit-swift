@@ -23,14 +23,13 @@ public struct MoveTree {
     /// move exists at that index.
     ///
     /// This value can also be accessed using a subscript on
-    /// the `MoveTree` directly,
+    /// the ``MoveTree`` directly,
     /// e.g. `tree[.init(number: 2, color: .white)]`
-    ///
     public func move(at index: Index) -> Move? {
         dictionary[index]?.move
     }
 
-    /// Subscript implementation for `MoveTree`.
+    /// Subscript implementation for ``MoveTree``.
     ///
     /// This method returns the same value as `move(at:)`.
     public subscript(_ index: Index) -> Move? {
@@ -57,6 +56,7 @@ public struct MoveTree {
     /// move is set to the `head` of the move tree.
     ///
     /// - returns: The move index resulting from the addition of the move.
+    ///
     @discardableResult
     public mutating func add(
         move: Move,
@@ -262,7 +262,7 @@ public struct MoveTree {
         return results
     }
 
-    /// The direction of the `MoveTree` path.
+    /// The direction of the ``MoveTree`` path.
     public enum PathDirection {
         /// Move forward (i.e. perform a move).
         case forward
@@ -280,6 +280,7 @@ public struct MoveTree {
     /// - parameter index: The index of the move to annotate.
     /// - parameter assessment: The move to annotate the move with.
     /// - parameter comment: The comment to annotate the move with.
+    ///
     public mutating func annotate(
         moveAt index: MoveTree.Index,
         assessment: Move.Assessment = .null,
@@ -335,7 +336,7 @@ public struct MoveTree {
         return result
     }
 
-    /// Returns the `MoveTree` as an array of PGN
+    /// Returns the ``MoveTree`` as an array of PGN
     /// (Portable Game Format) elements.
     public var pgnRepresentation: [PGNElement] {
         pgn(for: root)
@@ -383,7 +384,7 @@ extension MoveTree {
 
 extension MoveTree {
 
-    /// An element for representing the `MoveTree` in
+    /// An element for representing the ``MoveTree`` in
     /// PGN (Portable Game Notation) format.
     public enum PGNElement: Hashable, Equatable {
         /// e.g. `1.`

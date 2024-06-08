@@ -23,7 +23,6 @@ struct EnPassant: Equatable, Hashable {
     /// same rank as the target pawn and exactly 1 file away from the
     /// target pawn for this method to return `true`, otherwise `false`
     /// is returned.
-    ///
     func canBeCaptured(by capturingPiece: Piece) -> Bool {
         capturingPiece.kind == .pawn &&
         capturingPiece.color == pawn.color.opposite &&

@@ -5,7 +5,6 @@
 
 /// Parses and converts the Standard Algebraic Notation (SAN)
 /// of a chess move.
-///
 public class SANParser {
     
     private init() {}
@@ -19,7 +18,6 @@ public class SANParser {
     ///
     /// Make sure the provided `position` has the correct `sideToMove`
     /// set or the parsing may fail due to invalid moves.
-    ///
     public static func parse(
         move san: String,
         in position: Position
@@ -139,7 +137,7 @@ public class SANParser {
         return nil
     }
     
-    /// Converts a `Move` object into a SAN string.
+    /// Converts a ``Move`` object into a SAN string.
     ///
     /// - parameter move: The chess move to convert.
     /// - returns: A string containing the SAN of `move`.
@@ -240,7 +238,6 @@ public class SANParser {
     /// If multiple pieces of the same type can move to the target
     /// square, the SAN contains a disambiguating file, rank, or square
     /// so the piece that is moving can be determined.
-    ///
     private static func disambiguation(for san: String) -> Move.Disambiguation? {
         guard let range = san.range(of: Regex.disambiguation, options: .regularExpression) else {
             return nil
