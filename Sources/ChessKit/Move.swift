@@ -120,16 +120,16 @@ extension Move {
         /// The human-readable move assessment notation.
         public var notation: String {
             switch self {
-            case .null:         return ""
-            case .good:         return "!"
-            case .mistake:      return "?"
-            case .brilliant:    return "!!"
-            case .blunder:      return "??"
-            case .interesting:  return "!?"
-            case .dubious:      return "?!"
-            case .forced:       return "□"
-            case .singular:     return ""
-            case .worst:        return ""
+            case .null:        ""
+            case .good:        "!"
+            case .mistake:     "?"
+            case .brilliant:   "!!"
+            case .blunder:     "??"
+            case .interesting: "!?"
+            case .dubious:     "?!"
+            case .forced:      "□"
+            case .singular:    ""
+            case .worst:       ""
             }
         }
     }

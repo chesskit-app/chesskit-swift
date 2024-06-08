@@ -29,12 +29,12 @@ public struct Piece: Equatable, Hashable {
         /// The notation of the given piece kind.
         public var notation: String {
             switch self {
-            case .pawn:             return ""
-            case .bishop:           return "B"
-            case .knight:           return "N"
-            case .rook:             return "R"
-            case .queen:            return "Q"
-            case .king:             return "K"
+            case .pawn:   ""
+            case .bishop: "B"
+            case .knight: "N"
+            case .rook:   "R"
+            case .queen:  "Q"
+            case .king:   "K"
             }
         }
 
@@ -67,32 +67,19 @@ public struct Piece: Equatable, Hashable {
     ///
     init?(fen: String, square: Square) {
         switch fen {
-        case "p":
-            self = Piece(.pawn,   color: .black, square: square)
-        case "b":
-            self = Piece(.bishop, color: .black, square: square)
-        case "n":
-            self = Piece(.knight, color: .black, square: square)
-        case "r":
-            self = Piece(.rook,   color: .black, square: square)
-        case "q":
-            self = Piece(.queen,  color: .black, square: square)
-        case "k":
-            self = Piece(.king,   color: .black, square: square)
-        case "P":
-            self = Piece(.pawn,   color: .white, square: square)
-        case "B":
-            self = Piece(.bishop, color: .white, square: square)
-        case "N":
-            self = Piece(.knight, color: .white, square: square)
-        case "R":
-            self = Piece(.rook,   color: .white, square: square)
-        case "Q":
-            self = Piece(.queen,  color: .white, square: square)
-        case "K":
-            self = Piece(.king,   color: .white, square: square)
-        default:
-            return nil
+        case "p": self = Piece(.pawn,   color: .black, square: square)
+        case "b": self = Piece(.bishop, color: .black, square: square)
+        case "n": self = Piece(.knight, color: .black, square: square)
+        case "r": self = Piece(.rook,   color: .black, square: square)
+        case "q": self = Piece(.queen,  color: .black, square: square)
+        case "k": self = Piece(.king,   color: .black, square: square)
+        case "P": self = Piece(.pawn,   color: .white, square: square)
+        case "B": self = Piece(.bishop, color: .white, square: square)
+        case "N": self = Piece(.knight, color: .white, square: square)
+        case "R": self = Piece(.rook,   color: .white, square: square)
+        case "Q": self = Piece(.queen,  color: .white, square: square)
+        case "K": self = Piece(.king,   color: .white, square: square)
+        default:  return nil
         }
     }
 

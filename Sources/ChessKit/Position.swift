@@ -194,8 +194,7 @@ public struct Position: Equatable {
                 let allBLight = set.bishops & .dark == 0 // all bishops on light squares
                 let allBDark = set.bishops & .light == 0 // all bishops on dark squares
 
-                return set.knights == 0
-                && (allBLight || allBDark)
+                return set.knights == 0 && (allBLight || allBDark)
             }
         } else {
             // not insufficient material if pawns, rooks, or queens
