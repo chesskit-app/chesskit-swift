@@ -15,7 +15,6 @@ public enum Square: Int, Equatable, CaseIterable {
         /// Square.File.a.number // 1
         /// Square.File.h.number // 8
         /// ```
-        ///
         public var number: Int {
             File.allCases.firstIndex(of: self)! + 1
         }
@@ -28,7 +27,6 @@ public enum Square: Int, Equatable, CaseIterable {
         /// greater than 8, the file is set to `.a`.
         ///
         /// See also `Square.File.number`.
-        ///
         public init(_ number: Int) {
             switch number {
             case 1:   self = .a
@@ -93,71 +91,71 @@ public enum Square: Int, Equatable, CaseIterable {
     ///
     init(_ file: File, _ rank: Rank) {
         switch (file, rank) {
-        case (.a, 1):   self = .a1
-        case (.a, 2):   self = .a2
-        case (.a, 3):   self = .a3
-        case (.a, 4):   self = .a4
-        case (.a, 5):   self = .a5
-        case (.a, 6):   self = .a6
-        case (.a, 7):   self = .a7
-        case (.a, 8):   self = .a8
-        case (.b, 1):   self = .b1
-        case (.b, 2):   self = .b2
-        case (.b, 3):   self = .b3
-        case (.b, 4):   self = .b4
-        case (.b, 5):   self = .b5
-        case (.b, 6):   self = .b6
-        case (.b, 7):   self = .b7
-        case (.b, 8):   self = .b8
-        case (.c, 1):   self = .c1
-        case (.c, 2):   self = .c2
-        case (.c, 3):   self = .c3
-        case (.c, 4):   self = .c4
-        case (.c, 5):   self = .c5
-        case (.c, 6):   self = .c6
-        case (.c, 7):   self = .c7
-        case (.c, 8):   self = .c8
-        case (.d, 1):   self = .d1
-        case (.d, 2):   self = .d2
-        case (.d, 3):   self = .d3
-        case (.d, 4):   self = .d4
-        case (.d, 5):   self = .d5
-        case (.d, 6):   self = .d6
-        case (.d, 7):   self = .d7
-        case (.d, 8):   self = .d8
-        case (.e, 1):   self = .e1
-        case (.e, 2):   self = .e2
-        case (.e, 3):   self = .e3
-        case (.e, 4):   self = .e4
-        case (.e, 5):   self = .e5
-        case (.e, 6):   self = .e6
-        case (.e, 7):   self = .e7
-        case (.e, 8):   self = .e8
-        case (.f, 1):   self = .f1
-        case (.f, 2):   self = .f2
-        case (.f, 3):   self = .f3
-        case (.f, 4):   self = .f4
-        case (.f, 5):   self = .f5
-        case (.f, 6):   self = .f6
-        case (.f, 7):   self = .f7
-        case (.f, 8):   self = .f8
-        case (.g, 1):   self = .g1
-        case (.g, 2):   self = .g2
-        case (.g, 3):   self = .g3
-        case (.g, 4):   self = .g4
-        case (.g, 5):   self = .g5
-        case (.g, 6):   self = .g6
-        case (.g, 7):   self = .g7
-        case (.g, 8):   self = .g8
-        case (.h, 1):   self = .h1
-        case (.h, 2):   self = .h2
-        case (.h, 3):   self = .h3
-        case (.h, 4):   self = .h4
-        case (.h, 5):   self = .h5
-        case (.h, 6):   self = .h6
-        case (.h, 7):   self = .h7
-        case (.h, 8):   self = .h8
-        default:        self = .a1
+        case (.a, 1): self = .a1
+        case (.a, 2): self = .a2
+        case (.a, 3): self = .a3
+        case (.a, 4): self = .a4
+        case (.a, 5): self = .a5
+        case (.a, 6): self = .a6
+        case (.a, 7): self = .a7
+        case (.a, 8): self = .a8
+        case (.b, 1): self = .b1
+        case (.b, 2): self = .b2
+        case (.b, 3): self = .b3
+        case (.b, 4): self = .b4
+        case (.b, 5): self = .b5
+        case (.b, 6): self = .b6
+        case (.b, 7): self = .b7
+        case (.b, 8): self = .b8
+        case (.c, 1): self = .c1
+        case (.c, 2): self = .c2
+        case (.c, 3): self = .c3
+        case (.c, 4): self = .c4
+        case (.c, 5): self = .c5
+        case (.c, 6): self = .c6
+        case (.c, 7): self = .c7
+        case (.c, 8): self = .c8
+        case (.d, 1): self = .d1
+        case (.d, 2): self = .d2
+        case (.d, 3): self = .d3
+        case (.d, 4): self = .d4
+        case (.d, 5): self = .d5
+        case (.d, 6): self = .d6
+        case (.d, 7): self = .d7
+        case (.d, 8): self = .d8
+        case (.e, 1): self = .e1
+        case (.e, 2): self = .e2
+        case (.e, 3): self = .e3
+        case (.e, 4): self = .e4
+        case (.e, 5): self = .e5
+        case (.e, 6): self = .e6
+        case (.e, 7): self = .e7
+        case (.e, 8): self = .e8
+        case (.f, 1): self = .f1
+        case (.f, 2): self = .f2
+        case (.f, 3): self = .f3
+        case (.f, 4): self = .f4
+        case (.f, 5): self = .f5
+        case (.f, 6): self = .f6
+        case (.f, 7): self = .f7
+        case (.f, 8): self = .f8
+        case (.g, 1): self = .g1
+        case (.g, 2): self = .g2
+        case (.g, 3): self = .g3
+        case (.g, 4): self = .g4
+        case (.g, 5): self = .g5
+        case (.g, 6): self = .g6
+        case (.g, 7): self = .g7
+        case (.g, 8): self = .g8
+        case (.h, 1): self = .h1
+        case (.h, 2): self = .h2
+        case (.h, 3): self = .h3
+        case (.h, 4): self = .h4
+        case (.h, 5): self = .h5
+        case (.h, 6): self = .h6
+        case (.h, 7): self = .h7
+        case (.h, 8): self = .h8
+        default:      self = .a1
         }
     }
 

@@ -10,7 +10,6 @@
 /// ```
 /// "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 /// ```
-///
 public class FENParser {
 
     private init() {}
@@ -113,7 +112,7 @@ public class FENParser {
         )
     }
 
-    /// Converts a `Position` object into a FEN string.
+    /// Converts a ``Position`` object into a FEN string.
     ///
     /// - parameter position: The chess position to convert.
     /// - returns: A string containing the FEN of `position`.

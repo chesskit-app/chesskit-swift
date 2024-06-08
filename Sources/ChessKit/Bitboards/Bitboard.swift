@@ -91,6 +91,8 @@ extension Bitboard {
     /// - parameter labelRanks: Whether or not to label ranks (i.e. 1, 2, 3, ...).
     /// - parameter labelFiles: Whether or not to label ranks (i.e. a, b, c, ...).
     /// - returns: A string representing an 8x8 chess board.
+    /// 
+    // periphery:ignore
     func chessString(
         _ occupied: Character = "⨯",
         _ empty: Character = "·",

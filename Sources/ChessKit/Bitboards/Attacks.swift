@@ -5,7 +5,6 @@
 
 /// Stores pre-generated pseudo-legal attack bitboards
 /// for non-pawn piece types.
-///
 struct Attacks {
 
     /// Cached king attacks, the dictionary key
@@ -141,7 +140,6 @@ struct Attacks {
     ///
     /// Uses a similar techique as Stockfish (see [`Stockfish/init_magics`](https://github.com/official-stockfish/Stockfish/blob/0716b845fdef8a20102b07eaec074b8da8162523/src/bitboard.cpp#L139)) except with hardcoded magics rather than
     /// seeded random generation.
-    ///
     private static func createMagics(for kind: Piece.Kind) {
         guard let magicNumbers = magicNumbers[kind] else { return }
 
@@ -280,7 +278,6 @@ struct Attacks {
 
 /// Stores the magic factors and attacks for a given piece
 /// type (bishop or rook) and square (a1-h8).
-///
 struct Magic {
     /// The magic number used to compute the hash key.
     fileprivate var magic: Bitboard

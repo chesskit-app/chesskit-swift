@@ -11,7 +11,7 @@ struct LegalCastlings: Equatable {
     /// Initialize a `LegalCastlings` struct with an
     /// array of legal castling moves.
     ///
-    /// - parameter legal: An array of legal `Castling` moves.
+    /// - parameter legal: An array of legal ``Castling`` moves.
     ///
     init(legal: [Castling] = [.bK, .wK, .bQ, .wQ]) {
         self.legal = legal
@@ -25,7 +25,6 @@ struct LegalCastlings: Equatable {
     ///
     /// For example, if a king has moved, pass the king piece to this
     /// method to remove any castlings associated with that king.
-    ///
     mutating func invalidateCastling(for piece: Piece) {
         if piece.kind == .king {
             legal.removeAll { $0.color == piece.color }

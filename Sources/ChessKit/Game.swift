@@ -10,7 +10,6 @@ import Foundation
 /// This object is the entry point for interacting with a full
 /// chess game within `ChessKit`. It provides methods for
 /// making moves and publishes the played moves in an observable way.
-///
 public class Game: ObservableObject {
 
     // MARK: - Properties
@@ -77,13 +76,12 @@ public class Game: ObservableObject {
     /// it will attempt to make the move defined by `move` by moving
     /// pieces at the provided starting/ending squares and making any
     /// necessary captures, promotions, etc. It is the responsibility
-    /// of the caller to ensure the move is legal, see the `Board` struct.
+    /// of the caller to ensure the move is legal, see the ``Board`` struct.
     ///
     /// If `move` is the same as the upcoming move in the
     /// current variation of `index`, the move is not made, otherwise
     /// another variation with the same first move as the existing one
     /// would be created.
-    ///
     @discardableResult
     public func make(
         move: Move,
@@ -136,8 +134,7 @@ public class Game: ObservableObject {
     /// it will attempt to make the move defined by `moveString` by moving
     /// pieces at the provided starting/ending squares and making any
     /// necessary captures, promotions, etc. It is the responsibility
-    /// of the caller to ensure the move is legal, see the `Board` struct.
-    ///
+    /// of the caller to ensure the move is legal, see the ``Board`` struct.
     @discardableResult
     public func make(
         move moveString: String,
@@ -165,8 +162,7 @@ public class Game: ObservableObject {
     /// it will attempt to make the moves defined by `moveStrings` by moving
     /// pieces at the provided starting/ending squares and making any
     /// necessary captures, promotions, etc. It is the responsibility
-    /// of the caller to ensure the moves are legal, see the `Board` struct.
-    ///
+    /// of the caller to ensure the moves are legal, see the ``Board`` struct.
     @discardableResult
     public func make(
         moves moveStrings: [String],
@@ -183,7 +179,7 @@ public class Game: ObservableObject {
 
     /// Annotates the move at the provided `index`.
     ///
-    /// - parameter index: The index of the move within the `MoveTree`.
+    /// - parameter index: The index of the move within the ``MoveTree``.
     /// - parameter assessment: The move assessment annotation.
     /// - parameter comment: The move comment annotation.
     /// 

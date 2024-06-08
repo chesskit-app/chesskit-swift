@@ -59,13 +59,11 @@ public struct Position: Equatable {
     }
 
     /// Toggle the current side to move.
-    ///
     private mutating func _toggleSideToMove() {
         sideToMove.toggle()
     }
 
     /// Toggle the current side to move.
-    ///
     @available(*, deprecated, message: "This function no longer has any effect. `sideToMove` is toggled automatically as needed.")
     public mutating func toggleSideToMove() {
 
@@ -152,7 +150,6 @@ public struct Position: Equatable {
     /// - parameter piece: The piece to remove from the position.
     ///
     /// If the piece is not currently located in the position, this method has no effect.
-    ///
     mutating func remove(_ piece: Piece) {
         pieceSet.remove(piece)
     }
@@ -165,7 +162,6 @@ public struct Position: Equatable {
     /// If a piece is not found at the given square, this method has no effect.
     /// This method contains no logic to determine if the piece can be legally
     /// promoted, and such checks should be done before calling this method.
-    ///
     mutating func promote(pieceAt square: Square, to kind: Piece.Kind) {
         guard let piece = pieceSet.get(square) else { return }
         pieceSet.replace(kind, for: piece)

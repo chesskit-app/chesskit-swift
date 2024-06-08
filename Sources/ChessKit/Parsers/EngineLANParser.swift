@@ -17,7 +17,6 @@
 ///
 /// See [UCI protocol documentation](https://backscattering.de/chess/uci/2006-04.txt)
 /// for more information.
-///
 public class EngineLANParser {
 
     private init() {}
@@ -32,7 +31,6 @@ public class EngineLANParser {
     ///
     /// This parser does not look for checks or checkmates,
     /// i.e. the move's `checkState` will always be `.none`.
-    ///
     public static func parse(
         move lan: String,
         for color: Piece.Color,
@@ -88,7 +86,7 @@ public class EngineLANParser {
         return move
     }
 
-    /// Converts a `Move` object into an engine LAN string.
+    /// Converts a ``Move`` object into an engine LAN string.
     ///
     /// - parameter move: The chess move to convert.
     /// - returns: A string containing the engine LAN of `move`.
