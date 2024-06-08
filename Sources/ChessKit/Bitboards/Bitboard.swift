@@ -82,11 +82,7 @@ extension Bitboard {
 
 }
 
-extension Bitboard: CustomDebugStringConvertible {
-
-    public var debugDescription: String {
-        chessString()
-    }
+extension Bitboard {
 
     /// Converts the `Bitboard` to an 8x8 board representation string.
     ///
