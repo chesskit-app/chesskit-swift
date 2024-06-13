@@ -29,23 +29,9 @@ public struct MoveTree {
         dictionary[index]?.move
     }
 
-    /// Subscript implementation for ``MoveTree``.
-    ///
-    /// This method returns the same value as `move(at:)`.
-    public subscript(_ index: Index) -> Move? {
-        get {
-            move(at: index)
-        }
-        set {
-            if let newValue {
-                dictionary[index]?.move = newValue
-            }
-        }
-    }
-
-    /// The indices of all the moves stored in the tree.
-    public var indices: [Index] {
-        Array(dictionary.keys)
+    /// A set containing the indices of all the moves stored in the tree.
+    public var indices: Set<Index> {
+        Set(dictionary.keys)
     }
 
     /// Adds a move to the move tree.
@@ -139,9 +125,9 @@ public struct MoveTree {
     /// For chess this would represent an array of all the move indices
     /// from the starting move until the move defined by `index`, accounting
     /// for any branching variations in between.
-    public func history(for index: Index) -> [MoveTree.Index] {
+    public func history(for index: Index) -> [Index] {
         var currentNode = dictionary[index]
-        var history: [MoveTree.Index] = []
+        var history: [Index] = []
 
         while currentNode != nil {
             if let node = currentNode {
@@ -162,9 +148,9 @@ public struct MoveTree {
     /// For chess this would represent an array of all the move indices
     /// from the move after the move defined by `index` to the last move
     /// of the variation.
-    public func future(for index: Index) -> [MoveTree.Index] {
+    public func future(for index: Index) -> [Index] {
         var currentNode = dictionary[index]
-        var future: [MoveTree.Index] = []
+        var future: [Index] = []
 
         while currentNode != nil {
             currentNode = currentNode?.next
@@ -180,7 +166,7 @@ public struct MoveTree {
     /// Returns the full variation for a move at the provided `index`.
     ///
     /// This returns the sum of `history(for:)` and `future(for:)`.
-    public func fullVariation(for index: Index) -> [MoveTree.Index] {
+    public func fullVariation(for index: Index) -> [Index] {
         history(for: index) + future(for: index)
     }
 
@@ -218,8 +204,8 @@ public struct MoveTree {
     public func path(
         from startIndex: Index,
         to endIndex: Index
-    ) -> [(PathDirection, MoveTree.Index)] {
-        var results = [(PathDirection, MoveTree.Index)]()
+    ) -> [(PathDirection, Index)] {
+        var results = [(PathDirection, Index)]()
         let startHistory = history(for: startIndex)
         let endHistory = history(for: endIndex)
 
@@ -282,7 +268,7 @@ public struct MoveTree {
     /// - parameter comment: The comment to annotate the move with.
     ///
     public mutating func annotate(
-        moveAt index: MoveTree.Index,
+        moveAt index: Index,
         assessment: Move.Assessment = .null,
         comment: String = ""
     ) {
@@ -361,7 +347,7 @@ extension MoveTree {
         /// The move for this node.
         var move: Move
         /// The index for this node.
-        var index: MoveTree.Index = .minimum
+        var index: Index = .minimum
         /// The previous node.
         var previous: Node?
         /// The next node.
@@ -374,8 +360,8 @@ extension MoveTree {
         }
 
         // MARK: Equatable
-        static func == (lhs: MoveTree.Node, rhs: MoveTree.Node) -> Bool {
-            lhs.index == rhs.index
+        static func == (lhs: Node, rhs: Node) -> Bool {
+            lhs.index == rhs.index && lhs.move == rhs.move
         }
 
     }
@@ -399,4 +385,51 @@ extension MoveTree {
         case variationEnd
     }
 
+}
+
+extension MoveTree: Collection {
+
+    public typealias Index = MoveTreeIndex
+
+    public var startIndex: Index { minimumIndex }
+
+    public var endIndex: Index {
+        #warning("implement this")
+        return minimumIndex
+    }
+
+    /// Subscript implementation for ``MoveTree``.
+    ///
+    /// This method returns the same value as `move(at:)` and
+    /// can also be used to set the `move` for `index`.
+    public subscript(_ index: Index) -> Move? {
+        get {
+            move(at: index)
+        }
+        set {
+            if let newValue {
+                dictionary[index]?.move = newValue
+            }
+        }
+    }
+
+    public func index(after i: Index) -> Index {
+        nextIndex(for: i) ?? i
+    }
+
+}
+
+extension MoveTree: BidirectionalCollection {
+
+    public func index(before i: Index) -> Index {
+        previousIndex(for: i) ?? i
+    }
+
+}
+
+extension MoveTreeIndex: Comparable {
+    public static func < (lhs: MoveTreeIndex, rhs: MoveTreeIndex) -> Bool {
+        #warning("implement this")
+        return true
+    }
 }

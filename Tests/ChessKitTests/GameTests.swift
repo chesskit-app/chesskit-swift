@@ -12,12 +12,12 @@ class GameTests: XCTestCase {
 
     // MARK: - Indices used in tests
 
-    private let nf3Index = MoveTree.Index(number: 2, color: .white, variation: 0)
-    private let nc3Index = MoveTree.Index(number: 2, color: .white, variation: 1)
-    private let nf6Index = MoveTree.Index(number: 2, color: .black, variation: 1)
-    private let nc6Index = MoveTree.Index(number: 2, color: .black, variation: 2)
-    private let nc6Index2 = MoveTree.Index(number: 2, color: .black, variation: 0)
-    private let f5Index = MoveTree.Index(number: 2, color: .black, variation: 3)
+    private let nf3Index = MoveTreeIndex(number: 2, color: .white, variation: 0)
+    private let nc3Index = MoveTreeIndex(number: 2, color: .white, variation: 1)
+    private let nf6Index = MoveTreeIndex(number: 2, color: .black, variation: 1)
+    private let nc6Index = MoveTreeIndex(number: 2, color: .black, variation: 2)
+    private let nc6Index2 = MoveTreeIndex(number: 2, color: .black, variation: 0)
+    private let f5Index = MoveTreeIndex(number: 2, color: .black, variation: 3)
 
     // MARK: - Setup
 
@@ -153,8 +153,8 @@ class GameTests: XCTestCase {
 
     func testMoveTreeSimplePath() {
         // "1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4"
-        let f4 = MoveTree.Index(number: 3, color: .white, variation: 2)
-        let e5 = MoveTree.Index(number: 1, color: .black, variation: 0)
+        let f4 = MoveTreeIndex(number: 3, color: .white, variation: 2)
+        let e5 = MoveTreeIndex(number: 1, color: .black, variation: 0)
 
         // 3. f4 to 1. e5
         let path1 = game.moves.path(from: f4, to: e5)
@@ -194,8 +194,8 @@ class GameTests: XCTestCase {
     func testMoveTreeComplexPath() {
         // "1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4"
         // 3. f4 to 3. Bc4
-        let f4 = MoveTree.Index(number: 3, color: .white, variation: 2)
-        let Bc4 = MoveTree.Index(number: 3, color: .white, variation: 0)
+        let f4 = MoveTreeIndex(number: 3, color: .white, variation: 2)
+        let Bc4 = MoveTreeIndex(number: 3, color: .white, variation: 0)
         let path = game.moves.path(from: f4, to: Bc4)
 
         XCTAssertEqual(

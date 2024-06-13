@@ -1,5 +1,13 @@
 # [unreleased]
 
+### Improvements
+* `MoveTree` now conforms to `BidirectionalCollection`, allowing for more standard collection-based semantics in Swift.
+  * Should not affect any existing functionality or API usage.
+  * `MoveTree.Index` has been renamed to `MoveTreeIndex`.
+  * Due to the aforementioned collection conformance, renames are not required in existing code. Going forward either `MoveTreeIndex` or `MoveTree.Index` can be used interchangeably.
+  * `indices` is now a `Set` instead of an `Array` for faster `contains` lookups, etc.
+
+### Bug Fixes
 * Removed `CustomDebugStringConvertible` conformance from `Bitboard` to avoid affecting all `UInt64` debug prints.
   * To print the string representation of `Bitboard` use `Bitboard.chessString()`.
 
