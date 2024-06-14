@@ -26,9 +26,9 @@ extension MoveTree {
     )
     public func previousIndex(for index: Index) -> Index? {
         if index == minimumIndex.next {
-            return minimumIndex
+            minimumIndex
         } else {
-            return dictionary[index]?.previous?.index
+            dictionary[index]?.previous?.index
         }
     }
 
@@ -40,9 +40,9 @@ extension MoveTree {
     )
     public func nextIndex(for index: Index) -> Index? {
         if index == minimumIndex {
-            return dictionary[minimumIndex.next]?.index
+            dictionary[minimumIndex.next]?.index
         } else {
-            return dictionary[index]?.next?.index
+            dictionary[index]?.next?.index
         }
     }
 }

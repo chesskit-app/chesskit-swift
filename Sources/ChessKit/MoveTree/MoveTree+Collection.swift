@@ -28,10 +28,16 @@ extension MoveTree: Collection {
 
 extension MoveTree: BidirectionalCollection {
 
+    /// Returns the previous index in the move tree based on `i`.
+    ///
+    /// If there is no previous index, `i` is returned.
+    /// Use `hasIndex(before:)` to check whether a valid index
+    /// before `i` exists.
     public func index(before i: Index) -> Index {
         _previousIndex(for: i) ?? i
     }
 
+    /// Returns `true` if a valid index before `i` exists.
     public func hasIndex(before i: Index) -> Bool {
         _previousIndex(for: i) != nil
     }
@@ -44,17 +50,23 @@ extension MoveTree: BidirectionalCollection {
         }
     }
 
+    /// Returns the next index in the move tree based on `i`.
+    ///
+    /// If there is no next index, `i` is returned.
+    /// Use `hasIndex(after:)` to check whether a valid index
+    /// after `i` exists.
     public func index(after i: Index) -> Index {
         _nextIndex(for: i) ?? i
     }
 
+    /// Returns `true` if a valid index after `i` exists.
     public func hasIndex(after i: Index) -> Bool {
         _nextIndex(for: i) != nil
     }
 
     private func _nextIndex(for index: Index) -> Index? {
         if index == minimumIndex {
-            dictionary[index.next]?.index
+            dictionary[minimumIndex.next]?.index
         } else {
             dictionary[index]?.next?.index
         }

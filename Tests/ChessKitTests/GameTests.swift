@@ -122,7 +122,7 @@ class GameTests: XCTestCase {
         )
     }
 
-    func testMoveIndexHistory() {
+    func testMoveHistory() {
         let f5History = game.moves.history(for: f5Index)
 
         XCTAssertEqual(
@@ -134,7 +134,7 @@ class GameTests: XCTestCase {
         )
     }
 
-    func testMoveIndexFuture() {
+    func testMoveFuture() {
         let f5Future = game.moves.future(for: f5Index)
 
         XCTAssertEqual(
@@ -143,7 +143,7 @@ class GameTests: XCTestCase {
         )
     }
 
-    func testMoveIndexFullVariation() {
+    func testMoveFullVariation() {
         let f5History = game.moves.history(for: f5Index)
         let f5Future = game.moves.future(for: f5Index)
 

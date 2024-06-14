@@ -23,8 +23,8 @@ public struct MoveTree {
     private var root: Node?
 
     /// A set containing the indices of all the moves stored in the tree.
-    public var indices: Set<Index> {
-        Set(dictionary.keys)
+    public var indices: [Index] {
+        Array(dictionary.keys)
     }
 
     /// Adds a move to the move tree.
