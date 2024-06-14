@@ -3,8 +3,8 @@
 //  ChessKit
 //
 
-import XCTest
 @testable import ChessKit
+import XCTest
 
 class CastlingTests: XCTestCase {
 

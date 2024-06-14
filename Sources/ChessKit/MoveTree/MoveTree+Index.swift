@@ -20,11 +20,11 @@ extension MoveTree {
         ///
         /// A `variation` equal to `MoveTreeIndex.mainVariation` is assumed to be the
         /// main variation in a move tree.
-        public var variation: Int = Self.mainVariation
+        public var variation: Int = mainVariation
 
         /// Creates a `MoveTreeIndex` with a given `number`, `color`,
         /// and `variation` (default is `0`).
-        public init(number: Int, color: Piece.Color, variation: Int = Self.mainVariation) {
+        public init(number: Int, color: Piece.Color, variation: Int = mainVariation) {
             self.number = number
             self.color = color
             self.variation = variation

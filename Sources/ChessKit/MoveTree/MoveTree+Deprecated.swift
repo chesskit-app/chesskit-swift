@@ -19,7 +19,11 @@ extension MoveTree {
     }
 
     /// Returns the index of the previous move given an `index`.
-    @available(*, deprecated, renamed: "index(before:)")
+    @available(
+        *, deprecated,
+         renamed: "index(before:)",
+         message: "Use index(before:) to obtain the previous index or hasIndex(before:) to check if a valid previous index exists."
+    )
     public func previousIndex(for index: Index) -> Index? {
         if index == minimumIndex.next {
             return minimumIndex
@@ -29,7 +33,11 @@ extension MoveTree {
     }
 
     /// Returns the index of the next move given an `index`.
-    @available(*, deprecated, renamed: "index(after:)")
+    @available(
+        *, deprecated,
+         renamed: "index(after:)",
+         message: "Use index(after:) to obtain the next index or hasIndex(after:) to check if a valid next index exists."
+    )
     public func nextIndex(for index: Index) -> Index? {
         if index == minimumIndex {
             return dictionary[minimumIndex.next]?.index

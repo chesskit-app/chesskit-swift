@@ -5,8 +5,8 @@
   * Should not affect any existing functionality or API usage.
   * `indices` is now a `Set` instead of an `Array` for faster `contains` lookups, etc.
   * Several methods on `MoveTree` have been deprecated in favor of their `Collection` counterparts:
-    * `previousIndex(for:)` → `index(before:)`
-    * `nextIndex(for:)` → `index(after:)`
+    * `previousIndex(for:)` → `index(before:)` / `hasIndex(before:)`
+    * `nextIndex(for:)` → `index(after:)` / `hasIndex(after:)`
     * `move(at:)` → `subscript(_:)` (e.g. `tree[index]`)
 * `MoveTree.annotate()` now optionally returns the `Move` object after annotation.
 

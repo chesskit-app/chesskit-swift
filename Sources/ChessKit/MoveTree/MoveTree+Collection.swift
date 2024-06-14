@@ -17,7 +17,7 @@ extension MoveTree: Collection {
         }
         set {
             if let newValue {
-                dictionary[index]?.move = newValue
+                add(move: newValue, toParentIndex: index.previous)
             }
         }
     }
@@ -29,18 +29,34 @@ extension MoveTree: Collection {
 extension MoveTree: BidirectionalCollection {
 
     public func index(before i: Index) -> Index {
-        if i == minimumIndex.next {
+        _previousIndex(for: i) ?? i
+    }
+
+    public func hasIndex(before i: Index) -> Bool {
+        _previousIndex(for: i) != nil
+    }
+
+    private func _previousIndex(for index: Index) -> Index? {
+        if index == minimumIndex.next {
             minimumIndex
         } else {
-            dictionary[i]?.previous?.index ?? i
+            dictionary[index]?.previous?.index
         }
     }
 
     public func index(after i: Index) -> Index {
-        if i == minimumIndex {
-            dictionary[i.next]?.index ?? i
+        _nextIndex(for: i) ?? i
+    }
+
+    public func hasIndex(after i: Index) -> Bool {
+        _nextIndex(for: i) != nil
+    }
+
+    private func _nextIndex(for index: Index) -> Index? {
+        if index == minimumIndex {
+            dictionary[index.next]?.index
         } else {
-            dictionary[i]?.next?.index ?? i
+            dictionary[index]?.next?.index
         }
     }
 
