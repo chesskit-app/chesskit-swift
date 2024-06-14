@@ -9,25 +9,18 @@
 /// provides index-based access for any element in the tree.
 public struct MoveTree {
 
+    /// The index of the root of the move tree.
+    ///
+    /// Defaults to `MoveTree.Index.minimum`.
     var minimumIndex: Index = .minimum
 
+    /// The last index of the main variation of the move tree.
+    private(set) var lastMainVariationIndex: Index = .minimum
+
     /// Dictionary representation of the tree for faster access.
-    private var dictionary: [Index: Node] = [:]
+    private(set) var dictionary: [Index: Node] = [:]
     /// The root node of the tree.
     private var root: Node?
-
-    /// Returns the move at the specified index.
-    ///
-    /// - parameter index: The move index to query.
-    /// - returns: The move at the given index, or `nil` if no
-    /// move exists at that index.
-    ///
-    /// This value can also be accessed using a subscript on
-    /// the ``MoveTree`` directly,
-    /// e.g. `tree[.init(number: 2, color: .white)]`
-    public func move(at index: Index) -> Move? {
-        dictionary[index]?.move
-    }
 
     /// A set containing the indices of all the moves stored in the tree.
     public var indices: Set<Index> {
@@ -77,25 +70,11 @@ public struct MoveTree {
         dictionary[newIndex] = newNode
         newNode.index = newIndex
 
+        if newIndex.variation == Index.mainVariation {
+            lastMainVariationIndex = newIndex
+        }
+
         return newIndex
-    }
-
-    /// Returns the index of the previous move given an `index`.
-    public func previousIndex(for index: Index) -> Index? {
-        if index == minimumIndex.next {
-            return minimumIndex
-        } else {
-            return dictionary[index]?.previous?.index
-        }
-    }
-
-    /// Returns the index of the next move given an `index`.
-    public func nextIndex(for index: Index) -> Index? {
-        if index == minimumIndex {
-            return dictionary[minimumIndex.next]?.index
-        } else {
-            return dictionary[index]?.next?.index
-        }
     }
 
     /// Returns the index matching `move` in the next or child moves of the
@@ -204,7 +183,7 @@ public struct MoveTree {
     public func path(
         from startIndex: Index,
         to endIndex: Index
-    ) -> [(PathDirection, Index)] {
+    ) -> [(direction: PathDirection, index: Index)] {
         var results = [(PathDirection, Index)]()
         let startHistory = history(for: startIndex)
         let endHistory = history(for: endIndex)
@@ -267,16 +246,35 @@ public struct MoveTree {
     /// - parameter assessment: The move to annotate the move with.
     /// - parameter comment: The comment to annotate the move with.
     ///
+    /// - returns: The move updated with the given annotations.
+    ///
+    @discardableResult
     public mutating func annotate(
         moveAt index: Index,
         assessment: Move.Assessment = .null,
         comment: String = ""
-    ) {
+    ) -> Move? {
         dictionary[index]?.move.assessment = assessment
         dictionary[index]?.move.comment = comment
+        return dictionary[index]?.move
     }
 
     // MARK: - PGN
+
+    /// An element for representing the ``MoveTree`` in
+    /// PGN (Portable Game Notation) format.
+    public enum PGNElement: Hashable, Equatable {
+        /// e.g. `1.`
+        case whiteNumber(Int)
+        /// e.g. `1...`
+        case blackNumber(Int)
+        /// e.g. `e4`
+        case move(Move, Index)
+        /// e.g. `(`
+        case variationStart
+        /// e.g. `)`
+        case variationEnd
+    }
 
     private func pgn(for node: Node?) -> [PGNElement] {
         guard let node else { return [] }
@@ -342,20 +340,20 @@ extension MoveTree: Equatable {
 extension MoveTree {
 
     /// Object that represents a node in the move tree.
-    private class Node: Equatable {
+    class Node: Equatable {
 
         /// The move for this node.
         var move: Move
         /// The index for this node.
-        var index: Index = .minimum
+        fileprivate(set) var index: Index = .minimum
         /// The previous node.
-        var previous: Node?
+        fileprivate(set) var previous: Node?
         /// The next node.
-        weak var next: Node?
+        fileprivate(set) weak var next: Node?
         /// Children nodes (i.e. variation moves).
-        var children: [Node] = []
+        fileprivate var children: [Node] = []
 
-        init(move: Move) {
+        fileprivate init(move: Move) {
             self.move = move
         }
 
@@ -366,70 +364,4 @@ extension MoveTree {
 
     }
 
-}
-
-extension MoveTree {
-
-    /// An element for representing the ``MoveTree`` in
-    /// PGN (Portable Game Notation) format.
-    public enum PGNElement: Hashable, Equatable {
-        /// e.g. `1.`
-        case whiteNumber(Int)
-        /// e.g. `1...`
-        case blackNumber(Int)
-        /// e.g. `e4`
-        case move(Move, Index)
-        /// e.g. `(`
-        case variationStart
-        /// e.g. `)`
-        case variationEnd
-    }
-
-}
-
-extension MoveTree: Collection {
-
-    public typealias Index = MoveTreeIndex
-
-    public var startIndex: Index { minimumIndex }
-
-    public var endIndex: Index {
-        #warning("implement this")
-        return minimumIndex
-    }
-
-    /// Subscript implementation for ``MoveTree``.
-    ///
-    /// This method returns the same value as `move(at:)` and
-    /// can also be used to set the `move` for `index`.
-    public subscript(_ index: Index) -> Move? {
-        get {
-            move(at: index)
-        }
-        set {
-            if let newValue {
-                dictionary[index]?.move = newValue
-            }
-        }
-    }
-
-    public func index(after i: Index) -> Index {
-        nextIndex(for: i) ?? i
-    }
-
-}
-
-extension MoveTree: BidirectionalCollection {
-
-    public func index(before i: Index) -> Index {
-        previousIndex(for: i) ?? i
-    }
-
-}
-
-extension MoveTreeIndex: Comparable {
-    public static func < (lhs: MoveTreeIndex, rhs: MoveTreeIndex) -> Bool {
-        #warning("implement this")
-        return true
-    }
 }

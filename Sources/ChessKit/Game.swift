@@ -17,9 +17,9 @@ public class Game: ObservableObject {
     /// The move tree representing all moves made in the game.
     @Published public private(set) var moves: MoveTree
     /// The move tree index of the starting position in the game.
-    public private(set) var startingIndex: MoveTreeIndex
+    public private(set) var startingIndex: MoveTree.Index
     /// A dictionary of every position in the game, keyed by move index.
-    public private(set) var positions: [MoveTreeIndex: Position]
+    public private(set) var positions: [MoveTree.Index: Position]
     /// Contains the tag pairs for this game.
     public var tags: Tags
 
@@ -85,8 +85,8 @@ public class Game: ObservableObject {
     @discardableResult
     public func make(
         move: Move,
-        from index: MoveTreeIndex
-    ) -> MoveTreeIndex {
+        from index: MoveTree.Index
+    ) -> MoveTree.Index {
         if let existingMoveIndex = moves.nextIndex(containing: move, for: index) {
             // if attempted move already exists next in the variation,
             // skip making it and return the corresponding index
@@ -138,8 +138,8 @@ public class Game: ObservableObject {
     @discardableResult
     public func make(
         move moveString: String,
-        from index: MoveTreeIndex
-    ) -> MoveTreeIndex {
+        from index: MoveTree.Index
+    ) -> MoveTree.Index {
         guard let position = positions[index],
               let move = SANParser.parse(move: moveString, in: position)
         else {
@@ -166,8 +166,8 @@ public class Game: ObservableObject {
     @discardableResult
     public func make(
         moves moveStrings: [String],
-        from index: MoveTreeIndex
-    ) -> MoveTreeIndex {
+        from index: MoveTree.Index
+    ) -> MoveTree.Index {
         var index = index
 
         for moveString in moveStrings {
@@ -184,7 +184,7 @@ public class Game: ObservableObject {
     /// - parameter comment: The move comment annotation.
     /// 
     public func annotate(
-        moveAt index: MoveTreeIndex,
+        moveAt index: MoveTree.Index,
         assessment: Move.Assessment = .null,
         comment: String = ""
     ) {

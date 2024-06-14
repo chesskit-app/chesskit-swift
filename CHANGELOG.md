@@ -3,9 +3,12 @@
 ### Improvements
 * `MoveTree` now conforms to `BidirectionalCollection`, allowing for more standard collection-based semantics in Swift.
   * Should not affect any existing functionality or API usage.
-  * `MoveTree.Index` has been renamed to `MoveTreeIndex`.
-  * Due to the aforementioned collection conformance, renames are not required in existing code. Going forward either `MoveTreeIndex` or `MoveTree.Index` can be used interchangeably.
   * `indices` is now a `Set` instead of an `Array` for faster `contains` lookups, etc.
+  * Several methods on `MoveTree` have been deprecated in favor of their `Collection` counterparts:
+    * `previousIndex(for:)` → `index(before:)`
+    * `nextIndex(for:)` → `index(after:)`
+    * `move(at:)` → `subscript(_:)` (e.g. `tree[index]`)
+* `MoveTree.annotate()` now optionally returns the `Move` object after annotation.
 
 ### Bug Fixes
 * Removed `CustomDebugStringConvertible` conformance from `Bitboard` to avoid affecting all `UInt64` debug prints.
