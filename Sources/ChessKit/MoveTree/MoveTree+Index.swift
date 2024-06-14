@@ -1,5 +1,5 @@
 //
-//  MoveTreeIndex.swift
+//  MoveTree+Index.swift
 //  ChessKit
 //
 
@@ -18,11 +18,11 @@ extension MoveTree {
         /// If multiple moves occur for the same move number and piece color,
         /// the `variation` is incremented.
         ///
-        /// A `variation` equal to `MoveTreeIndex.mainVariation` is assumed to be the
+        /// A `variation` equal to `MoveTree.Index.mainVariation` is assumed to be the
         /// main variation in a move tree.
         public var variation: Int = mainVariation
 
-        /// Creates a `MoveTreeIndex` with a given `number`, `color`,
+        /// Creates a `MoveTree.Index` with a given `number`, `color`,
         /// and `variation` (default is `0`).
         public init(number: Int, color: Piece.Color, variation: Int = mainVariation) {
             self.number = number
@@ -30,11 +30,11 @@ extension MoveTree {
             self.variation = variation
         }
 
-        /// The minimum value of `MoveTreeIndex(number: 0, color: .black)`
+        /// The minimum value of `MoveTree.Index(number: 0, color: .black)`
         ///
         /// This represents the starting position of the game.
         ///
-        /// i.e. `MoveTreeIndex(number: 1, color: .white)` is returned by `MoveTreeIndex.minimum.next`
+        /// i.e. `MoveTree.Index(number: 1, color: .white)` is returned by `MoveTree.Index.minimum.next`
         /// which is the first move of the game (played by white).
         public static let minimum = Index(number: 0, color: .black)
 
