@@ -3,8 +3,8 @@
 //  ChessKitTests
 //
 
-import XCTest
 @testable import ChessKit
+import XCTest
 
 class SpecialMoveTests: XCTestCase {
 

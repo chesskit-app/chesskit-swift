@@ -1,5 +1,16 @@
 # [unreleased]
 
+### Improvements
+* `MoveTree` now conforms to `BidirectionalCollection`, allowing for more standard collection-based semantics in Swift.
+  * Should not affect any existing functionality or API usage.
+  * Several methods on `MoveTree` have been deprecated in favor of their `Collection` counterparts:
+    * `previousIndex(for:)` → `index(before:)` / `hasIndex(before:)`
+    * `nextIndex(for:)` → `index(after:)` / `hasIndex(after:)`
+    * `move(at:)` → `subscript(_:)` (e.g. `tree[index]`)
+* `MoveTree.annotate()` now optionally returns the `Move` object after annotation.
+* `MoveTree.path()` now returns tuple with named parameters (`direction` and `index`).
+
+### Bug Fixes
 * Removed `CustomDebugStringConvertible` conformance from `Bitboard` to avoid affecting all `UInt64` debug prints.
   * To print the string representation of `Bitboard` use `Bitboard.chessString()`.
 

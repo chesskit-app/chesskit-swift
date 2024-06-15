@@ -3,8 +3,8 @@
 //  ChessKitTests
 //
 
-import XCTest
 @testable import ChessKit
+import XCTest
 
 class GameTests: XCTestCase {
 
@@ -66,11 +66,11 @@ class GameTests: XCTestCase {
         XCTAssertEqual(game2.startingPosition, .init(fen: fen)!)
         game2.make(move: "O-O", from: game2.startingIndex)
         XCTAssertEqual(
-            game2.moves.nextIndex(for: game2.moves.minimumIndex),
+            game2.moves.index(after: game2.moves.minimumIndex),
             .init(number: 1, color: .black, variation: 0)
         )
         XCTAssertEqual(
-            game2.moves.move(at: .init(number: 1, color: .black, variation: 0)),
+            game2.moves[.init(number: 1, color: .black, variation: 0)],
             .init(san: "O-O", position: .init(fen: fen)!)
         )
     }
@@ -92,8 +92,8 @@ class GameTests: XCTestCase {
         XCTAssertEqual(game.moves[nc6Index]?.san, "Nc6")
 
         XCTAssertEqual(
-            game.moves.previousIndex(
-                for: nc6Index
+            game.moves.index(
+                before: nc6Index
             ),
             nc3Index
         )
@@ -102,14 +102,14 @@ class GameTests: XCTestCase {
         XCTAssertEqual(game.moves[f5Index]?.san, "f5")
 
         XCTAssertEqual(
-            game.moves.previousIndex(
-                for: f5Index
+            game.moves.index(
+                before: f5Index
             ),
             nf3Index
         )
 
-        XCTAssertEqual(game.moves.previousIndex(for: .minimum.next), .minimum)
-        XCTAssertEqual(game.moves.nextIndex(for: nc3Index), nf6Index)
+        XCTAssertEqual(game.moves.index(before: .minimum.next), .minimum)
+        XCTAssertEqual(game.moves.index(after: nc3Index), nf6Index)
     }
 
     func testMoveAnnotation() {
@@ -122,29 +122,33 @@ class GameTests: XCTestCase {
         )
     }
 
-    func testMoveIndexHistory() {
+    func testMoveHistory() {
         let f5History = game.moves.history(for: f5Index)
 
         XCTAssertEqual(
             f5History,
-            [
-                .init(number: 1, color: .white, variation: 0),
-                .init(number: 1, color: .black, variation: 0),
-                .init(number: 2, color: .white, variation: 0),
-                f5Index
-            ]
+            [.init(number: 1, color: .white, variation: 0),
+             .init(number: 1, color: .black, variation: 0),
+             .init(number: 2, color: .white, variation: 0),
+             f5Index]
         )
     }
 
-    func testMoveIndexFuture() {
+    func testMoveFuture() {
         let f5Future = game.moves.future(for: f5Index)
 
         XCTAssertEqual(
             f5Future,
-            [
-                .init(number: 3, color: .white, variation: 3)
-            ]
+            [.init(number: 3, color: .white, variation: 3)]
         )
+    }
+
+    func testMoveFullVariation() {
+        let f5History = game.moves.history(for: f5Index)
+        let f5Future = game.moves.future(for: f5Index)
+
+        let f5Full = game.moves.fullVariation(for: f5Index)
+        XCTAssertEqual(f5History + f5Future, f5Full)
     }
 
     func testMoveTreeEmptyPath() {
@@ -160,12 +164,12 @@ class GameTests: XCTestCase {
         let path1 = game.moves.path(from: f4, to: e5)
 
         XCTAssertEqual(
-            path1.map(\.0),
+            path1.map(\.direction),
             [.reverse, .reverse, .reverse]
         )
 
         XCTAssertEqual(
-            path1.map(\.1),
+            path1.map(\.index),
             [
                 f4,
                 .init(number: 2, color: .black, variation: 2),
@@ -177,12 +181,12 @@ class GameTests: XCTestCase {
         let path2 = game.moves.path(from: e5, to: f4)
 
         XCTAssertEqual(
-            path2.map(\.0),
+            path2.map(\.direction),
             [.forward, .forward, .forward]
         )
 
         XCTAssertEqual(
-            path2.map(\.1),
+            path2.map(\.index),
             [
                 .init(number: 2, color: .white, variation: 1),
                 .init(number: 2, color: .black, variation: 2),
@@ -199,7 +203,7 @@ class GameTests: XCTestCase {
         let path = game.moves.path(from: f4, to: Bc4)
 
         XCTAssertEqual(
-            path.map(\.0),
+            path.map(\.direction),
             [
                 .reverse,
                 .reverse,
@@ -212,7 +216,7 @@ class GameTests: XCTestCase {
         )
         
         XCTAssertEqual(
-            path.map(\.1),
+            path.map(\.index),
             [
                 f4,
                 .init(number: 2, color: .black, variation: 2),

@@ -1,12 +1,13 @@
 //
-//  MoveTreeIndex.swift
+//  MoveTree+Index.swift
 //  ChessKit
 //
 
 extension MoveTree {
-
     /// Object that represents the index of a node in the move tree.
     public struct Index: Hashable {
+
+        public static let mainVariation = 0
 
         /// The move number.
         public let number: Int
@@ -17,12 +18,13 @@ extension MoveTree {
         /// If multiple moves occur for the same move number and piece color,
         /// the `variation` is incremented.
         ///
-        /// `variation = 0` is assumed to be the main variation in a move tree.
-        public var variation: Int = 0
+        /// A `variation` equal to `MoveTree.Index.mainVariation` is assumed to be the
+        /// main variation in a move tree.
+        public var variation: Int = mainVariation
 
         /// Creates a `MoveTree.Index` with a given `number`, `color`,
         /// and `variation` (default is `0`).
-        public init(number: Int, color: Piece.Color, variation: Int = 0) {
+        public init(number: Int, color: Piece.Color, variation: Int = mainVariation) {
             self.number = number
             self.color = color
             self.variation = variation
@@ -40,17 +42,17 @@ extension MoveTree {
         ///
         /// This assumes `variation` is constant.
         /// For the previous index taking into account variations
-        /// use `MoveTree.previousIndex(for:)`.
+        /// use `MoveTree.index(before:)`.
         public var previous: Index {
             switch color {
             case .white:
-                return Index(
+                Index(
                     number: number - 1,
                     color: .black,
                     variation: variation
                 )
             case .black:
-                return Index(
+                Index(
                     number: number,
                     color: .white,
                     variation: variation
@@ -62,17 +64,17 @@ extension MoveTree {
         ///
         /// This assumes `variation` is constant.
         /// For the next index taking into account variations
-        /// use `MoveTree.nextIndex(for:)`.
+        /// use `MoveTree.index(after:)`.
         public var next: Index {
             switch color {
             case .white:
-                return Index(
+                Index(
                     number: number,
                     color: .black,
                     variation: variation
                 )
             case .black:
-                return Index(
+                Index(
                     number: number + 1,
                     color: .white,
                     variation: variation
@@ -82,4 +84,19 @@ extension MoveTree {
 
     }
 
+}
+
+extension MoveTree.Index: Comparable {
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        if lhs.variation == rhs.variation {
+            if lhs.number == rhs.number {
+                lhs.color == .white && rhs.color == .black
+            } else {
+                lhs.number < rhs.number
+            }
+        } else {
+            // prioritize lower variation numbers (since 0 is the main variation)
+            lhs.variation > rhs.variation
+        }
+    }
 }
