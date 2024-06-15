@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.9.0
+Released Saturday, June 15, 2024.
 
 ### Improvements
 * `MoveTree` now conforms to `BidirectionalCollection`, allowing for more standard collection-based semantics in Swift.
