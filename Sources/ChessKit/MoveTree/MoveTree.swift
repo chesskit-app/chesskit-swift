@@ -228,7 +228,7 @@ public struct MoveTree {
     }
 
     /// The direction of the ``MoveTree`` path.
-    public enum PathDirection {
+    public enum PathDirection: Sendable {
         /// Move forward (i.e. perform a move).
         case forward
         /// Move backward (i.e. undo a move).
@@ -263,7 +263,7 @@ public struct MoveTree {
 
     /// An element for representing the ``MoveTree`` in
     /// PGN (Portable Game Notation) format.
-    public enum PGNElement: Hashable, Equatable {
+    public enum PGNElement: Hashable, Equatable, Sendable {
         /// e.g. `1.`
         case whiteNumber(Int)
         /// e.g. `1...`

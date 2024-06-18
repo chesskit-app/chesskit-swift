@@ -1,3 +1,8 @@
+# [unreleased]
+
+* Update tools version to Swift 5.9
+* Conform to strict concurrency in Swift and add Sendable conformance to most objects
+
 # ChessKit 0.9.0
 Released Saturday, June 15, 2024.
 

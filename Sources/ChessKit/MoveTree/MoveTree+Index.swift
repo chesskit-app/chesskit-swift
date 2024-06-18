@@ -5,7 +5,7 @@
 
 extension MoveTree {
     /// Object that represents the index of a node in the move tree.
-    public struct Index: Hashable {
+    public struct Index: Hashable, Sendable {
 
         public static let mainVariation = 0
 

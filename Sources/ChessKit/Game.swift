@@ -214,7 +214,7 @@ extension Game {
 
     /// Denotes a PGN tag pair.
     @propertyWrapper
-    public struct Tag {
+    public struct Tag: Sendable {
 
         /// The name of the tag pair.
         ///
