@@ -21,9 +21,17 @@ extension Position {
     static let insufficientMaterial = Position(fen: "k7/b6P/8/8/8/8/8/K7 w - - 0 1")!
 }
 
-class MockBoardDelegate: BoardDelegate {
-    var didPromote: ((Move) -> Void)?
-    var didEnd: ((Board.EndResult) -> Void)?
+final class MockBoardDelegate: BoardDelegate {
+    private let didPromote: (@Sendable (Move) -> Void)?
+    private let didEnd: (@Sendable (Board.EndResult) -> Void)?
+
+    init(
+        didPromote: (@Sendable (Move) -> Void)? = nil,
+        didEnd: (@Sendable (Board.EndResult) -> Void)? = nil
+    ) {
+        self.didPromote = didPromote
+        self.didEnd = didEnd
+    }
 
     func didPromote(with move: Move) {
         didPromote?(move)
@@ -58,17 +66,15 @@ class BoardTests: XCTestCase {
         let queen = Piece(.queen, color: .white, square: .e8)
         var board = Board(position: .init(pieces: [pawn]))
 
-        let delegate = MockBoardDelegate()
-        board.delegate = delegate
+        nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns promotion move")
 
-        var expectation: XCTestExpectation? = self.expectation(description: "Board returns promotion move")
-
-        delegate.didPromote = { move in
+        let delegate = MockBoardDelegate(didPromote: { move in
             let newPawn = Piece(.pawn, color: .white, square: .e8)
             XCTAssertEqual(move.piece, newPawn)
             expectation?.fulfill()
             expectation = nil
-        }
+        })
+        board.delegate = delegate
 
         let move = board.move(pieceAt: .e7, to: .e8)!
         waitForExpectations(timeout: 1.0)
@@ -81,12 +87,9 @@ class BoardTests: XCTestCase {
 
     func testFiftyMoveRule() {
         var board = Board(position: .fiftyMove)
-        let delegate = MockBoardDelegate()
-        board.delegate = delegate
+        nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns fifty move draw result")
 
-        var expectation: XCTestExpectation? = self.expectation(description: "Board returns fifty move draw result")
-
-        delegate.didEnd = { result in
+        let delegate = MockBoardDelegate(didEnd: { result in
             if case .draw(let drawType) = result {
                 if drawType == .fiftyMoves {
                     expectation?.fulfill()
@@ -95,7 +98,8 @@ class BoardTests: XCTestCase {
             } else {
                 XCTFail()
             }
-        }
+        })
+        board.delegate = delegate
 
         board.move(pieceAt: .f7, to: .f8)
         waitForExpectations(timeout: 1.0)
@@ -103,11 +107,9 @@ class BoardTests: XCTestCase {
 
     func testInsufficientMaterial() {
         var board = Board(position: .insufficientMaterial)
-        let delegate = MockBoardDelegate()
-        board.delegate = delegate
+        nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns insufficient material draw result")
 
-        var expectation: XCTestExpectation? = self.expectation(description: "Board returns insufficient material draw result")
-        delegate.didEnd = { result in
+        let delegate = MockBoardDelegate(didEnd: { result in
             if case .draw(let drawType) = result {
                 if drawType == .insufficientMaterial {
                     expectation?.fulfill()
@@ -116,7 +118,8 @@ class BoardTests: XCTestCase {
             } else {
                 XCTFail()
             }
-        }
+        })
+        board.delegate = delegate
 
         let move = board.move(pieceAt: .h7, to: .h8)!
         board.completePromotion(of: move, to: .bishop)

@@ -4,7 +4,7 @@
 //
 
 /// Structure that captures legal castling moves.
-struct LegalCastlings: Equatable {
+struct LegalCastlings: Equatable, Sendable {
 
     private var legal: [Castling]
 
@@ -55,7 +55,7 @@ struct LegalCastlings: Equatable {
 ///
 /// Contains various characteristics of the castling move
 /// such as king and rook start and end squares and notation.
-public struct Castling: Equatable, Hashable {
+public struct Castling: Equatable, Hashable, Sendable {
 
     /// Kingside castle for black.
     static let bK = Castling(side: .king, color: .black)
@@ -68,7 +68,7 @@ public struct Castling: Equatable, Hashable {
 
     /// Represents the side of the board from which castling an occur.
     /// Either `king` or `queen`.
-    enum Side: CaseIterable {
+    enum Side: CaseIterable, Sendable {
         case king, queen
 
         var notation: String {

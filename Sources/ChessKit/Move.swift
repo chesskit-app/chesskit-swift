@@ -3,17 +3,17 @@
 //  ChessKit
 //
 
-public struct Move: Equatable, Hashable {
+public struct Move: Equatable, Hashable, Sendable {
 
     /// The result of the move.
-    public enum Result: Equatable, Hashable {
+    public enum Result: Equatable, Hashable, Sendable {
         case move
         case capture(Piece)
         case castle(Castling)
     }
 
     /// The check state resulting from the move.
-    public enum CheckState: String {
+    public enum CheckState: String, Sendable {
         case none
         case check
         case checkmate
@@ -29,7 +29,7 @@ public struct Move: Equatable, Hashable {
     }
 
     /// Rank, file, or square disambiguation of moves.
-    public enum Disambiguation: Equatable, Hashable {
+    public enum Disambiguation: Equatable, Hashable, Sendable {
         case byFile(Square.File)
         case byRank(Square.Rank)
         case bySquare(Square)
@@ -105,7 +105,7 @@ extension Move {
     ///
     /// The raw String value corresponds to what is displayed
     /// in a PGN string.
-    public enum Assessment: String {
+    public enum Assessment: String, Sendable {
         case null = "$0"
         case good = "$1"
         case mistake = "$2"
