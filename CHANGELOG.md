@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.10.0
+Released Friday, June 21, 2024.
 
 ### Improvements
 
