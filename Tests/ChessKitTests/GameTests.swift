@@ -57,7 +57,7 @@ class GameTests: XCTestCase {
         XCTAssertEqual(game1.startingPosition, .standard)
 
         let fen = "r1bqkb1r/pp1ppppp/2n2n2/8/2B1P3/2N2N2/PP3PPP/R1BQK2R b KQkq - 4 6"
-        let game2 = Game(startingWith: .init(fen: fen)!)
+        var game2 = Game(startingWith: .init(fen: fen)!)
 
         XCTAssertEqual(
             game2.startingIndex,

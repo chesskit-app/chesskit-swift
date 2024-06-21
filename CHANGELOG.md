@@ -1,7 +1,14 @@
 # [unreleased]
 
-* Update tools version to Swift 5.9
-* Conform to strict concurrency in Swift and add Sendable conformance to most objects
+### Improvements
+
+* Update tools version to Swift 5.9 (requires Xcode 15.0 or greater).
+* Conform to Swift strict concurrency and add `Sendable` conformance to most objects
+
+### Breaking Changes
+
+* `Game` is now a `struct` and no longer conforms to `ObservableObject`.
+  * If observation semantics are required, consider using `didSet` property observers or an object that utilizes the `@Observable` macro.
 
 # ChessKit 0.9.0
 Released Saturday, June 15, 2024.

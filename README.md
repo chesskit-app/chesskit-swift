@@ -83,7 +83,8 @@ let board = Board()
 // 1 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
 //   a b c d e f g h
 
-board.move(pieceAt: .e2, to: .e4)           // move pawn at e2 to e4
+// move pawn at e2 to e4
+board.move(pieceAt: .e2, to: .e4)
 // 8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
 // 7 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
 // 6 · · · · · · · ·
