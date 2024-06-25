@@ -198,7 +198,20 @@ public struct Position: Equatable {
             return false
         }
     }
-
+    
+    /// Checks if a position already occurred N times
+    ///
+    ///   - parameter times: the times the position occurred
+    ///   - parameter positions: all the positions occurred during the game
+    /// - Returns: a bool stating if the position already occurred N times
+    public func occurred(times: Int, in positions: [Int:Int]) -> Bool {
+        if positions[hashed] == times {
+            return true
+        }
+        
+        return false
+    }
+    
     /// The FEN represenation of the position.
     public var fen: String {
         FENParser.convert(position: self)
