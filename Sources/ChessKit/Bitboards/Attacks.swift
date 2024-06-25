@@ -5,20 +5,20 @@
 
 /// Stores pre-generated pseudo-legal attack bitboards
 /// for non-pawn piece types.
-struct Attacks {
+struct Attacks: Sendable {
 
     /// Cached king attacks, the dictionary key
     /// corresponds to `Square.bb`.
-    static var kings = [Bitboard: Bitboard]()
+    private(set) nonisolated(unsafe) static var kings = [Bitboard: Bitboard]()
     /// Cached rook attacks, the array index corresponds
     /// to `Square.rawValue`.
-    static var rooks = [Magic]()
+    private(set) nonisolated(unsafe) static var rooks = [Magic]()
     /// Cached bishop attacks, the array index corresponds
     /// to `Square.rawValue`.
-    static var bishops = [Magic]()
+    private(set) nonisolated(unsafe) static var bishops = [Magic]()
     /// Cached king attacks, the dictionary key
     /// corresponds to `Square.bb`.
-    static var knights = [Bitboard: Bitboard]()
+    private(set) nonisolated(unsafe) static var knights = [Bitboard: Bitboard]()
 
     /// Generates and caches attack bitboards for all piece kinds.
     static func create() {
@@ -235,7 +235,7 @@ struct Attacks {
     /// Magic numbers for calculating bishop and rook magic bitboards.
     ///
     /// Derived by [Pradyumna Kannan](http://pradu.us/old/Nov27_2008/Buzz/research/magic/Bitboards.pdf).
-    private static var magicNumbers: [Piece.Kind: [Bitboard]] = [
+    private static let magicNumbers: [Piece.Kind: [Bitboard]] = [
         .bishop: [
             0x0002020202020200, 0x0002020202020000, 0x0004010202000000, 0x0004040080000000,
             0x0001104000000000, 0x0000821040000000, 0x0000410410400000, 0x0000104104104000,
@@ -278,7 +278,7 @@ struct Attacks {
 
 /// Stores the magic factors and attacks for a given piece
 /// type (bishop or rook) and square (a1-h8).
-struct Magic {
+struct Magic: Sendable {
     /// The magic number used to compute the hash key.
     fileprivate var magic: Bitboard
     /// The bitmask representing the possible moves on an empty board

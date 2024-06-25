@@ -1,5 +1,30 @@
-# [unreleased]
+# ChessKit 0.10.0
+Released Friday, June 21, 2024.
 
+### Improvements
+
+* Update tools version to Swift 5.9 (requires Xcode 15.0 or greater).
+* Conform to Swift strict concurrency and add `Sendable` conformance to most objects
+
+### Breaking Changes
+
+* `Game` is now a `struct` and no longer conforms to `ObservableObject`.
+  * If observation semantics are required, consider using `didSet` property observers or an object that utilizes the `@Observable` macro.
+
+# ChessKit 0.9.0
+Released Saturday, June 15, 2024.
+
+### Improvements
+* `MoveTree` now conforms to `BidirectionalCollection`, allowing for more standard collection-based semantics in Swift.
+  * Should not affect any existing functionality or API usage.
+  * Several methods on `MoveTree` have been deprecated in favor of their `Collection` counterparts:
+    * `previousIndex(for:)` → `index(before:)` / `hasIndex(before:)`
+    * `nextIndex(for:)` → `index(after:)` / `hasIndex(after:)`
+    * `move(at:)` → `subscript(_:)` (e.g. `tree[index]`)
+* `MoveTree.annotate()` now optionally returns the `Move` object after annotation.
+* `MoveTree.path()` now returns tuple with named parameters (`direction` and `index`).
+
+### Bug Fixes
 * Removed `CustomDebugStringConvertible` conformance from `Bitboard` to avoid affecting all `UInt64` debug prints.
   * To print the string representation of `Bitboard` use `Bitboard.chessString()`.
 

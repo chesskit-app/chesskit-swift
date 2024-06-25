@@ -10,12 +10,12 @@ import Foundation
 /// This object is the entry point for interacting with a full
 /// chess game within `ChessKit`. It provides methods for
 /// making moves and publishes the played moves in an observable way.
-public class Game: ObservableObject {
+public struct Game {
 
     // MARK: - Properties
 
     /// The move tree representing all moves made in the game.
-    @Published public private(set) var moves: MoveTree
+    public private(set) var moves: MoveTree
     /// The move tree index of the starting position in the game.
     public private(set) var startingIndex: MoveTree.Index
     /// A dictionary of every position in the game, keyed by move index.
@@ -37,7 +37,8 @@ public class Game: ObservableObject {
     ///
     public init(startingWith position: Position = .standard, tags: Tags? = nil) {
         moves = MoveTree()
-        startingIndex = position.sideToMove == .white ? .minimum : .minimum.next
+        let startingIndex = position.sideToMove == .white ? MoveTree.Index.minimum : .minimum.next
+        self.startingIndex = startingIndex
         positions = [startingIndex: position]
         self.tags = tags ?? .init()
 
@@ -83,7 +84,7 @@ public class Game: ObservableObject {
     /// another variation with the same first move as the existing one
     /// would be created.
     @discardableResult
-    public func make(
+    public mutating func make(
         move: Move,
         from index: MoveTree.Index
     ) -> MoveTree.Index {
@@ -136,7 +137,7 @@ public class Game: ObservableObject {
     /// necessary captures, promotions, etc. It is the responsibility
     /// of the caller to ensure the move is legal, see the ``Board`` struct.
     @discardableResult
-    public func make(
+    public mutating func make(
         move moveString: String,
         from index: MoveTree.Index
     ) -> MoveTree.Index {
@@ -164,7 +165,7 @@ public class Game: ObservableObject {
     /// necessary captures, promotions, etc. It is the responsibility
     /// of the caller to ensure the moves are legal, see the ``Board`` struct.
     @discardableResult
-    public func make(
+    public mutating func make(
         moves moveStrings: [String],
         from index: MoveTree.Index
     ) -> MoveTree.Index {
@@ -183,7 +184,7 @@ public class Game: ObservableObject {
     /// - parameter assessment: The move assessment annotation.
     /// - parameter comment: The move comment annotation.
     /// 
-    public func annotate(
+    public mutating func annotate(
         moveAt index: MoveTree.Index,
         assessment: Move.Assessment = .null,
         comment: String = ""
@@ -214,7 +215,7 @@ extension Game {
 
     /// Denotes a PGN tag pair.
     @propertyWrapper
-    public struct Tag {
+    public struct Tag: Sendable {
 
         /// The name of the tag pair.
         ///

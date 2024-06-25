@@ -6,14 +6,14 @@
 /// Delegate protocol that allows the implementer to receive
 /// events related to changes in position on the board such
 /// as pawn promotions and end results.
-public protocol BoardDelegate: AnyObject {
+public protocol BoardDelegate: AnyObject, Sendable {
     func didPromote(with move: Move)
     func didEnd(with result: Board.EndResult)
 }
 
 /// Manages the state of the chess board and validates
 /// legal moves and game rules.
-public struct Board {
+public struct Board: Sendable {
 
     // MARK: - Properties
 
@@ -546,14 +546,14 @@ public struct Board {
 
 extension Board {
     /// Represents an end result of a standard chess game.
-    public enum EndResult: Equatable {
+    public enum EndResult: Equatable, Sendable {
         /// The board represents a win for the given color.
         case win(Piece.Color)
         /// The board represents a draw with a given reason.
         case draw(DrawType)
 
         /// The type of draw represented on the board.
-        public enum DrawType: String {
+        public enum DrawType: String, Sendable {
             case agreement
             case fiftyMoves
             case insufficientMaterial

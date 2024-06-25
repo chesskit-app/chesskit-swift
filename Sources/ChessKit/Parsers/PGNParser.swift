@@ -189,7 +189,7 @@ public class PGNParser {
             )
         }
 
-        let game = Game(startingWith: position, tags: parsedTags)
+        var game = Game(startingWith: position, tags: parsedTags)
 
         parsedMoves.forEach { move in
             let whiteIndex = MoveTree.Index(number: move.number, color: .white).previous
