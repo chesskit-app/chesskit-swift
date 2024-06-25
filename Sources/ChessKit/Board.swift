@@ -22,6 +22,9 @@ public struct Board {
     /// The current position represented on the board.
     public var position: Position
 
+    /// All the positions occurred during the game
+    public var gamePositions: [Int: Int]
+    
     /// Convenience accessor for the pieces in `position`.
     private var set: PieceSet {
         position.pieceSet
@@ -38,6 +41,7 @@ public struct Board {
     public init(position: Position = .standard) {
         Attacks.create()
         self.position = position
+        self.gamePositions = [:]
     }
 
     // MARK: - Public
@@ -198,13 +202,18 @@ public struct Board {
 
     /// Determines end game state and
     /// handles pawn promotion for provided `move`.
-    private func process(move: Move) -> Move {
+    private mutating func process(move: Move) -> Move {
         var processedMove = move
 
         // checks & mate
         let checkState = self.checkState(for: move.piece.color)
         processedMove.checkState = checkState
-
+        
+        gamePositions.updateValue(
+            (gamePositions[position.hashed] ?? 0) + 1,
+            forKey: position.hashed
+        )
+        
         if checkState == .checkmate {
             delegate?.didEnd(with: .win(move.piece.color))
         } else if checkState == .stalemate {
@@ -213,6 +222,8 @@ public struct Board {
             delegate?.didEnd(with: .draw(.fiftyMoves))
         } else if position.hasInsufficientMaterial {
             delegate?.didEnd(with: .draw(.insufficientMaterial))
+        } else if position.occurred(times: 3, in: gamePositions){
+            delegate?.didEnd(with: .draw(.repetition))
         }
 
         // pawn promotion
