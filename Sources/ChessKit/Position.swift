@@ -29,6 +29,16 @@ public struct Position: Equatable {
     /// en passant.
     var enPassant: EnPassant?
 
+    var hashed: Int {
+        var hasher: Hasher = .init()
+        
+        hasher.combine(pieceSet)
+        hasher.combine(sideToMove)
+        hasher.combine(legalCastlings)
+        hasher.combine(enPassant)
+        
+        return hasher.finalize()
+    }
     /// Keeps track of the number of moves in a game for the current position.
     public private(set) var clock: Clock
 
