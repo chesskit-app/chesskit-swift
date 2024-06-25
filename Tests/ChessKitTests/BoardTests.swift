@@ -165,6 +165,31 @@ class BoardTests: XCTestCase {
         XCTAssertTrue(board4.position.hasInsufficientMaterial)
     }
     
+    func testThreefoldRepetition() {
+
+        var board: Board = Board(position: .standard)
+        board.move(pieceAt: .e2, to: .e4)
+        board.move(pieceAt: .e7, to: .e5)
+        
+        board.move(pieceAt: .g1, to: .f3)
+        board.move(pieceAt: .g8, to: .f6)
+        
+        board.move(pieceAt: .f3, to: .g1)
+        board.move(pieceAt: .f6, to: .g8)
+        
+        board.move(pieceAt: .g1, to: .f3)
+        board.move(pieceAt: .g8, to: .f6)
+        
+        board.move(pieceAt: .f3, to: .g1)
+        board.move(pieceAt: .f6, to: .g8)
+        
+        // check draw before and after the move
+        XCTAssertFalse(board.position.occurred(times: 3, in: board.gamePositions))
+        board.move(pieceAt: .g1, to: .f3)
+        XCTAssertTrue(board.position.occurred(times: 3, in: board.gamePositions))
+        
+    }
+    
     func testLegalMovesForNonexistentPiece() {
         let board = Board(position: .standard)
         // no piece at d4
