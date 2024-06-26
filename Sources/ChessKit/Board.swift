@@ -14,24 +14,24 @@ public protocol BoardDelegate: AnyObject, Sendable {
 /// Manages the state of the chess board and validates
 /// legal moves and game rules.
 public struct Board: Sendable {
-
+    
     // MARK: - Properties
-
+    
     public weak var delegate: BoardDelegate?
-
+    
     /// The current position represented on the board.
     public var position: Position
-
-    /// All the positions occurred during the game
-    public var gamePositions: [Int: Int]
+    
+    /// All the positions occurred during the game and how many times they appeared
+    private var positionHashCounts: [Int: Int]
     
     /// Convenience accessor for the pieces in `position`.
     private var set: PieceSet {
         position.pieceSet
     }
-
+    
     // MARK: - Initializer
-
+    
     /// Initializes a board with the given `position`.
     ///
     /// - parameter position: The starting position of the board.
@@ -41,11 +41,11 @@ public struct Board: Sendable {
     public init(position: Position = .standard) {
         Attacks.create()
         self.position = position
-        self.gamePositions = [:]
+        self.positionHashCounts = [:]
     }
-
+    
     // MARK: - Public
-
+    
     /// Moves the piece at a given square to a new square.
     ///
     /// - parameter start: The starting square of the piece.
@@ -71,9 +71,9 @@ public struct Board: Sendable {
         guard canMove(pieceAt: start, to: end), let piece = set.get(start) else {
             return nil
         }
-
+        
         // en passant
-
+        
         if piece.kind == .pawn,
            let enPassant = position.enPassant,
            enPassant.pawn.color == piece.color.opposite,
@@ -84,15 +84,15 @@ public struct Board: Sendable {
         } else {
             position.enPassant = nil     // prevent en passant on next turn
         }
-
+        
         // castling
-
+        
         if piece.kind == .king {
             let castles = Castling.Side.allCases
                 .map { Castling(side: $0, color: piece.color) }
                 .compactMap {
                     (castling: Castling) -> Move? in
-
+                    
                     if canCastle(piece.color, castling: castling, set: set) && end == castling.kingEnd {
                         position.castle(castling)
                         return Move(result: .castle(castling), piece: piece, start: start, end: end)
@@ -100,14 +100,14 @@ public struct Board: Sendable {
                         return nil
                     }
                 }
-
+            
             if let castle = castles.first {
                 return process(move: castle)
             }
         }
-
+        
         // captures & moves
-
+        
         if let endPiece = position.piece(at: end), endPiece.color == piece.color.opposite {
             let move = disambiguate(
                 move: Move(
@@ -118,19 +118,19 @@ public struct Board: Sendable {
                 ),
                 in: set
             )
-
+            
             position.remove(endPiece)
             position.move(piece, to: end)
             position.resetHalfmoveClock()
-
+            
             return process(move: move)
         } else {
             let previousSet = set
-
+            
             guard let updatedPiece = position.move(piece, to: end) else {
                 return nil
             }
-
+            
             let move = disambiguate(
                 move: Move(
                     result: .move,
@@ -140,19 +140,21 @@ public struct Board: Sendable {
                 ),
                 in: previousSet
             )
-
+            
             if updatedPiece.kind == .pawn {
                 position.resetHalfmoveClock()
-
+                
                 if abs(start.rank.value - end.rank.value) == 2 {
                     position.enPassant = EnPassant(pawn: updatedPiece)
                 }
             }
-
             return process(move: move)
         }
     }
-
+    
+    public func hashedPositions() -> [Int:Int] {
+        return self.positionHashCounts
+    }
     /// Checks if a piece at a given square can be moved to a new square.
     ///
     /// - parameter square: The square currently containing the piece.
@@ -164,7 +166,7 @@ public struct Board: Sendable {
         guard let piece = set.get(square) else { return false }
         return legalMoves(for: piece, in: set) & newSquare.bb != 0
     }
-
+    
     /// Returns the possible legal moves for a piece at a given square.
     ///
     /// - parameter square: The square containing the piece to check.
@@ -176,7 +178,7 @@ public struct Board: Sendable {
         guard let piece = set.get(square) else { return [] }
         return legalMoves(for: piece, in: set).squares
     }
-
+    
     /// Completes a pawn promotion move.
     ///
     /// - parameter move: The move that triggered the promotion.
@@ -190,29 +192,26 @@ public struct Board: Sendable {
     @discardableResult
     public mutating func completePromotion(of move: Move, to kind: Piece.Kind) -> Move {
         let promotedPiece = Piece(kind, color: move.piece.color, square: move.end)
-
+        
         var updatedMove = move
         updatedMove.promotedPiece = promotedPiece
-
+        
         position.promote(pieceAt: move.end, to: kind)
         return process(move: updatedMove)
     }
-
+    
     // MARK: - Move Processing
-
+    
     /// Determines end game state and
     /// handles pawn promotion for provided `move`.
     private mutating func process(move: Move) -> Move {
         var processedMove = move
-
+        
         // checks & mate
         let checkState = self.checkState(for: move.piece.color)
         processedMove.checkState = checkState
         
-        gamePositions.updateValue(
-            (gamePositions[position.hashed] ?? 0) + 1,
-            forKey: position.hashed
-        )
+        positionHashCounts[position.hashValue, default: 0] += 1
         
         if checkState == .checkmate {
             delegate?.didEnd(with: .win(move.piece.color))
@@ -222,10 +221,10 @@ public struct Board: Sendable {
             delegate?.didEnd(with: .draw(.fiftyMoves))
         } else if position.hasInsufficientMaterial {
             delegate?.didEnd(with: .draw(.insufficientMaterial))
-        } else if position.occurred(times: 3, in: gamePositions){
+        } else if positionHashCounts[position.hashValue] == 3 {
             delegate?.didEnd(with: .draw(.repetition))
         }
-
+        
         // pawn promotion
         if move.piece.kind == .pawn {
             if (move.end.rank == 8 && move.piece.color == .white) ||
@@ -233,27 +232,27 @@ public struct Board: Sendable {
                 delegate?.didPromote(with: move)
             }
         }
-
+        
         return processedMove
     }
-
+    
     /// Determines the current check state for the provided `color`.
     private func checkState(for color: Piece.Color) -> Move.CheckState {
         var checkState: Move.CheckState = .none
-
+        
         let legalMoves = set.get(color.opposite)
             .squares
             .flatMap(legalMoves(forPieceAt:))
-
+        
         if isKingInCheck(color.opposite, set: set) {
             checkState = legalMoves.isEmpty ? .checkmate : .check
         } else {
             checkState = legalMoves.isEmpty ? .stalemate : .none
         }
-
+        
         return checkState
     }
-
+    
     /// Disambiguates any moves in `set` as they relate to `move`.
     ///
     /// For example, if two identical pieces can legally move
@@ -261,23 +260,23 @@ public struct Board: Sendable {
     /// disambiguate them by starting file, rank, or square.
     private func disambiguate(move: Move, in set: PieceSet) -> Move {
         let movePiece = move.piece
-
+        
         let disambiguationCandidates =
         set.get(movePiece.color)    // same color as move piece
         & set.get(movePiece.kind)   // same kind as move piece
         & ~(set.pawns | set.kings)  // not pawns & kings
         & ~move.start.bb            // not piece making move
-
+        
         let ambiguousPieces = disambiguationCandidates.squares.filter { square in
             guard let piece = set.get(square) else { return false }
             return legalMoves(for: piece, in: set) & move.end.bb != 0
         }
-
+        
         if ambiguousPieces.isEmpty {
             return move
         } else {
             var newMove = move
-
+            
             if ambiguousPieces.allSatisfy({ $0.file != move.start.file }) {
                 newMove.disambiguation = .byFile(move.start.file)
             } else if ambiguousPieces.allSatisfy({ $0.rank != move.start.rank }) {
@@ -285,13 +284,13 @@ public struct Board: Sendable {
             } else {
                 newMove.disambiguation = .bySquare(move.start)
             }
-
+            
             return newMove
         }
     }
-
+    
     // MARK: - Move Validation
-
+    
     /// Determines the legal moves for the given `piece` in `set`.
     private func legalMoves(for piece: Piece, in set: PieceSet) -> Bitboard {
         let attacks = switch piece.kind {
@@ -308,17 +307,17 @@ public struct Board: Sendable {
         case .pawn:
             pawnAttacks(piece.color, from: piece.square.bb, set: set)
         }
-
+        
         let us = set.get(piece.color)
         let pseudoLegalMoves = attacks & ~us
-
+        
         let legalMoves = pseudoLegalMoves.squares.filter {
             validate(moveFor: piece, to: $0)
         }
-
+        
         return legalMoves.bb
     }
-
+    
     /// Determines if a pseudo-legal move for a piece to a given square
     /// is valid.
     ///
@@ -331,20 +330,20 @@ public struct Board: Sendable {
         // attempt move in test set
         var testSet = set
         testSet.remove(piece)
-
+        
         var movedPiece = piece
         movedPiece.square = square
         testSet.add(movedPiece)
-
+        
         if let enPassant = position.enPassant {
             if enPassant.canBeCaptured(by: piece) && enPassant.captureSquare == square {
                 testSet.remove(enPassant.pawn)
             }
         }
-
+        
         return !isKingInCheck(piece.color, set: testSet)
     }
-
+    
     /// Determines the positions of pieces that attack a given square.
     ///
     /// - parameter sq: A bitboard corresponding to the square of interest.
@@ -358,7 +357,7 @@ public struct Board: Sendable {
         set: PieceSet
     ) -> Bitboard {
         guard let square = Square(sq) else { return 0 }
-
+        
         return kingAttacks[sq, default: 0] & set.kings
         | rookAttacks(from: square, occupancy: set.all) & set.lines
         | bishopAttacks(from: square, occupancy: set.all) & set.diagonals
@@ -366,7 +365,7 @@ public struct Board: Sendable {
         | pawnCaptures(.white, from: sq) & set.p
         | pawnCaptures(.black, from: sq) & set.P
     }
-
+    
     /// Determines if the king of the given piece color is in check.
     ///
     /// - parameter color: The color of the king.
@@ -377,12 +376,12 @@ public struct Board: Sendable {
     private func isKingInCheck(_ color: Piece.Color, set: PieceSet) -> Bool {
         let us = set.get(color)
         let attacks = attackers(to: set.kings & us, set: set)
-
+        
         return attacks & ~us != 0
     }
-
+    
     // MARK: - Piece Attacks
-
+    
     /// Non-capturing pawn moves.
     ///
     /// - parameter color: The color of the pawn.
@@ -398,7 +397,7 @@ public struct Board: Sendable {
     ) -> Bitboard {
         let movement: (Int) -> Bitboard
         let isOnStartingRank: Bool
-
+        
         switch color {
         case .white:
             movement = sq.north
@@ -407,26 +406,26 @@ public struct Board: Sendable {
             movement = sq.south
             isOnStartingRank = sq & .rank8.south() != 0
         }
-
+        
         // single pawn push
         let singleMove = movement(1)
-
+        
         // double pawn push for starting move
         let extraMove = isOnStartingRank ? movement(2) : 0
-
+        
         // en passant move
         var enPassantMove = Bitboard(0)
-
+        
         if let enPassant = position.enPassant,
            let square = Square(sq),
            let piece = set.get(square),
            enPassant.canBeCaptured(by: piece) {
             enPassantMove = enPassant.captureSquare.bb
         }
-
+        
         return (singleMove | extraMove | enPassantMove) & ~set.all
     }
-
+    
     /// Capturing pawn moves.
     ///
     /// - parameter color: The color of the pawn.
@@ -445,7 +444,7 @@ public struct Board: Sendable {
         case .black: (sq.southWest() | sq.southEast())
         }
     }
-
+    
     /// The complete set of pawn moves, including capturing and non-capturing moves.
     ///
     /// - parameter color: The color of the pawn.
@@ -461,10 +460,10 @@ public struct Board: Sendable {
     ) -> Bitboard {
         pawnMoves(color, from: sq, set: set) | pawnCaptures(color, from: sq) & set.get(color.opposite)
     }
-
+    
     /// Cached knight attack bitboards by square.
     private var knightAttacks: [Bitboard: Bitboard] { Attacks.knights }
-
+    
     /// Returns cached bishop attack bitboards by square and occupancy.
     private func bishopAttacks(
         from square: Square,
@@ -472,7 +471,7 @@ public struct Board: Sendable {
     ) -> Bitboard {
         Attacks.bishops.attacks(from: square, for: occupancy)
     }
-
+    
     /// Returns cached rook attack bitboards by square and occupancy.
     private func rookAttacks(
         from square: Square,
@@ -480,7 +479,7 @@ public struct Board: Sendable {
     ) -> Bitboard {
         Attacks.rooks.attacks(from: square, for: occupancy)
     }
-
+    
     /// Returns cached queen attack bitboards by square and occupancy.
     private func queenAttacks(
         from square: Square,
@@ -489,10 +488,10 @@ public struct Board: Sendable {
         rookAttacks(from: square, occupancy: occupancy)
         | bishopAttacks(from: square, occupancy: occupancy)
     }
-
+    
     /// Cached king attack bitboards by square.
     private var kingAttacks: [Bitboard: Bitboard] { Attacks.kings }
-
+    
     /// King attacks from a given square plus castling moves.
     private func kingMoves(
         _ color: Piece.Color,
@@ -500,28 +499,28 @@ public struct Board: Sendable {
         set: PieceSet
     ) -> Bitboard {
         var castleMoves = [Square]()
-
+        
         let kingSide = Castling(side: .king, color: color)
         if canCastle(color, castling: kingSide, set: set) {
             castleMoves.append(kingSide.kingEnd)
         }
-
+        
         let queenSide = Castling(side: .queen, color: color)
         if canCastle(color, castling: queenSide, set: set) {
             castleMoves.append(queenSide.kingEnd)
         }
-
+        
         return kingAttacks[sq, default: 0] + castleMoves.bb
     }
-
+    
     /// Determines whether the king of the provided `color` can
     /// castle according to `castling` given `set`.
     private func canCastle(_ color: Piece.Color, castling: Castling, set: PieceSet) -> Bool {
         let us = set.get(color)
-
+        
         let validKing = us & set.get(.king) & castling.kingStart.bb
         let validRook = us & set.get(.rook) & castling.rookStart.bb
-
+        
         let pathClear = castling.path.allSatisfy {
             set.get($0) == nil
         }
@@ -529,9 +528,9 @@ public struct Board: Sendable {
         let notCastlingThroughCheck = castling.squares.allSatisfy {
             attackers(to: $0.bb, set: set) & ~us == 0
         }
-
+        
         let notInCheck = !isKingInCheck(color, set: set)
-
+        
         return position.legalCastlings.contains(castling)
         && validKing != 0
         && validRook != 0
@@ -539,7 +538,7 @@ public struct Board: Sendable {
         && notCastlingThroughCheck
         && notInCheck
     }
-
+    
 }
 
 // MARK: - End Result
@@ -551,7 +550,7 @@ extension Board {
         case win(Piece.Color)
         /// The board represents a draw with a given reason.
         case draw(DrawType)
-
+        
         /// The type of draw represented on the board.
         public enum DrawType: String, Sendable {
             case agreement
@@ -564,9 +563,9 @@ extension Board {
 }
 
 extension Board: CustomStringConvertible {
-
+    
     public var description: String {
         String(describing: position)
     }
-
+    
 }
