@@ -4,7 +4,7 @@
 //
 
 /// Represents the collection of pieces on the chess board.
-public struct Position: Equatable, Sendable {
+public struct Position: Equatable, Sendable, Hashable {
 
     /// The pieces currently existing on the board in this position.
     public var pieces: [Piece] {
@@ -29,16 +29,14 @@ public struct Position: Equatable, Sendable {
     /// en passant.
     var enPassant: EnPassant?
 
-    var hashed: Int {
-        var hasher: Hasher = .init()
-        
+    /// Conforming Position class to Hashable
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(pieceSet)
         hasher.combine(sideToMove)
         hasher.combine(legalCastlings)
         hasher.combine(enPassant)
-        
-        return hasher.finalize()
     }
+    
     /// Keeps track of the number of moves in a game for the current position.
     public private(set) var clock: Clock
 
@@ -207,19 +205,6 @@ public struct Position: Equatable, Sendable {
             // are on the board
             return false
         }
-    }
-    
-    /// Checks if a position already occurred N times
-    ///
-    ///   - parameter times: the times the position occurred
-    ///   - parameter positions: all the positions occurred during the game
-    /// - Returns: a bool stating if the position already occurred N times
-    public func occurred(times: Int, in positions: [Int:Int]) -> Bool {
-        if positions[hashed] == times {
-            return true
-        }
-        
-        return false
     }
     
     /// The FEN represenation of the position.
