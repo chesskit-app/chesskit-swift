@@ -77,7 +77,7 @@ final class BoardPerformanceTests: XCTestCase {
         XCTAssertEqual(board.position.fen, "rnbq1rk1/2p1bppp/p2p1n2/1p2p3/4P3/1BP2N1P/PP1P1PP1/RNBQR1K1 w - - 1 10")
 
         board.move(pieceAt: .d2, to: .d4)
-        XCTAssertEqual(board.position.fen, "rnbq1rk1/2p1bppp/p2p1n2/1p2p3/3PP3/1BP2N1P/PP3PP1/RNBQR1K1 b - d3 0 10")
+        XCTAssertEqual(board.position.fen, "rnbq1rk1/2p1bppp/p2p1n2/1p2p3/3PP3/1BP2N1P/PP3PP1/RNBQR1K1 b - - 0 10")
 
         board.move(pieceAt: .b8, to: .d7)
         XCTAssertEqual(board.position.fen, "r1bq1rk1/2pnbppp/p2p1n2/1p2p3/3PP3/1BP2N1P/PP3PP1/RNBQR1K1 w - - 1 11")
