@@ -145,7 +145,12 @@ public struct Board: Sendable {
                 position.resetHalfmoveClock()
                 
                 if abs(start.rank.value - end.rank.value) == 2 {
-                    position.enPassant = EnPassant(pawn: updatedPiece)
+                    for square in updatedPiece.sideSquares {
+                        if position.piece(at: square)?.kind == .pawn{
+                            position.enPassant = EnPassant(pawn: updatedPiece)
+                        }
+                    }
+                    
                 }
             }
             return process(move: move)
