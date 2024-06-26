@@ -5,27 +5,27 @@
 
 /// Represents a piece on the chess board.
 public struct Piece: Equatable, Hashable, Sendable {
-
+    
     /// Represents the color of a piece.
     public enum Color: String, CaseIterable, Sendable {
         case black = "b", white = "w"
-
+        
         /// The opposite color of the given color.
         public var opposite: Color {
             self == .black ? .white : .black
         }
-
+        
         /// Toggles to the opposite color value.
         public mutating func toggle() {
             self = self.opposite
         }
     }
-
+    
     /// Represents the type of piece.
     public enum Kind: String, CaseIterable, Sendable {
         case pawn = ""
         case knight = "N", bishop = "B", rook = "R", queen = "Q", king = "K"
-
+        
         /// The notation of the given piece kind.
         public var notation: String {
             switch self {
@@ -37,16 +37,30 @@ public struct Piece: Equatable, Hashable, Sendable {
             case .king:   "K"
             }
         }
-
+        
     }
-
+    
     /// The color of the piece.
     public var color: Color
     /// The kind of piece, e.g. `.pawn`.
     public var kind: Kind
     /// The square where this piece is located on the board.
     public var square: Square
-
+    
+    public var sideSquares: [Square] {
+        switch square.rank.value {
+        case 1:
+            [Square(Square.File(square.file.number + 1), square.rank)]
+        case 8:
+            [Square(Square.File(square.file.number - 1), square.rank)]
+        default:
+            [
+                Square(Square.File(square.file.number + 1), square.rank),
+                Square(Square.File(square.file.number - 1), square.rank)
+            ]
+        }
+    }
+    
     /// Initializes a chess piece with the given kind, color, and square.
     ///
     /// - parameter kind: The kind of piece, e.g. `.pawn`.
@@ -58,7 +72,7 @@ public struct Piece: Equatable, Hashable, Sendable {
         self.color = color
         self.square = square
     }
-
+    
     /// Initializes a chess piece from its FEN notation.
     ///
     /// - parameter fen: The Forsyth–Edwards Notation of a piece kind
@@ -82,7 +96,7 @@ public struct Piece: Equatable, Hashable, Sendable {
         default:  return nil
         }
     }
-
+    
     /// The FEN representation of the piece.
     ///
     /// Note: This value does not convey any information regarding
@@ -103,7 +117,7 @@ public struct Piece: Equatable, Hashable, Sendable {
         case (.white, .king):   "K"
         }
     }
-
+    
     var graphic: String {
         switch (color, kind) {
         case (.black, .pawn):   "♟\u{FE0E}"
@@ -120,5 +134,5 @@ public struct Piece: Equatable, Hashable, Sendable {
         case (.white, .king):   "♔"
         }
     }
-
+    
 }
