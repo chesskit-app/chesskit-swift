@@ -146,7 +146,8 @@ public struct Board: Sendable {
                 
                 if abs(start.rank.value - end.rank.value) == 2 {
                     for square in updatedPiece.sideSquares {
-                        if position.piece(at: square)?.kind == .pawn {
+                        let nearbyPiece = position.piece(at: square)
+                        if nearbyPiece?.kind == .pawn && nearbyPiece?.color != updatedPiece.color {
                             // end.rank is different from the enPassant square rank
                             let finalSquare = Square(end.file, updatedPiece.color == .white ? 3 : 6)
                             
