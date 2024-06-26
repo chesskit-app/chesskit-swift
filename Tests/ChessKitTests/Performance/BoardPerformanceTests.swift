@@ -23,10 +23,10 @@ final class BoardPerformanceTests: XCTestCase {
         var board = Board()
 
         board.move(pieceAt: .e2, to: .e4)
-        XCTAssertEqual(board.position.fen, "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")
+        XCTAssertEqual(board.position.fen, "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1")
 
         board.move(pieceAt: .e7, to: .e5)
-        XCTAssertEqual(board.position.fen, "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2")
+        XCTAssertEqual(board.position.fen, "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2")
 
         board.move(pieceAt: .g1, to: .f3)
         XCTAssertEqual(board.position.fen, "rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2")
@@ -56,7 +56,7 @@ final class BoardPerformanceTests: XCTestCase {
         XCTAssertEqual(board.position.fen, "r1bqk2r/1pppbppp/p1n2n2/4p3/B3P3/5N2/PPPP1PPP/RNBQR1K1 b kq - 5 6")
 
         board.move(pieceAt: .b7, to: .b5)
-        XCTAssertEqual(board.position.fen, "r1bqk2r/2ppbppp/p1n2n2/1p2p3/B3P3/5N2/PPPP1PPP/RNBQR1K1 w kq b6 0 7")
+        XCTAssertEqual(board.position.fen, "r1bqk2r/2ppbppp/p1n2n2/1p2p3/B3P3/5N2/PPPP1PPP/RNBQR1K1 w kq - 0 7")
 
         board.move(pieceAt: .a4, to: .b3)
         XCTAssertEqual(board.position.fen, "r1bqk2r/2ppbppp/p1n2n2/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQR1K1 b kq - 1 7")
