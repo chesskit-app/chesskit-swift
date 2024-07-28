@@ -47,20 +47,6 @@ public struct Piece: Equatable, Hashable, Sendable {
     /// The square where this piece is located on the board.
     public var square: Square
     
-    public var sideSquares: [Square] {
-        switch square.rank.value {
-        case 1:
-            [Square(Square.File(square.file.number + 1), square.rank)]
-        case 8:
-            [Square(Square.File(square.file.number - 1), square.rank)]
-        default:
-            [
-                Square(Square.File(square.file.number + 1), square.rank),
-                Square(Square.File(square.file.number - 1), square.rank)
-            ]
-        }
-    }
-    
     /// Initializes a chess piece with the given kind, color, and square.
     ///
     /// - parameter kind: The kind of piece, e.g. `.pawn`.
