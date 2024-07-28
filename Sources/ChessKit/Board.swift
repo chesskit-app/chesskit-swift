@@ -83,6 +83,7 @@ public struct Board: Sendable {
             return process(move: Move(result: .capture(enPassant.pawn), piece: piece, start: start, end: end))
         } else {
             position.enPassant = nil     // prevent en passant on next turn
+            position.enPassantIsPossible = false
         }
         
         // castling
@@ -145,17 +146,10 @@ public struct Board: Sendable {
                 position.resetHalfmoveClock()
                 
                 if abs(start.rank.value - end.rank.value) == 2 {
-                    for square in updatedPiece.sideSquares {
-                        let nearbyPiece = position.piece(at: square)
-                        if nearbyPiece?.kind == .pawn && nearbyPiece?.color != updatedPiece.color {
-                            // end.rank is different from the enPassant square rank
-                            let finalSquare = Square(end.file, updatedPiece.color == .white ? 3 : 6)
-                            
-                            // check if the enPassant is possible
-                            if canMove(pieceAt: square, to: finalSquare) {
-                                position.enPassant = EnPassant(pawn: updatedPiece)
-                            }
-                        }
+                    position.enPassant = EnPassant(pawn: updatedPiece)
+                    
+                    if validateEnPassant() {
+                        position.enPassantIsPossible = true
                     }
                     
                 }
@@ -354,6 +348,24 @@ public struct Board: Sendable {
         }
         
         return !isKingInCheck(piece.color, set: testSet)
+    }
+    
+    /// Determines if there is an actualy possibility to execute
+    /// the enPassant.
+    private func validateEnPassant() -> Bool {
+        if let ep = position.enPassant {
+            let sideSquares = [ep.pawn.square.left, ep.pawn.square.right]
+            
+            for square in sideSquares {
+                if let piece = position.piece(at: square),
+                   ep.couldBeCaptured(by: piece),
+                   validate(moveFor: piece, to: ep.captureSquare) {
+                    return true
+                }
+            }
+        }
+        
+        return false
     }
     
     /// Determines the positions of pieces that attack a given square.
