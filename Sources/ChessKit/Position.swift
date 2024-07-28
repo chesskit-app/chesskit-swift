@@ -25,16 +25,18 @@ public struct Position: Equatable, Sendable, Hashable {
 
     /// Contains information about a pawn that can be captured by en passant.
     ///
-    /// This property is `nil` if there is no pawn capable of being captured by
-    /// en passant.
+    /// This property is set whenever a pawn moves by 2 squares.
     var enPassant: EnPassant?
+
+    /// States the possibility to actually execute the enPassant
+    var enPassantIsPossible: Bool
 
     /// Conforming Position class to Hashable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(pieceSet)
         hasher.combine(sideToMove)
         hasher.combine(legalCastlings)
-        hasher.combine(enPassant)
+        hasher.combine(enPassantIsPossible)
     }
     
     /// Keeps track of the number of moves in a game for the current position.
@@ -46,12 +48,14 @@ public struct Position: Equatable, Sendable, Hashable {
         sideToMove: Piece.Color = .white,
         legalCastlings: LegalCastlings = LegalCastlings(),
         enPassant: EnPassant? = nil,
+        enPassantIsPossible: Bool = false,
         clock: Clock = Clock()
     ) {
         self.pieceSet = .init(pieces: pieces)
         self.sideToMove = sideToMove
         self.legalCastlings = legalCastlings
         self.enPassant = enPassant
+        self.enPassantIsPossible = enPassantIsPossible
         self.clock = clock
     }
 
