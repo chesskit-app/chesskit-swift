@@ -348,7 +348,7 @@ public struct Board: Sendable {
         testSet.add(movedPiece)
         
         if let enPassant = position.enPassant {
-            if enPassant.canBeCaptured(by: piece) && enPassant.captureSquare == square {
+            if enPassant.couldBeCaptured(by: piece) && enPassant.captureSquare == square {
                 testSet.remove(enPassant.pawn)
             }
         }
@@ -431,7 +431,7 @@ public struct Board: Sendable {
         if let enPassant = position.enPassant,
            let square = Square(sq),
            let piece = set.get(square),
-           enPassant.canBeCaptured(by: piece) {
+           enPassant.couldBeCaptured(by: piece) {
             enPassantMove = enPassant.captureSquare.bb
         }
         

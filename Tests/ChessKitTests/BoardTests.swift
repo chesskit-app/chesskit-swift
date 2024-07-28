@@ -49,7 +49,7 @@ class BoardTests: XCTestCase {
         let ep = board.position.enPassant!
         
         let capturingPiece = board.position.piece(at: .f4)!
-        XCTAssertTrue(ep.canBeCaptured(by: capturingPiece))
+        XCTAssertTrue(ep.couldBeCaptured(by: capturingPiece))
         
         let move = board.move(pieceAt: .f4, to: ep.captureSquare)!
         XCTAssertEqual(move.result, .capture(ep.pawn))
