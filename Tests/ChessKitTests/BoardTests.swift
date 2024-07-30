@@ -61,6 +61,15 @@ class BoardTests: XCTestCase {
         XCTAssertFalse(board.canMove(pieceAt: .c5, to: .d6))
     }
     
+    func testDoubleEnPassant() {
+        var board = Board(position: .init(fen: "kr6/2p5/8/1P1P4/8/1K6/8/8 b - - 0 1")!)
+        board.move(pieceAt: .c7, to: .c5)
+        // after this move only 1 out of 2 pawns can execute enPassant
+        XCTAssertFalse(board.canMove(pieceAt: .b5, to: .c6))
+        XCTAssertTrue(board.canMove(pieceAt: .d5, to: .c6))
+        XCTAssertTrue(board.position.enPassantIsPossible)
+    }
+    
     func testPromotion() {
         let pawn = Piece(.pawn, color: .white, square: .e7)
         let queen = Piece(.queen, color: .white, square: .e8)
