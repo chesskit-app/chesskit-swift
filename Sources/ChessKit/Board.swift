@@ -158,9 +158,6 @@ public struct Board: Sendable {
         }
     }
     
-    public func hashedPositions() -> [Int:Int] {
-        return self.positionHashCounts
-    }
     /// Checks if a piece at a given square can be moved to a new square.
     ///
     /// - parameter square: The square currently containing the piece.

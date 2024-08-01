@@ -179,27 +179,40 @@ class BoardTests: XCTestCase {
     
     func testThreefoldRepetition() {
         
-        var board: Board = Board(position: .standard)
+        var board = Board(position: .standard)
         
         board.move(pieceAt: .e2, to: .e4)
-        board.move(pieceAt: .e7, to: .e5)
+        board.move(pieceAt: .e7, to: .e5) // 1st time position occurs
         
         board.move(pieceAt: .g1, to: .f3)
         board.move(pieceAt: .g8, to: .f6)
         
         board.move(pieceAt: .f3, to: .g1)
-        board.move(pieceAt: .f6, to: .g8)
+        board.move(pieceAt: .f6, to: .g8) // 2nd time position occurs
         
         board.move(pieceAt: .g1, to: .f3)
         board.move(pieceAt: .g8, to: .f6)
         
         board.move(pieceAt: .f3, to: .g1)
         
-        // check draw before and after the move
-        XCTAssertFalse(board.hashedPositions()[board.position.hashValue] == 3)
-        board.move(pieceAt: .f6, to: .g8)
-        XCTAssertTrue(board.hashedPositions()[board.position.hashValue] == 3)
         
+        nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns draw by repetition result")
+        
+        let delegate = MockBoardDelegate(didEnd: { result in
+            if case .draw(let drawType) = result {
+                if drawType == .repetition {
+                    expectation?.fulfill()
+                    expectation = nil
+                }
+            } else {
+                XCTFail()
+            }
+        })
+        
+        board.delegate = delegate
+        board.move(pieceAt: .f6, to: .g8) // 3rd time position occurs
+        
+        waitForExpectations(timeout: 1.0)
     }
     
     func testLegalMovesForNonexistentPiece() {
