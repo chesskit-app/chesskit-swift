@@ -60,12 +60,12 @@ public enum Square: Int, Equatable, CaseIterable, Sendable {
             self.init(value)
         }
     }
-    
+
     /// The Square at the left of the current one.
     public var left: Square {
         Square(File(file.number - 1), rank)
     }
-    
+
     /// The Square at the right of the current one.
     public var right: Square {
         Square(File(file.number + 1), rank)

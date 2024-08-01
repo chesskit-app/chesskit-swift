@@ -38,7 +38,7 @@ public struct Position: Equatable, Sendable, Hashable {
         hasher.combine(legalCastlings)
         hasher.combine(enPassantIsPossible)
     }
-    
+
     /// Keeps track of the number of moves in a game for the current position.
     public private(set) var clock: Clock
 
@@ -210,7 +210,7 @@ public struct Position: Equatable, Sendable, Hashable {
             return false
         }
     }
-    
+
     /// The FEN represenation of the position.
     public var fen: String {
         FENParser.convert(position: self)
