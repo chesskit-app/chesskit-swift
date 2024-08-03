@@ -14,7 +14,7 @@ enum PositionAnnotation {
 /// Parses and converts the Portable Game Notation (PGN)
 /// of a chess game.
 ///
-public class PGNParser {
+public enum PGNParser {
 
     /// Contains the contents of a single parsed move pair.
     private struct ParsedMove {
@@ -33,8 +33,6 @@ public class PGNParser {
             case draw = "1/2-1/2"
         }
     }
-
-    private init() {}
 
     // MARK: - Public
 

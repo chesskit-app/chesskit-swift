@@ -5,9 +5,7 @@
 
 /// Parses and converts the Standard Algebraic Notation (SAN)
 /// of a chess move.
-public class SANParser {
-    
-    private init() {}
+public enum SANParser {
     
     /// Parses a SAN string and returns a move.
     ///

@@ -57,7 +57,7 @@ class MoveTreeTests: XCTestCase {
 
 }
 
-// MARK: - Deprecated Method Tests
+// MARK: - Deprecated Tests
 
 extension MoveTreeTests {
 
@@ -85,6 +85,8 @@ extension MoveTreeTests {
 
         XCTAssertNil(moveTree.previousIndex(for: .minimum))
         XCTAssertNil(moveTree.nextIndex(for: i2))
+
+        XCTAssertEqual(moveTree.nextIndex(for: .minimum), i1)
     }
 
 }

@@ -274,7 +274,7 @@ class GameTests: XCTestCase {
         XCTAssertTrue(game.tags.isValid)
     }
 
-    func testInValidTagPairs() {
+    func testInvalidTagPairs() {
         let pgn =
         """
         [Event "Test Event"]
@@ -285,6 +285,10 @@ class GameTests: XCTestCase {
         let game = Game(pgn: pgn)!
         XCTAssertFalse(game.tags.isValid)
         XCTAssertTrue(game.tags.$site.pgn.isEmpty)
+    }
+
+    func testInvalidGame() {
+        
     }
 
 }

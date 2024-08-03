@@ -6,7 +6,12 @@
 
 ### Bug Fixes
 * `File.init(_ number: Int)` now correctly bounds invalid values.
-  * i.e. Value less than 1 become `File.a` and values greater than 8 become `File.h`.
+  * i.e. Values less than 1 become `File.a` and values greater than 8 become `File.h`.
+
+### Technical Changes
+* Test coverage has been improved.
+* Parsers (`EngineLANParser`, `FENParser`, `PGNParser`, `SANParser`) have been converted from classes to caseless enums.
+  * This should have no effect on existing code since the class versions had private initializers.
 
 # ChessKit 0.10.0
 Released Friday, June 21, 2024.
