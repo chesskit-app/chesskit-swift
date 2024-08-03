@@ -293,41 +293,55 @@ final class BoardTests: XCTestCase {
         let position = Position(fen: "r7/1r6/2r1p3/P7/p7/2R1P3/1R6/R7 w - - 0 1")!
         let board = Board(position: position)
 
-        XCTAssertTrue(board.canMove(pieceAt: .a1, to: .a4))
-        XCTAssertFalse(board.canMove(pieceAt: .a1, to: .a5))
-        XCTAssertTrue(board.canMove(pieceAt: .a1, to: .h1))
+        [.a4, .h1].forEach {
+            XCTAssertTrue(board.canMove(pieceAt: .a1, to: $0))
+        }
 
-        XCTAssertTrue(board.canMove(pieceAt: .b2, to: .b7))
+        XCTAssertFalse(board.canMove(pieceAt: .a1, to: .a5))
+
+        [.a2, .b1, .b7, .h2].forEach {
+            XCTAssertTrue(board.canMove(pieceAt: .b2, to: $0))
+        }
+
         XCTAssertFalse(board.canMove(pieceAt: .b2, to: .b8))
-        XCTAssertTrue(board.canMove(pieceAt: .b2, to: .h2))
-        XCTAssertTrue(board.canMove(pieceAt: .b2, to: .b1))
-        XCTAssertTrue(board.canMove(pieceAt: .b2, to: .a2))
     }
 
     func testLegalQueenMoves() {
+        let position = Position(fen: "7k/8/2pP4/3qq3/3QQ3/4pP2/8/K7 w - - 0 1")!
+        let board = Board(position: position)
 
+        [.b2, .c3, .e5].forEach { XCTAssertTrue(board.canMove(pieceAt: .d4, to: $0))  }
+        [.e3, .c4, .b4].forEach { XCTAssertFalse(board.canMove(pieceAt: .d4, to: $0)) }
+
+        [.d4, .f6, .g7].forEach { XCTAssertTrue(board.canMove(pieceAt: .e5, to: $0))  }
+        [.d6, .e6, .g6].forEach { XCTAssertFalse(board.canMove(pieceAt: .e5, to: $0)) }
+
+        [.d4, .e4, .a2].forEach { XCTAssertTrue(board.canMove(pieceAt: .d5, to: $0))  }
+        [.c6, .e5, .d7].forEach { XCTAssertFalse(board.canMove(pieceAt: .d5, to: $0)) }
+
+        [.d5, .e5, .h7].forEach { XCTAssertTrue(board.canMove(pieceAt: .e4, to: $0))  }
+        [.e2, .d4, .f3].forEach { XCTAssertFalse(board.canMove(pieceAt: .e4, to: $0)) }
     }
 
     func testLegalKingMoves() {
         let position = Position(fen: "8/8/8/4p3/4K3/8/8/8 w - - 0 1")!
         let board = Board(position: position)
 
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .d5))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .d3))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .f5))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .f3))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .e5))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .e3))
-        XCTAssertFalse(board.canMove(pieceAt: .e4, to: .d4))
-        XCTAssertFalse(board.canMove(pieceAt: .e4, to: .f4))
-    }
+        [.d3, .d5, .f3, .f5, .e3, .e5].forEach {
+            XCTAssertTrue(board.canMove(pieceAt: .e4, to: $0))
+        }
 
-    func testLegalMovePiece() {
-
+        [.d4, .f4].forEach {
+            XCTAssertFalse(board.canMove(pieceAt: .e4, to: $0))
+        }
     }
 
     func testCaptureMove() {
+        var board = Board(position: .init(fen: "8/8/8/4p3/3P4/8/8/8 w - - 0 1")!)
+        let move = board.move(pieceAt: .d4, to: .e5)
 
+        let capturedPiece = Piece(.pawn, color: .black, square: .e5)
+        XCTAssertEqual(move?.result, .capture(capturedPiece))
     }
 
     func testIllegalMove() {
