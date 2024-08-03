@@ -4,7 +4,7 @@
 //
 
 extension PGNParser {
-    
+
     /// Contains useful regex strings for PGN parsing.
     struct Pattern {
         // tag pair components

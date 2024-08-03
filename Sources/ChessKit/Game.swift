@@ -184,7 +184,7 @@ public struct Game: Equatable {
     /// - parameter index: The index of the move within the ``MoveTree``.
     /// - parameter assessment: The move assessment annotation.
     /// - parameter comment: The move comment annotation.
-    /// 
+    ///
     public mutating func annotate(
         moveAt index: MoveTree.Index,
         assessment: Move.Assessment = .null,
@@ -234,7 +234,7 @@ extension Game {
     /// Contains the PGN tag pairs for a game.
     public struct Tags: Equatable {
 
-        /// Whether or not all the standard mandatory tags for 
+        /// Whether or not all the standard mandatory tags for
         /// PGN archival are set.
         ///
         /// These include `event`, `site`, `date`, `round`,
@@ -258,7 +258,7 @@ extension Game {
         /// where "COUNTRY" is the three-letter International Olympic Committee
         /// code for the country.
         ///
-        /// Although not part of the specification, some online chess platforms 
+        /// Although not part of the specification, some online chess platforms
         /// will include a URL or website as the site value.
         @Tag(name: "Site")
         public var site: String
@@ -289,7 +289,7 @@ extension Game {
         @Tag(name: "Black")
         public var black: String
 
-        /// Result of the game. 
+        /// Result of the game.
         ///
         /// Example: `"1/2-1/2"`
         ///
@@ -338,7 +338,7 @@ extension Game {
         ///
         /// The key will be used as the tag name in the PGN.
         public var other: [String: String] = [:]
-        
+
         /// Initializes a `Game.Tags` object with the provided
         /// values.
         ///

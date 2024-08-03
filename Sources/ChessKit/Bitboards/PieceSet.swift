@@ -182,7 +182,7 @@ extension PieceSet: CustomStringConvertible {
                 let sq = Square(file, .init(rank))
 
                 if let piece = get(sq) {
-                    s += " \(ChessKitConfiguration.printOptions.mode == .graphic ? piece.graphic : piece.fen)" 
+                    s += " \(ChessKitConfiguration.printOptions.mode == .graphic ? piece.graphic : piece.fen)"
                 } else {
                     s += " ·"
                 }

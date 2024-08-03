@@ -94,7 +94,7 @@ public enum EngineLANParser {
     }
 
     // MARK: - Private
-    
+
     /// Returns whether the provided engine LAN is valid.
     ///
     /// - parameter lan: The LAN string to check.

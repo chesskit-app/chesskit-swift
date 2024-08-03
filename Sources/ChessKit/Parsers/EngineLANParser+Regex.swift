@@ -9,5 +9,5 @@ extension EngineLANParser {
     struct Pattern {
         static let move = #"^([a-h][1-8]){2}[qrbn]?$"#
     }
-
+    
 }

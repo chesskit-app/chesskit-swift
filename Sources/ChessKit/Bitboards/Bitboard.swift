@@ -23,7 +23,7 @@ extension Bitboard {
     static let dark: Bitboard = 0xAA55AA55AA55AA55
     /// Bitboard representing all the light squares on the board.
     static let light: Bitboard = ~dark
-    
+
     /// Translates the receiver `n` column "east" on an 8x8 grid.
     ///
     /// `n` should be in the range `[1, 7]`.
@@ -91,7 +91,7 @@ extension Bitboard {
     /// - parameter labelRanks: Whether or not to label ranks (i.e. 1, 2, 3, ...).
     /// - parameter labelFiles: Whether or not to label ranks (i.e. a, b, c, ...).
     /// - returns: A string representing an 8x8 chess board.
-    /// 
+    ///
     // periphery:ignore
     func chessString(
         _ occupied: Character = "⨯",
