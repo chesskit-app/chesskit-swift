@@ -257,7 +257,7 @@ public enum PGNParser {
         }
 
         // movetext
-        
+
         for element in game.moves.pgnRepresentation {
             switch element {
             case .whiteNumber(let number):

@@ -94,14 +94,14 @@ public enum EngineLANParser {
     }
 
     // MARK: - Private
-
+    
     /// Returns whether the provided engine LAN is valid.
     ///
     /// - parameter lan: The LAN string to check.
     /// - returns: Whether the LAN is valid.
     ///
     private static func isValid(lan: String) -> Bool {
-        lan.range(of: EngineLANParser.Regex.full, options: .regularExpression) != nil
+        lan.range(of: EngineLANParser.Pattern.move, options: .regularExpression) != nil
     }
 
 }
