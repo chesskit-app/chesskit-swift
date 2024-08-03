@@ -17,12 +17,19 @@ public struct Board: Sendable {
 
     // MARK: - Properties
 
+    /// The delegate for this board object.
+    ///
+    /// Used to communicate certain events as
+    /// the ``position`` changes.
     public weak var delegate: BoardDelegate?
 
     /// The current position represented on the board.
     public var position: Position
 
-    /// All the positions occurred during the game and how many times they appeared
+    /// A dictionary containing the occurrence counts for all the positions
+    /// that have appeared on this board, keyed by the position's hash.
+    ///
+    /// This is used to determine draw by repetition.
     private var positionHashCounts: [Int: Int]
 
     /// Convenience accessor for the pieces in `position`.
@@ -147,11 +154,7 @@ public struct Board: Sendable {
 
                 if abs(start.rank.value - end.rank.value) == 2 {
                     position.enPassant = EnPassant(pawn: updatedPiece)
-
-                    if validateEnPassant() {
-                        position.enPassantIsPossible = true
-                    }
-
+                    position.enPassantIsPossible = enPassantIsValid
                 }
             }
 
@@ -348,14 +351,10 @@ public struct Board: Sendable {
         return !isKingInCheck(piece.color, set: testSet)
     }
 
-    /// Determines if there is an actualy possibility to execute
-    /// the enPassant.
-    ///
-    private func validateEnPassant() -> Bool {
+    /// Whether the `enPassant` stored in `position` is valid.
+    private var enPassantIsValid: Bool {
         if let ep = position.enPassant {
-            let sideSquares = [ep.pawn.square.left, ep.pawn.square.right]
-
-            for square in sideSquares {
+            for square in [ep.pawn.square.left, ep.pawn.square.right] {
                 if let piece = position.piece(at: square),
                    ep.couldBeCaptured(by: piece),
                    validate(moveFor: piece, to: ep.captureSquare) {

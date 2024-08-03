@@ -29,15 +29,17 @@ public enum Square: Int, Equatable, CaseIterable, Sendable {
         /// See also `Square.File.number`.
         public init(_ number: Int) {
             switch number {
-            case 1:   self = .a
-            case 2:   self = .b
-            case 3:   self = .c
-            case 4:   self = .d
-            case 5:   self = .e
-            case 6:   self = .f
-            case 7:   self = .g
-            case 8:   self = .h
-            default:  self = .a
+            case 1:  self = .a
+            case 2:  self = .b
+            case 3:  self = .c
+            case 4:  self = .d
+            case 5:  self = .e
+            case 6:  self = .f
+            case 7:  self = .g
+            case 8:  self = .h
+            case let n where n < 1: self = .a
+            case let n where n > 8: self = .h
+            default: self = .a
             }
         }
     }
@@ -59,16 +61,6 @@ public enum Square: Int, Equatable, CaseIterable, Sendable {
         public init(integerLiteral value: IntegerLiteralType) {
             self.init(value)
         }
-    }
-
-    /// The Square at the left of the current one.
-    public var left: Square {
-        Square(File(file.number - 1), rank)
-    }
-
-    /// The Square at the right of the current one.
-    public var right: Square {
-        Square(File(file.number + 1), rank)
     }
 
     // MARK: - Squares
@@ -198,7 +190,7 @@ public enum Square: Int, Equatable, CaseIterable, Sendable {
         case .a8, .b8, .c8, .d8, .e8, .f8, .g8, .h8: 8
         }
     }
-    
+
     /// The notation for the given square.
     public var notation: String {
         file.rawValue + "\(rank.value)"
@@ -219,4 +211,35 @@ public enum Square: Int, Equatable, CaseIterable, Sendable {
             .light
         }
     }
+
+    // MARK: - Directional
+
+    /// The `Square` to the left of the current one.
+    ///
+    /// Returns the same square if called from a square on the A file.
+    public var left: Square {
+        Square(File(file.number - 1), rank)
+    }
+
+    /// The `Square` to the right of the current one.
+    ///
+    /// Returns the same square if called from a square on the H file.
+    public var right: Square {
+        Square(File(file.number + 1), rank)
+    }
+
+    /// The `Square` above the current one.
+    ///
+    /// Returns the same square if called from a square on the 8th rank.
+    public var up: Square {
+        Square(file, Rank(rank.value + 1))
+    }
+
+    /// The `Square` below the current one.
+    ///
+    /// Returns the same square if called from a square on the 1st rank.
+    public var down: Square {
+        Square(file, Rank(rank.value - 1))
+    }
+
 }

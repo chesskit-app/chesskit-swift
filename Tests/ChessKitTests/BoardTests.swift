@@ -178,7 +178,6 @@ class BoardTests: XCTestCase {
     }
 
     func testThreefoldRepetition() {
-
         var board = Board(position: .standard)
 
         board.move(pieceAt: .e2, to: .e4)
@@ -194,7 +193,6 @@ class BoardTests: XCTestCase {
         board.move(pieceAt: .g8, to: .f6)
 
         board.move(pieceAt: .f3, to: .g1)
-
 
         nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns draw by repetition result")
 

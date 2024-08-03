@@ -46,7 +46,26 @@ class SquareTests: XCTestCase {
     }
 
     func testInvalidFileNumber() {
-        XCTAssertEqual(Square.File(100), .a)
+        XCTAssertEqual(Square.File(-10), .a)
+        XCTAssertEqual(Square.File(100), .h)
+    }
+
+    func testDirectionalSquares() {
+        XCTAssertEqual(Square.a1.left, .a1)
+        XCTAssertEqual(Square.b1.left, .a1)
+        XCTAssertEqual(Square.h1.left, .g1)
+
+        XCTAssertEqual(Square.a1.right, .b1)
+        XCTAssertEqual(Square.g1.right, .h1)
+        XCTAssertEqual(Square.h1.right, .h1)
+
+        XCTAssertEqual(Square.a8.up, .a8)
+        XCTAssertEqual(Square.a7.up, .a8)
+        XCTAssertEqual(Square.a1.up, .a2)
+
+        XCTAssertEqual(Square.a1.down, .a1)
+        XCTAssertEqual(Square.a2.down, .a1)
+        XCTAssertEqual(Square.a8.down, .a7)
     }
 
 }

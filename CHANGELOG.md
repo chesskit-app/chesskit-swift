@@ -1,13 +1,21 @@
+# [unreleased]
+
+### New Features
+* A draw result is now published by `BoardDelegate` when the board encounters a threefold repetition (by [@joee-ca](https://github.com/joee-ca)).
+* Convenience directional properties added to `Square` such as `up`, `down`, `left`, and `right` to obtain squares in relation to the given `Square`.
+
+### Bug Fixes
+* `File.init(_ number: Int)` now correctly bounds invalid values.
+  * i.e. Value less than 1 become `File.a` and values greater than 8 become `File.h`.
+
 # ChessKit 0.10.0
 Released Friday, June 21, 2024.
 
 ### Improvements
-
 * Update tools version to Swift 5.9 (requires Xcode 15.0 or greater).
 * Conform to Swift strict concurrency and add `Sendable` conformance to most objects
 
 ### Breaking Changes
-
 * `Game` is now a `struct` and no longer conforms to `ObservableObject`.
   * If observation semantics are required, consider using `didSet` property observers or an object that utilizes the `@Observable` macro.
 

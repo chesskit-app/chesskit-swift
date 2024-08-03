@@ -4,7 +4,7 @@
 //
 
 /// Represents the collection of pieces on the chess board.
-public struct Position: Equatable, Sendable, Hashable {
+public struct Position: Equatable, Sendable {
 
     /// The pieces currently existing on the board in this position.
     public var pieces: [Piece] {
@@ -28,16 +28,8 @@ public struct Position: Equatable, Sendable, Hashable {
     /// This property is set whenever a pawn moves by 2 squares.
     var enPassant: EnPassant?
 
-    /// States the possibility to actually execute the enPassant
+    /// Indicates whether the en passant stored in `enPassant` is valid.
     var enPassantIsPossible: Bool
-
-    /// Conforming Position class to Hashable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(pieceSet)
-        hasher.combine(sideToMove)
-        hasher.combine(legalCastlings)
-        hasher.combine(enPassantIsPossible)
-    }
 
     /// Keeps track of the number of moves in a game for the current position.
     public private(set) var clock: Clock
@@ -239,6 +231,17 @@ extension Position: CustomStringConvertible {
 
     public var description: String {
         String(describing: pieceSet)
+    }
+
+}
+
+extension Position: Hashable {
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(pieceSet)
+        hasher.combine(sideToMove)
+        hasher.combine(legalCastlings)
+        hasher.combine(enPassantIsPossible)
     }
 
 }

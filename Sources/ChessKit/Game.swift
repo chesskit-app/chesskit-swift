@@ -10,7 +10,7 @@ import Foundation
 /// This object is the entry point for interacting with a full
 /// chess game within `ChessKit`. It provides methods for
 /// making moves and publishes the played moves in an observable way.
-public struct Game {
+public struct Game: Equatable {
 
     // MARK: - Properties
 
@@ -33,8 +33,9 @@ public struct Game {
     /// Initialize a game with a starting position.
     ///
     /// - parameter position: The starting position of the game.
-    /// Defaults to the starting position.
+    /// - parameter tags: The PGN tags associated with this game.
     ///
+    /// Defaults to the starting position.
     public init(startingWith position: Position = .standard, tags: Tags? = nil) {
         moves = MoveTree()
         let startingIndex = position.sideToMove == .white ? MoveTree.Index.minimum : .minimum.next
@@ -199,23 +200,13 @@ public struct Game {
 
 }
 
-// MARK: - Equatable
-
-extension Game: Equatable {
-
-    public static func == (lhs: Game, rhs: Game) -> Bool {
-        lhs.moves == rhs.moves && lhs.positions == rhs.positions
-    }
-
-}
-
 // MARK: - Tags
 
 extension Game {
 
     /// Denotes a PGN tag pair.
     @propertyWrapper
-    public struct Tag: Sendable {
+    public struct Tag: Equatable, Sendable {
 
         /// The name of the tag pair.
         ///
@@ -235,17 +226,13 @@ extension Game {
         ///
         /// Formatted as `[Name "Value"]`.
         public var pgn: String {
-            if wrappedValue.isEmpty {
-                return ""
-            } else {
-                return "[\(name) \"\(wrappedValue)\"]"
-            }
+            wrappedValue.isEmpty ? "" : "[\(name) \"\(wrappedValue)\"]"
         }
 
     }
 
     /// Contains the PGN tag pairs for a game.
-    public struct Tags {
+    public struct Tags: Equatable {
 
         /// Whether or not all the standard mandatory tags for 
         /// PGN archival are set.
