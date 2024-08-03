@@ -8,14 +8,30 @@ import XCTest
 
 class EngineLANParserTests: XCTestCase {
 
-    func testCastling() {
-        let p1 = Position(fen: "r3k3/8/8/8/8/8/8/4K2R w Kq - 0 1")!
-        let shortCastle = EngineLANParser.parse(move: "e1g1", for: .white, in: p1)
-        XCTAssertEqual(shortCastle?.result, .castle(.wK))
+    func testCapture() {
+        let position = Position(fen: "8/8/8/4p3/3P4/8/8/8 w - - 0 1")!
+        let move = EngineLANParser.parse(move: "d4e5", for: .white, in: position)
 
-        let p2 = Position(fen: "r3k3/8/8/8/8/8/8/5RK1 b q - 0 1")!
-        let longCastle = EngineLANParser.parse(move: "e8c8", for: .black, in: p2)
-        XCTAssertEqual(longCastle?.result, .castle(.bQ))
+        let capturedPiece = Piece(.pawn, color: .black, square: .e5)
+        XCTAssertEqual(move?.result, .capture(capturedPiece))
+    }
+
+    func testCastling() {
+        let p1 = Position(fen: "8/8/8/8/8/8/8/4K2R w KQ - 0 1")!
+        let wShortCastle = EngineLANParser.parse(move: "e1g1", for: .white, in: p1)
+        XCTAssertEqual(wShortCastle?.result, .castle(.wK))
+
+        let p2 = Position(fen: "8/8/8/8/8/8/8/R3K3 w KQ - 0 1")!
+        let wLongCastle = EngineLANParser.parse(move: "e1c1", for: .white, in: p2)
+        XCTAssertEqual(wLongCastle?.result, .castle(.wQ))
+
+        let p3 = Position(fen: "4k2r/8/8/8/8/8/8/8 b kq - 0 1")!
+        let bShortCastle = EngineLANParser.parse(move: "e8g8", for: .black, in: p3)
+        XCTAssertEqual(bShortCastle?.result, .castle(.bK))
+
+        let p4 = Position(fen: "r3k3/8/8/8/8/8/8/8 b kq - 0 1")!
+        let bLongCastle = EngineLANParser.parse(move: "e8c8", for: .black, in: p4)
+        XCTAssertEqual(bLongCastle?.result, .castle(.bQ))
     }
 
     func testPromotion() {
