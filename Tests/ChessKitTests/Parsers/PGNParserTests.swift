@@ -27,7 +27,21 @@ final class PGNParserTests: XCTestCase {
         XCTAssertEqual(game?.tags.black, "Spassky, Boris V.")
         XCTAssertEqual(game?.tags.result, "1/2-1/2")
     }
-    
+
+    func testCustomTagParsing() {
+        // invalid pair
+        let g1 = PGNParser.parse(game: "[a] 1. e4 e5")
+        XCTAssertNil(g1?.tags.other["a"])
+
+        // custom tag
+        let g2 = PGNParser.parse(game: "[CustomTag \"Value\"] 1. e4 e5")
+        XCTAssertEqual(g2?.tags.other["CustomTag"], "Value")
+
+        // duplicate tags
+        let g3 = PGNParser.parse(game: "[CustomTag \"Value\"] [CustomTag \"Value2\"] 1. e4 e5")
+        XCTAssertEqual(g3?.tags.other["CustomTag"], "Value")
+    }
+
     func testMoveTextParsing() {
         let game = PGNParser.parse(game: Game.fischerSpassky)
         
