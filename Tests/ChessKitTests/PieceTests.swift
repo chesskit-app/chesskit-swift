@@ -6,7 +6,7 @@
 @testable import ChessKit
 import XCTest
 
-class PieceTests: XCTestCase {
+final class PieceTests: XCTestCase {
 
     func testNotation() {
         let pawn = Piece.Kind.pawn
@@ -85,7 +85,7 @@ class PieceTests: XCTestCase {
         XCTAssertEqual(bN?.color, .black)
         XCTAssertEqual(bN?.kind, .knight)
         XCTAssertEqual(bN?.square, sq)
-        
+
         let bR = Piece(fen: "r", square: sq)
         XCTAssertEqual(bR?.color, .black)
         XCTAssertEqual(bR?.kind, .rook)

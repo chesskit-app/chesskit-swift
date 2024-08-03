@@ -6,7 +6,7 @@
 @testable import ChessKit
 import XCTest
 
-class GameTests: XCTestCase {
+final class GameTests: XCTestCase {
 
     private var game = Game()
 
@@ -214,7 +214,7 @@ class GameTests: XCTestCase {
                 .forward
             ]
         )
-        
+
         XCTAssertEqual(
             path.map(\.index),
             [
@@ -230,7 +230,7 @@ class GameTests: XCTestCase {
     }
 
     func testPGN() {
-        let pgn = 
+        let pgn =
         """
         [Event "Test Event"]
         [Site "Barrow, Alaska USA"]
@@ -249,7 +249,7 @@ class GameTests: XCTestCase {
         [SetUp "1"]
         [TestKey1 "Test Value 1"]
         [TestKey2 "Test Value 2"]
-
+        
         1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
         """
 
@@ -266,7 +266,7 @@ class GameTests: XCTestCase {
         [White "Player One"]
         [Black "Player Two"]
         [Result "1-0"]
-
+        
         1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
         """
 
@@ -274,17 +274,21 @@ class GameTests: XCTestCase {
         XCTAssertTrue(game.tags.isValid)
     }
 
-    func testInValidTagPairs() {
+    func testInvalidTagPairs() {
         let pgn =
         """
         [Event "Test Event"]
-
+        
         1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
         """
 
         let game = Game(pgn: pgn)!
         XCTAssertFalse(game.tags.isValid)
         XCTAssertTrue(game.tags.$site.pgn.isEmpty)
+    }
+
+    func testInvalidGame() {
+
     }
 
 }

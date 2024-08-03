@@ -6,7 +6,7 @@
 @testable import ChessKit
 import XCTest
 
-class SpecialMoveTests: XCTestCase {
+final class SpecialMoveTests: XCTestCase {
 
     func testLegalCastlingInvalidationForKings() {
         let blackKing = Piece(.king, color: .black, square: .e8)
@@ -57,7 +57,7 @@ class SpecialMoveTests: XCTestCase {
         XCTAssertFalse(legalCastlings.contains(.wK))
         XCTAssertFalse(legalCastlings.contains(.wQ))
     }
-    
+
     func testEnPassantCaptureSquare() {
         let blackPawn = Piece(.pawn, color: .black, square: .d5)
         let blackEnPassant = EnPassant(pawn: blackPawn)

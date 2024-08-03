@@ -6,7 +6,7 @@
 @testable import ChessKit
 import XCTest
 
-class SquareTests: XCTestCase {
+final class SquareTests: XCTestCase {
 
     func testNotation() {
         XCTAssertEqual(Square.a1.notation, "a1")
@@ -23,7 +23,7 @@ class SquareTests: XCTestCase {
     func testInvalidNotation() {
         XCTAssertEqual(Square("invalid"), .a1)
     }
-    
+
     func testSquareColor() {
         XCTAssertEqual(Square.a1.color, .dark)
         XCTAssertEqual(Square.h1.color, .light)
@@ -54,7 +54,7 @@ class SquareTests: XCTestCase {
         XCTAssertEqual(Square.a1.left, .a1)
         XCTAssertEqual(Square.b1.left, .a1)
         XCTAssertEqual(Square.h1.left, .g1)
-
+        
         XCTAssertEqual(Square.a1.right, .b1)
         XCTAssertEqual(Square.g1.right, .h1)
         XCTAssertEqual(Square.h1.right, .h1)

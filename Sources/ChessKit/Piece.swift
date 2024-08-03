@@ -103,7 +103,7 @@ public struct Piece: Equatable, Hashable, Sendable {
         case (.white, .king):   "K"
         }
     }
-
+    
     var graphic: String {
         switch (color, kind) {
         case (.black, .pawn):   "♟\u{FE0E}"

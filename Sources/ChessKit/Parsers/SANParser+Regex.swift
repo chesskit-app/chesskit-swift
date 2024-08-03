@@ -6,7 +6,7 @@
 extension SANParser {
 
     /// Contains useful regex strings for SAN parsing.
-    struct Regex {
+    struct Pattern {
         static let full = #"(([Oo0]-[Oo0](-[Oo0])?|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](\=[QRBN])?[+#]?))"#
 
         // piece kinds

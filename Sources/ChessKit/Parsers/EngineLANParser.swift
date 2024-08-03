@@ -17,9 +17,7 @@
 ///
 /// See [UCI protocol documentation](https://backscattering.de/chess/uci/2006-04.txt)
 /// for more information.
-public class EngineLANParser {
-
-    private init() {}
+public enum EngineLANParser {
 
     /// Parses a LAN string and returns a move.
     ///
@@ -103,7 +101,7 @@ public class EngineLANParser {
     /// - returns: Whether the LAN is valid.
     ///
     private static func isValid(lan: String) -> Bool {
-        lan.range(of: EngineLANParser.Regex.full, options: .regularExpression) != nil
+        lan.range(of: EngineLANParser.Pattern.move, options: .regularExpression) != nil
     }
 
 }

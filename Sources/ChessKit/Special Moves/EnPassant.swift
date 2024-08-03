@@ -13,7 +13,7 @@ struct EnPassant: Equatable, Hashable, Sendable {
     var captureSquare: Square {
         Square(pawn.square.file, pawn.color == .white ? 3 : 6)
     }
-
+    
     /// Determines whether or not the pawn could be captured by en passant.
     ///
     /// - parameter capturingPiece: The piece that is capturing the contained pawn.

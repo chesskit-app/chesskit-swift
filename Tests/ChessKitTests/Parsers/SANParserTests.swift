@@ -6,7 +6,7 @@
 @testable import ChessKit
 import XCTest
 
-class SANParserTests: XCTestCase {
+final class SANParserTests: XCTestCase {
 
     func testCastling() {
         let p1 = Position(fen: "r3k3/8/8/8/8/8/8/4K2R w Kq - 0 1")!

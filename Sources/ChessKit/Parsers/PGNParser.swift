@@ -5,16 +5,9 @@
 
 import Foundation
 
-/// Positional assessments.
-// periphery:ignore
-enum PositionAnnotation {
-    // <TBD>
-}
-
 /// Parses and converts the Portable Game Notation (PGN)
 /// of a chess game.
-///
-public class PGNParser {
+public enum PGNParser {
 
     /// Contains the contents of a single parsed move pair.
     private struct ParsedMove {
@@ -33,8 +26,6 @@ public class PGNParser {
             case draw = "1/2-1/2"
         }
     }
-
-    private init() {}
 
     // MARK: - Public
 
@@ -60,44 +51,43 @@ public class PGNParser {
 
         // tags
 
-        let tags: [(String, String)]? = try? NSRegularExpression(pattern: Regex.tags)
+        let tags: [(String, String)]? = try? NSRegularExpression(pattern: Pattern.tags)
             .matches(in: processedPGN, range: range)
             .map {
                 NSString(string: pgn).substring(with: $0.range)
                     .trimmingCharacters(in: .whitespacesAndNewlines)
             }
-
             .compactMap { tag in
-            let tagRange = NSRange(0..<tag.utf16.count)
+                let tagRange = NSRange(0..<tag.utf16.count)
 
-            let matches = try? NSRegularExpression(pattern: Regex.tagPair)
-                .matches(in: tag, range: tagRange)
+                let matches = try? NSRegularExpression(pattern: Pattern.tagPair)
+                    .matches(in: tag, range: tagRange)
 
-            if let matches,
-               matches.count >= 1,
-               matches[0].numberOfRanges >= 3 {
-                let key = matches[0].range(at: 1)
-                let value = matches[0].range(at: 2)
+                if let matches,
+                   matches.count >= 1,
+                   matches[0].numberOfRanges >= 3 {
+                    let key = matches[0].range(at: 1)
+                    let value = matches[0].range(at: 2)
 
-                return (
-                    NSString(string: tag).substring(with: key)
-                        .trimmingCharacters(in: .whitespacesAndNewlines),
-                    NSString(string: tag).substring(with: value)
-                        .trimmingCharacters(in: .whitespacesAndNewlines)
-                )
-            } else {
-                return nil
+                    return (
+                        NSString(string: tag).substring(with: key)
+                            .trimmingCharacters(in: .whitespacesAndNewlines),
+                        NSString(string: tag).substring(with: value)
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+                    )
+                } else {
+                    return nil
+                }
             }
-        }
 
         let parsedTags = parsed(tags: Dictionary<String, String>(tags ?? []) { a, _ in a })
 
         // movetext
 
-        let moves: [String]
+        let moveText: [String]
 
         do {
-            moves = try NSRegularExpression(pattern: Regex.full)
+            moveText = try NSRegularExpression(pattern: Pattern.moveText)
                 .matches(in: processedPGN, range: range)
                 .map {
                     NSString(string: pgn).substring(with: $0.range)
@@ -107,18 +97,16 @@ public class PGNParser {
             return nil
         }
 
-        let parsedMoves = moves.compactMap { move -> ParsedMove? in
+        let parsedMoves = moveText.compactMap { move -> ParsedMove? in
             let range = NSRange(0..<move.utf16.count)
 
-            guard let moveNumberRange = move.range(of: Regex.moveNumber, options: .regularExpression),
+            guard let moveNumberRange = move.range(of: Pattern.moveNumber, options: .regularExpression),
                   let moveNumber = Int(move[moveNumberRange])
             else {
                 return nil
             }
 
-            let singleMoveRegex = "(\(Regex.castle)?|\(Regex.move)?)(\\s?\(Regex.annotation))?(\\s?\(Regex.comment))?"
-
-            guard let m = try? NSRegularExpression(pattern: singleMoveRegex)
+            guard let m = try? NSRegularExpression(pattern: Pattern.singleMove)
                 .matches(in: move, range: range)
                 .map({ NSString(string: move).substring(with: $0.range) }),
                   m.count >= 1 && m.count <= 2
@@ -126,16 +114,16 @@ public class PGNParser {
                 return nil
             }
 
-            let whiteAnnotation = try? NSRegularExpression(pattern: Regex.annotation)
+            let whiteAnnotation = try? NSRegularExpression(pattern: Pattern.annotation)
                 .matches(in: m[0], range: NSRange(0..<m[0].utf16.count))
-                .map {
-                    Move.Assessment(rawValue: NSString(string: m[0]).substring(with: $0.range)) ?? .null
+                .compactMap {
+                    Move.Assessment(rawValue: NSString(string: m[0]).substring(with: $0.range))
                 }
                 .first ?? .null
 
-            let whiteComment = try? NSRegularExpression(pattern: Regex.comment)
+            let whiteComment = try? NSRegularExpression(pattern: Pattern.comment)
                 .matches(in: m[0], range: NSRange(0..<m[0].utf16.count))
-                .map {
+                .compactMap {
                     NSString(string: m[0]).substring(with: $0.range)
                         .replacingOccurrences(of: "{", with: "")
                         .replacingOccurrences(of: "}", with: "")
@@ -146,16 +134,16 @@ public class PGNParser {
             var blackComment: String?
 
             if m.count == 2 {
-                blackAnnotation = try? NSRegularExpression(pattern: Regex.annotation)
+                blackAnnotation = try? NSRegularExpression(pattern: Pattern.annotation)
                     .matches(in: m[1], range: NSRange(0..<m[1].utf16.count))
-                    .map {
-                        Move.Assessment(rawValue: NSString(string: m[1]).substring(with: $0.range)) ?? .null
+                    .compactMap {
+                        Move.Assessment(rawValue: NSString(string: m[1]).substring(with: $0.range))
                     }
                     .first ?? .null
 
-                blackComment = try? NSRegularExpression(pattern: Regex.comment)
+                blackComment = try? NSRegularExpression(pattern: Pattern.comment)
                     .matches(in: m[1], range: NSRange(0..<m[1].utf16.count))
-                    .map {
+                    .compactMap {
                         NSString(string: m[1]).substring(with: $0.range)
                             .replacingOccurrences(of: "{", with: "")
                             .replacingOccurrences(of: "}", with: "")
@@ -163,7 +151,7 @@ public class PGNParser {
                     .first ?? ""
             }
 
-            let result = try? NSRegularExpression(pattern: Regex.result)
+            let result = try? NSRegularExpression(pattern: Pattern.result)
                 .matches(in: move, range: range)
                 .map {
                     NSString(string: move).substring(with: $0.range)
@@ -269,7 +257,7 @@ public class PGNParser {
         }
 
         // movetext
-        
+
         for element in game.moves.pgnRepresentation {
             switch element {
             case .whiteNumber(let number):

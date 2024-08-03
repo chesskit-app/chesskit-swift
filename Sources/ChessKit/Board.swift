@@ -219,7 +219,7 @@ public struct Board: Sendable {
         processedMove.checkState = checkState
 
         positionHashCounts[position.hashValue, default: 0] += 1
-        
+
         if checkState == .checkmate {
             delegate?.didEnd(with: .win(move.piece.color))
         } else if checkState == .stalemate {
@@ -546,7 +546,7 @@ public struct Board: Sendable {
         let pathClear = castling.path.allSatisfy {
             set.get($0) == nil
         }
-        
+
         let notCastlingThroughCheck = castling.squares.allSatisfy {
             attackers(to: $0.bb, set: set) & ~us == 0
         }

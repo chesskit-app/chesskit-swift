@@ -6,7 +6,7 @@
 @testable import ChessKit
 import XCTest
 
-class MoveTests: XCTestCase {
+final class MoveTests: XCTestCase {
     
     func testMoveSANInit() {
         let move = Move(result: .move, piece: .init(.pawn, color: .white, square: .e4), start: .e2, end: .e4)

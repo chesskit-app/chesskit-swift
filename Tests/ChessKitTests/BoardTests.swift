@@ -6,43 +6,7 @@
 @testable import ChessKit
 import XCTest
 
-/// Test positions
-extension Position {
-    static let standard = Position(fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")!
-
-    static let complex = Position(fen: "r1b1k1nr/p2p1pNp/n2B4/1p1NP2P/6P1/3P1Q2/P1P1K3/q5b1 b kq - 0 20")!
-
-    static let ep = Position(fen: "rnbqkbnr/ppppp1pp/8/8/4Pp2/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1")!
-
-    static let castling = Position(fen: "4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1")!
-
-    static let fiftyMove = Position(fen: "8/5k2/3p4/1p1Pp2p/pP2Pp1P/P4P1K/8/8 b - - 99 50")!
-
-    static let insufficientMaterial = Position(fen: "k7/b6P/8/8/8/8/8/K7 w - - 0 1")!
-}
-
-final class MockBoardDelegate: BoardDelegate {
-    private let didPromote: (@Sendable (Move) -> Void)?
-    private let didEnd: (@Sendable (Board.EndResult) -> Void)?
-
-    init(
-        didPromote: (@Sendable (Move) -> Void)? = nil,
-        didEnd: (@Sendable (Board.EndResult) -> Void)? = nil
-    ) {
-        self.didPromote = didPromote
-        self.didEnd = didEnd
-    }
-
-    func didPromote(with move: Move) {
-        didPromote?(move)
-    }
-
-    func didEnd(with result: Board.EndResult) {
-        didEnd?(result)
-    }
-}
-
-class BoardTests: XCTestCase {
+final class BoardTests: XCTestCase {
 
     func testEnPassant() {
         var board = Board(position: .ep)
@@ -50,7 +14,7 @@ class BoardTests: XCTestCase {
 
         let capturingPiece = board.position.piece(at: .f4)!
         XCTAssertTrue(ep.couldBeCaptured(by: capturingPiece))
-        
+
         let move = board.move(pieceAt: .f4, to: ep.captureSquare)!
         XCTAssertEqual(move.result, .capture(ep.pawn))
     }
@@ -70,7 +34,7 @@ class BoardTests: XCTestCase {
         XCTAssertTrue(board.position.enPassantIsPossible)
     }
 
-   func testPromotion() {
+    func testWhitePromotion() {
         let pawn = Piece(.pawn, color: .white, square: .e7)
         let queen = Piece(.queen, color: .white, square: .e8)
         var board = Board(position: .init(pieces: [pawn]))
@@ -94,6 +58,30 @@ class BoardTests: XCTestCase {
         XCTAssertEqual(promotionMove.end, .e8)
     }
 
+    func testBlackPromotion() {
+        let pawn = Piece(.pawn, color: .black, square: .e2)
+        let queen = Piece(.queen, color: .black, square: .e1)
+        var board = Board(position: .init(pieces: [pawn]))
+
+        nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns promotion move")
+
+        let delegate = MockBoardDelegate(didPromote: { move in
+            let newPawn = Piece(.pawn, color: .black, square: .e1)
+            XCTAssertEqual(move.piece, newPawn)
+            expectation?.fulfill()
+            expectation = nil
+        })
+        board.delegate = delegate
+
+        let move = board.move(pieceAt: .e2, to: .e1)!
+        waitForExpectations(timeout: 1.0)
+
+        let promotionMove = board.completePromotion(of: move, to: .queen)
+        XCTAssertEqual(promotionMove.result, .move)
+        XCTAssertEqual(promotionMove.promotedPiece, queen)
+        XCTAssertEqual(promotionMove.end, .e1)
+    }
+
     func testFiftyMoveRule() {
         var board = Board(position: .fiftyMove)
         nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns fifty move draw result")
@@ -115,7 +103,7 @@ class BoardTests: XCTestCase {
     }
 
     func testInsufficientMaterial() {
-        var board = Board(position: .insufficientMaterial)
+        var board = Board(position: .init(fen: "k7/b6P/8/8/8/8/8/K7 w - - 0 1")!)
         nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns insufficient material draw result")
 
         let delegate = MockBoardDelegate(didEnd: { result in
@@ -138,26 +126,26 @@ class BoardTests: XCTestCase {
     func testInsufficientMaterialScenarios() {
         // different promotions
         let fen = "k7/7P/8/8/8/8/8/K7 w - - 0 1"
-        
+
         let validPieces: [Piece.Kind] = [.rook, .queen]
         let invalidPieces: [Piece.Kind] = [.bishop, .knight]
-        
+
         for p in validPieces {
             var board = Board(position: .init(fen: fen)!)
             let move = board.move(pieceAt: .h7, to: .h8)!
-            
+
             board.completePromotion(of: move , to: p)
             XCTAssertFalse(board.position.hasInsufficientMaterial)
         }
-        
+
         for p in invalidPieces {
             var board = Board(position: .init(fen: fen)!)
             let move = board.move(pieceAt: .h7, to: .h8)!
-            
+
             board.completePromotion(of: move , to: p)
             XCTAssertTrue(board.position.hasInsufficientMaterial)
         }
-        
+
         // opposite color bishops VS same color bishops
         let fen2 = "k5B1/b7/1b6/8/8/8/8/K7 w - - 0 1"
         let fen3 = "k5B1/1b6/2b5/8/8/8/8/K7 w - - 0 1"
@@ -209,7 +197,7 @@ class BoardTests: XCTestCase {
 
         board.delegate = delegate
         board.move(pieceAt: .f6, to: .g8) // 3rd time position occurs
-        
+
         waitForExpectations(timeout: 1.0)
     }
 
@@ -305,41 +293,55 @@ class BoardTests: XCTestCase {
         let position = Position(fen: "r7/1r6/2r1p3/P7/p7/2R1P3/1R6/R7 w - - 0 1")!
         let board = Board(position: position)
 
-        XCTAssertTrue(board.canMove(pieceAt: .a1, to: .a4))
-        XCTAssertFalse(board.canMove(pieceAt: .a1, to: .a5))
-        XCTAssertTrue(board.canMove(pieceAt: .a1, to: .h1))
+        [.a4, .h1].forEach {
+            XCTAssertTrue(board.canMove(pieceAt: .a1, to: $0))
+        }
 
-        XCTAssertTrue(board.canMove(pieceAt: .b2, to: .b7))
+        XCTAssertFalse(board.canMove(pieceAt: .a1, to: .a5))
+
+        [.a2, .b1, .b7, .h2].forEach {
+            XCTAssertTrue(board.canMove(pieceAt: .b2, to: $0))
+        }
+
         XCTAssertFalse(board.canMove(pieceAt: .b2, to: .b8))
-        XCTAssertTrue(board.canMove(pieceAt: .b2, to: .h2))
-        XCTAssertTrue(board.canMove(pieceAt: .b2, to: .b1))
-        XCTAssertTrue(board.canMove(pieceAt: .b2, to: .a2))
     }
 
     func testLegalQueenMoves() {
+        let position = Position(fen: "7k/8/2pP4/3qq3/3QQ3/4pP2/8/K7 w - - 0 1")!
+        let board = Board(position: position)
 
+        [.b2, .c3, .e5].forEach { XCTAssertTrue(board.canMove(pieceAt: .d4, to: $0))  }
+        [.e3, .c4, .b4].forEach { XCTAssertFalse(board.canMove(pieceAt: .d4, to: $0)) }
+
+        [.d4, .f6, .g7].forEach { XCTAssertTrue(board.canMove(pieceAt: .e5, to: $0))  }
+        [.d6, .e6, .g6].forEach { XCTAssertFalse(board.canMove(pieceAt: .e5, to: $0)) }
+
+        [.d4, .e4, .a2].forEach { XCTAssertTrue(board.canMove(pieceAt: .d5, to: $0))  }
+        [.c6, .e5, .d7].forEach { XCTAssertFalse(board.canMove(pieceAt: .d5, to: $0)) }
+
+        [.d5, .e5, .h7].forEach { XCTAssertTrue(board.canMove(pieceAt: .e4, to: $0))  }
+        [.e2, .d4, .f3].forEach { XCTAssertFalse(board.canMove(pieceAt: .e4, to: $0)) }
     }
 
     func testLegalKingMoves() {
         let position = Position(fen: "8/8/8/4p3/4K3/8/8/8 w - - 0 1")!
         let board = Board(position: position)
 
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .d5))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .d3))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .f5))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .f3))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .e5))
-        XCTAssertTrue(board.canMove(pieceAt: .e4, to: .e3))
-        XCTAssertFalse(board.canMove(pieceAt: .e4, to: .d4))
-        XCTAssertFalse(board.canMove(pieceAt: .e4, to: .f4))
-    }
+        [.d3, .d5, .f3, .f5, .e3, .e5].forEach {
+            XCTAssertTrue(board.canMove(pieceAt: .e4, to: $0))
+        }
 
-    func testLegalMovePiece() {
-
+        [.d4, .f4].forEach {
+            XCTAssertFalse(board.canMove(pieceAt: .e4, to: $0))
+        }
     }
 
     func testCaptureMove() {
+        var board = Board(position: .init(fen: "8/8/8/4p3/3P4/8/8/8 w - - 0 1")!)
+        let move = board.move(pieceAt: .d4, to: .e5)
 
+        let capturedPiece = Piece(.pawn, color: .black, square: .e5)
+        XCTAssertEqual(move?.result, .capture(capturedPiece))
     }
 
     func testIllegalMove() {
@@ -349,13 +351,32 @@ class BoardTests: XCTestCase {
     }
 
     func testCheckMove() {
-
+        var board = Board(position: .init(fen: "k7/7R/8/8/8/8/K7/8 w - - 0 1")!)
+        let move = board.move(pieceAt: .h7, to: .h8)
+        XCTAssertEqual(move?.checkState, .check)
     }
 
     func testCheckmateMove() {
+        var board = Board(position: .init(fen: "k7/7R/6R1/8/8/8/K7/8 w - - 0 1")!)
 
+        nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns checkmate result")
+
+        let delegate = MockBoardDelegate(didEnd: { result in
+            if case .win(.white) = result {
+                expectation?.fulfill()
+                expectation = nil
+            } else {
+                XCTFail()
+            }
+        })
+
+        board.delegate = delegate
+        let move = board.move(pieceAt: .g6, to: .g8)
+        XCTAssertEqual(move?.checkState, .checkmate)
+
+        waitForExpectations(timeout: 1.0)
     }
-    
+
     func testSideToMove() {
         var position = Position.standard
         XCTAssertEqual(position.sideToMove, .white)
@@ -437,6 +458,47 @@ class BoardTests: XCTestCase {
         · · · · · · · ·
         ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
         ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯ ⨯
+        """)
+    }
+
+}
+
+// MARK: - Deprecated Tests
+
+extension BoardTests {
+
+    @available(*, deprecated)
+    func testPrintDeprecated() {
+        let board = Board()
+
+        ChessKitConfiguration.printMode = .letter
+        XCTAssertEqual(ChessKitConfiguration.printMode, .letter)
+        XCTAssertEqual(String(describing: board),
+        """
+        8 r n b q k b n r
+        7 p p p p p p p p
+        6 · · · · · · · ·
+        5 · · · · · · · ·
+        4 · · · · · · · ·
+        3 · · · · · · · ·
+        2 P P P P P P P P
+        1 R N B Q K B N R
+          a b c d e f g h
+        """)
+
+        ChessKitConfiguration.printMode = .graphic
+        XCTAssertEqual(ChessKitConfiguration.printMode, .graphic)
+        XCTAssertEqual(String(describing: board),
+        """
+        8 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        7 ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E} ♟\u{FE0E}
+        6 · · · · · · · ·
+        5 · · · · · · · ·
+        4 · · · · · · · ·
+        3 · · · · · · · ·
+        2 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+        1 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+          a b c d e f g h
         """)
     }
 

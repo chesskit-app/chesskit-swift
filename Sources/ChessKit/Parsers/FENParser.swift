@@ -10,9 +10,7 @@
 /// ```
 /// "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 /// ```
-public class FENParser {
-
-    private init() {}
+public enum FENParser {
 
     /// Number of components in FEN
     /// 1. Piece placement
