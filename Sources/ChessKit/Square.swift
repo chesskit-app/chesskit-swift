@@ -61,6 +61,16 @@ public enum Square: Int, Equatable, CaseIterable, Sendable {
         }
     }
 
+    /// The Square at the left of the current one.
+    public var left: Square {
+        Square(File(file.number - 1), rank)
+    }
+
+    /// The Square at the right of the current one.
+    public var right: Square {
+        Square(File(file.number + 1), rank)
+    }
+
     // MARK: - Squares
 
     case a1, b1, c1, d1, e1, f1, g1, h1

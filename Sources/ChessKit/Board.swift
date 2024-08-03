@@ -22,6 +22,9 @@ public struct Board: Sendable {
     /// The current position represented on the board.
     public var position: Position
 
+    /// All the positions occurred during the game and how many times they appeared
+    private var positionHashCounts: [Int: Int]
+
     /// Convenience accessor for the pieces in `position`.
     private var set: PieceSet {
         position.pieceSet
@@ -38,6 +41,7 @@ public struct Board: Sendable {
     public init(position: Position = .standard) {
         Attacks.create()
         self.position = position
+        self.positionHashCounts = [:]
     }
 
     // MARK: - Public
@@ -79,6 +83,7 @@ public struct Board: Sendable {
             return process(move: Move(result: .capture(enPassant.pawn), piece: piece, start: start, end: end))
         } else {
             position.enPassant = nil     // prevent en passant on next turn
+            position.enPassantIsPossible = false
         }
 
         // castling
@@ -142,6 +147,11 @@ public struct Board: Sendable {
 
                 if abs(start.rank.value - end.rank.value) == 2 {
                     position.enPassant = EnPassant(pawn: updatedPiece)
+
+                    if validateEnPassant() {
+                        position.enPassantIsPossible = true
+                    }
+
                 }
             }
 
@@ -198,13 +208,15 @@ public struct Board: Sendable {
 
     /// Determines end game state and
     /// handles pawn promotion for provided `move`.
-    private func process(move: Move) -> Move {
+    private mutating func process(move: Move) -> Move {
         var processedMove = move
 
         // checks & mate
         let checkState = self.checkState(for: move.piece.color)
         processedMove.checkState = checkState
 
+        positionHashCounts[position.hashValue, default: 0] += 1
+        
         if checkState == .checkmate {
             delegate?.didEnd(with: .win(move.piece.color))
         } else if checkState == .stalemate {
@@ -213,6 +225,8 @@ public struct Board: Sendable {
             delegate?.didEnd(with: .draw(.fiftyMoves))
         } else if position.hasInsufficientMaterial {
             delegate?.didEnd(with: .draw(.insufficientMaterial))
+        } else if positionHashCounts[position.hashValue] == 3 {
+            delegate?.didEnd(with: .draw(.repetition))
         }
 
         // pawn promotion
@@ -326,12 +340,31 @@ public struct Board: Sendable {
         testSet.add(movedPiece)
 
         if let enPassant = position.enPassant {
-            if enPassant.canBeCaptured(by: piece) && enPassant.captureSquare == square {
+            if enPassant.couldBeCaptured(by: piece) && enPassant.captureSquare == square {
                 testSet.remove(enPassant.pawn)
             }
         }
 
         return !isKingInCheck(piece.color, set: testSet)
+    }
+
+    /// Determines if there is an actualy possibility to execute
+    /// the enPassant.
+    ///
+    private func validateEnPassant() -> Bool {
+        if let ep = position.enPassant {
+            let sideSquares = [ep.pawn.square.left, ep.pawn.square.right]
+
+            for square in sideSquares {
+                if let piece = position.piece(at: square),
+                   ep.couldBeCaptured(by: piece),
+                   validate(moveFor: piece, to: ep.captureSquare) {
+                    return true
+                }
+            }
+        }
+
+        return false
     }
 
     /// Determines the positions of pieces that attack a given square.
@@ -409,7 +442,7 @@ public struct Board: Sendable {
         if let enPassant = position.enPassant,
            let square = Square(sq),
            let piece = set.get(square),
-           enPassant.canBeCaptured(by: piece) {
+           enPassant.couldBeCaptured(by: piece) {
             enPassantMove = enPassant.captureSquare.bb
         }
 

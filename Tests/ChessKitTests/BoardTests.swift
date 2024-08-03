@@ -49,8 +49,8 @@ class BoardTests: XCTestCase {
         let ep = board.position.enPassant!
 
         let capturingPiece = board.position.piece(at: .f4)!
-        XCTAssertTrue(ep.canBeCaptured(by: capturingPiece))
-
+        XCTAssertTrue(ep.couldBeCaptured(by: capturingPiece))
+        
         let move = board.move(pieceAt: .f4, to: ep.captureSquare)!
         XCTAssertEqual(move.result, .capture(ep.pawn))
     }
@@ -61,7 +61,16 @@ class BoardTests: XCTestCase {
         XCTAssertFalse(board.canMove(pieceAt: .c5, to: .d6))
     }
 
-    func testPromotion() {
+    func testDoubleEnPassant() {
+        var board = Board(position: .init(fen: "kr6/2p5/8/1P1P4/8/1K6/8/8 b - - 0 1")!)
+        board.move(pieceAt: .c7, to: .c5)
+        // after this move only 1 out of 2 pawns can execute enPassant
+        XCTAssertFalse(board.canMove(pieceAt: .b5, to: .c6))
+        XCTAssertTrue(board.canMove(pieceAt: .d5, to: .c6))
+        XCTAssertTrue(board.position.enPassantIsPossible)
+    }
+
+   func testPromotion() {
         let pawn = Piece(.pawn, color: .white, square: .e7)
         let queen = Piece(.queen, color: .white, square: .e8)
         var board = Board(position: .init(pieces: [pawn]))
@@ -167,7 +176,45 @@ class BoardTests: XCTestCase {
         board4.move(pieceAt: .a8, to: .b7)
         XCTAssertTrue(board4.position.hasInsufficientMaterial)
     }
-    
+
+    func testThreefoldRepetition() {
+
+        var board = Board(position: .standard)
+
+        board.move(pieceAt: .e2, to: .e4)
+        board.move(pieceAt: .e7, to: .e5) // 1st time position occurs
+
+        board.move(pieceAt: .g1, to: .f3)
+        board.move(pieceAt: .g8, to: .f6)
+
+        board.move(pieceAt: .f3, to: .g1)
+        board.move(pieceAt: .f6, to: .g8) // 2nd time position occurs
+
+        board.move(pieceAt: .g1, to: .f3)
+        board.move(pieceAt: .g8, to: .f6)
+
+        board.move(pieceAt: .f3, to: .g1)
+
+
+        nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns draw by repetition result")
+
+        let delegate = MockBoardDelegate(didEnd: { result in
+            if case .draw(let drawType) = result {
+                if drawType == .repetition {
+                    expectation?.fulfill()
+                    expectation = nil
+                }
+            } else {
+                XCTFail()
+            }
+        })
+
+        board.delegate = delegate
+        board.move(pieceAt: .f6, to: .g8) // 3rd time position occurs
+        
+        waitForExpectations(timeout: 1.0)
+    }
+
     func testLegalMovesForNonexistentPiece() {
         let board = Board(position: .standard)
         // no piece at d4

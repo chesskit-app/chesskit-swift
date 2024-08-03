@@ -4,7 +4,7 @@
 //
 
 /// Structure that captures legal castling moves.
-struct LegalCastlings: Equatable, Sendable {
+struct LegalCastlings: Equatable, Hashable, Sendable {
 
     private var legal: [Castling]
 
