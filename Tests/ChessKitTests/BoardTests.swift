@@ -6,7 +6,7 @@
 @testable import ChessKit
 import XCTest
 
-class BoardTests: XCTestCase {
+final class BoardTests: XCTestCase {
 
     func testEnPassant() {
         var board = Board(position: .ep)
@@ -14,7 +14,7 @@ class BoardTests: XCTestCase {
 
         let capturingPiece = board.position.piece(at: .f4)!
         XCTAssertTrue(ep.couldBeCaptured(by: capturingPiece))
-        
+
         let move = board.move(pieceAt: .f4, to: ep.captureSquare)!
         XCTAssertEqual(move.result, .capture(ep.pawn))
     }
@@ -34,7 +34,7 @@ class BoardTests: XCTestCase {
         XCTAssertTrue(board.position.enPassantIsPossible)
     }
 
-   func testWhitePromotion() {
+    func testWhitePromotion() {
         let pawn = Piece(.pawn, color: .white, square: .e7)
         let queen = Piece(.queen, color: .white, square: .e8)
         var board = Board(position: .init(pieces: [pawn]))
@@ -126,26 +126,26 @@ class BoardTests: XCTestCase {
     func testInsufficientMaterialScenarios() {
         // different promotions
         let fen = "k7/7P/8/8/8/8/8/K7 w - - 0 1"
-        
+
         let validPieces: [Piece.Kind] = [.rook, .queen]
         let invalidPieces: [Piece.Kind] = [.bishop, .knight]
-        
+
         for p in validPieces {
             var board = Board(position: .init(fen: fen)!)
             let move = board.move(pieceAt: .h7, to: .h8)!
-            
+
             board.completePromotion(of: move , to: p)
             XCTAssertFalse(board.position.hasInsufficientMaterial)
         }
-        
+
         for p in invalidPieces {
             var board = Board(position: .init(fen: fen)!)
             let move = board.move(pieceAt: .h7, to: .h8)!
-            
+
             board.completePromotion(of: move , to: p)
             XCTAssertTrue(board.position.hasInsufficientMaterial)
         }
-        
+
         // opposite color bishops VS same color bishops
         let fen2 = "k5B1/b7/1b6/8/8/8/8/K7 w - - 0 1"
         let fen3 = "k5B1/1b6/2b5/8/8/8/8/K7 w - - 0 1"
@@ -197,7 +197,7 @@ class BoardTests: XCTestCase {
 
         board.delegate = delegate
         board.move(pieceAt: .f6, to: .g8) // 3rd time position occurs
-        
+
         waitForExpectations(timeout: 1.0)
     }
 
@@ -362,7 +362,7 @@ class BoardTests: XCTestCase {
 
         waitForExpectations(timeout: 1.0)
     }
-    
+
     func testSideToMove() {
         var position = Position.standard
         XCTAssertEqual(position.sideToMove, .white)

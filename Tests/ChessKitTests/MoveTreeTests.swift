@@ -6,7 +6,7 @@
 @testable import ChessKit
 import XCTest
 
-class MoveTreeTests: XCTestCase {
+final class MoveTreeTests: XCTestCase {
 
     func testEmptyCollection() {
         let moveTree = MoveTree()
@@ -76,13 +76,13 @@ extension MoveTreeTests {
 
         XCTAssertEqual(moveTree.previousIndex(for: i1), moveTree.index(before: i1))
         XCTAssertEqual(moveTree.nextIndex(for: i1), moveTree.index(after: i1))
-        
+
         XCTAssertEqual(moveTree.move(at: i1), moveTree[i1])
         XCTAssertEqual(moveTree.move(at: i1), move1)
 
         XCTAssertEqual(moveTree.move(at: i2), moveTree[i2])
         XCTAssertEqual(moveTree.move(at: i2), move2)
-
+        
         XCTAssertNil(moveTree.previousIndex(for: .minimum))
         XCTAssertNil(moveTree.nextIndex(for: i2))
 

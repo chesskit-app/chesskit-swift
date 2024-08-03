@@ -6,18 +6,18 @@
 @testable import ChessKit
 import XCTest
 
-class PGNParserTests: XCTestCase {
-
+final class PGNParserTests: XCTestCase {
+    
     func testGameFromPGN() {
         let game = PGNParser.parse(game: Game.fischerSpassky)
         let gameFromPGN = Game(pgn: Game.fischerSpassky)
-
+        
         XCTAssertEqual(game, gameFromPGN)
     }
-
+    
     func testTagParsing() {
         let game = PGNParser.parse(game: Game.fischerSpassky)
-
+        
         // tags
         XCTAssertEqual(game?.tags.event, "F/S Return Match")
         XCTAssertEqual(game?.tags.site, "Belgrade, Serbia JUG")
@@ -27,10 +27,10 @@ class PGNParserTests: XCTestCase {
         XCTAssertEqual(game?.tags.black, "Spassky, Boris V.")
         XCTAssertEqual(game?.tags.result, "1/2-1/2")
     }
-
+    
     func testMoveTextParsing() {
         let game = PGNParser.parse(game: Game.fischerSpassky)
-
+        
         // starting position + 85 ply
         XCTAssertEqual(game?.positions.keys.count, 86)
         
@@ -67,5 +67,5 @@ class PGNParserTests: XCTestCase {
             color: .white
         )]?.checkState, .check)
     }
-
+    
 }
