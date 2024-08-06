@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.11.0
+Released Monday, August 5, 2024.
 
 ### New Features
 * A draw result is now published by `BoardDelegate` when the board encounters a threefold repetition (by [@joee-ca](https://github.com/joee-ca)).
