@@ -1,3 +1,9 @@
+# [unreleased]
+
+### Improvements
+* `Game.Tag` now publicly exposes `name`.
+* `Game.Tags` is now `Hashable` and `Sendable`.
+
 # ChessKit 0.11.0
 Released Monday, August 5, 2024.
 

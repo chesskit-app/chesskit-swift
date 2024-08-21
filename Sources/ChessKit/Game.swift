@@ -206,20 +206,20 @@ extension Game {
 
     /// Denotes a PGN tag pair.
     @propertyWrapper
-    public struct Tag: Equatable, Sendable {
+    public struct Tag: Equatable, Hashable, Sendable {
 
         /// The name of the tag pair.
         ///
         /// Used as the key in a PGN tag pair.
-        var name: String
+        public var name: String
 
         /// The value of the tag pair.
         ///
         /// Appears at the top of the PGN after the
-        /// corresponding `name`, within brackets.
+        /// corresponding ``name``, within brackets.
         public var wrappedValue: String = ""
 
-        /// The projected value of this `Tag` object.
+        /// The projected value of this ``Tag`` object.
         public var projectedValue: Tag { self }
 
         /// The PGN representation of this tag.
@@ -232,7 +232,7 @@ extension Game {
     }
 
     /// Contains the PGN tag pairs for a game.
-    public struct Tags: Equatable {
+    public struct Tags: Equatable, Hashable, Sendable {
 
         /// Whether or not all the standard mandatory tags for
         /// PGN archival are set.
