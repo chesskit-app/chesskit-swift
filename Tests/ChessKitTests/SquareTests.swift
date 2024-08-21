@@ -54,7 +54,7 @@ final class SquareTests: XCTestCase {
         XCTAssertEqual(Square.a1.left, .a1)
         XCTAssertEqual(Square.b1.left, .a1)
         XCTAssertEqual(Square.h1.left, .g1)
-        
+
         XCTAssertEqual(Square.a1.right, .b1)
         XCTAssertEqual(Square.g1.right, .h1)
         XCTAssertEqual(Square.h1.right, .h1)

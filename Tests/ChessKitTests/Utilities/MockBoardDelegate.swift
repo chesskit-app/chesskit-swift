@@ -20,7 +20,7 @@ final class MockBoardDelegate: BoardDelegate {
     func didPromote(with move: Move) {
         didPromote?(move)
     }
-    
+
     func didEnd(with result: Board.EndResult) {
         didEnd?(result)
     }

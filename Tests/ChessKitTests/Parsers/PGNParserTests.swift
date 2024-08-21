@@ -7,17 +7,17 @@
 import XCTest
 
 final class PGNParserTests: XCTestCase {
-    
+
     func testGameFromPGN() {
         let game = PGNParser.parse(game: Game.fischerSpassky)
         let gameFromPGN = Game(pgn: Game.fischerSpassky)
-        
+
         XCTAssertEqual(game, gameFromPGN)
     }
-    
+
     func testTagParsing() {
         let game = PGNParser.parse(game: Game.fischerSpassky)
-        
+
         // tags
         XCTAssertEqual(game?.tags.event, "F/S Return Match")
         XCTAssertEqual(game?.tags.site, "Belgrade, Serbia JUG")
@@ -44,10 +44,10 @@ final class PGNParserTests: XCTestCase {
 
     func testMoveTextParsing() {
         let game = PGNParser.parse(game: Game.fischerSpassky)
-        
+
         // starting position + 85 ply
         XCTAssertEqual(game?.positions.keys.count, 86)
-        
+
         XCTAssertEqual(game?.moves[.init(
             number: 1,
             color: .white
@@ -81,5 +81,5 @@ final class PGNParserTests: XCTestCase {
             color: .white
         )]?.checkState, .check)
     }
-    
+
 }

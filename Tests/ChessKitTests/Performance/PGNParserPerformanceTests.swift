@@ -18,10 +18,10 @@ final class PGNParserPerformanceTests: XCTestCase {
             block: parsePGN
         )
     }
-    
+
     private func parsePGN() {
         let parsedGame = PGNParser.parse(game: Game.fischerSpassky)
         XCTAssertNotNil(parsedGame)
     }
-    
+
 }

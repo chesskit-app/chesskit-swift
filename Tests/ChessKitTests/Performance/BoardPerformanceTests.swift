@@ -267,10 +267,10 @@ final class BoardPerformanceTests: XCTestCase {
 
         board.move(pieceAt: .h3, to: .f2)
         XCTAssertEqual(board.position.fen, "8/8/R5p1/2k2bp1/1p6/1P3PP1/3K1n2/8 w - - 6 42")
-        
+
         board.move(pieceAt: .g3, to: .g4)
         XCTAssertEqual(board.position.fen, "8/8/R5p1/2k2bp1/1p4P1/1P3P2/3K1n2/8 b - - 0 42")
-
+        
         board.move(pieceAt: .f5, to: .d3)
         XCTAssertEqual(board.position.fen, "8/8/R5p1/2k3p1/1p4P1/1P1b1P2/3K1n2/8 w - - 1 43")
 

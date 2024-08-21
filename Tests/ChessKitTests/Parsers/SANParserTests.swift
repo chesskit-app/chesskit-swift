@@ -74,7 +74,7 @@ final class SANParserTests: XCTestCase {
         XCTAssertEqual(queenMove?.promotedPiece, nil)
         XCTAssertEqual(queenMove?.checkState, Move.CheckState.none)
     }
-
+    
     func testValidSANButInvalidMove() {
         XCTAssertNil(SANParser.parse(move: "axb5", in: .standard))
         XCTAssertNil(SANParser.parse(move: "Bb5", in: .standard))

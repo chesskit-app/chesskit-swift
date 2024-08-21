@@ -82,7 +82,7 @@ extension MoveTreeTests {
 
         XCTAssertEqual(moveTree.move(at: i2), moveTree[i2])
         XCTAssertEqual(moveTree.move(at: i2), move2)
-        
+
         XCTAssertNil(moveTree.previousIndex(for: .minimum))
         XCTAssertNil(moveTree.nextIndex(for: i2))
 
