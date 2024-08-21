@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.12.0
+Released Wednesday, August 21, 2024.
 
 ### Improvements
 * Conform more types to `Hashable` such as `Game` and `MoveTree`.
