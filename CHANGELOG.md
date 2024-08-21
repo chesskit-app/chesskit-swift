@@ -1,6 +1,7 @@
 # [unreleased]
 
 ### Improvements
+* Conform more types to `Hashable` such as `Game` and `MoveTree`.
 * `Game.Tag` now publicly exposes `name`.
 * `Game.Tags` is now `Hashable` and `Sendable`.
 

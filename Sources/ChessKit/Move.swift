@@ -3,10 +3,10 @@
 //  ChessKit
 //
 
-public struct Move: Equatable, Hashable, Sendable {
+public struct Move: Hashable, Sendable {
 
     /// The result of the move.
-    public enum Result: Equatable, Hashable, Sendable {
+    public enum Result: Hashable, Sendable {
         case move
         case capture(Piece)
         case castle(Castling)
@@ -29,7 +29,7 @@ public struct Move: Equatable, Hashable, Sendable {
     }
 
     /// Rank, file, or square disambiguation of moves.
-    public enum Disambiguation: Equatable, Hashable, Sendable {
+    public enum Disambiguation: Hashable, Sendable {
         case byFile(Square.File)
         case byRank(Square.Rank)
         case bySquare(Square)

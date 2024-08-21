@@ -10,7 +10,7 @@ import Foundation
 /// This object is the entry point for interacting with a full
 /// chess game within `ChessKit`. It provides methods for
 /// making moves and publishes the played moves in an observable way.
-public struct Game: Equatable {
+public struct Game: Hashable {
 
     // MARK: - Properties
 
@@ -206,7 +206,7 @@ extension Game {
 
     /// Denotes a PGN tag pair.
     @propertyWrapper
-    public struct Tag: Equatable, Hashable, Sendable {
+    public struct Tag: Hashable, Sendable {
 
         /// The name of the tag pair.
         ///
@@ -232,7 +232,7 @@ extension Game {
     }
 
     /// Contains the PGN tag pairs for a game.
-    public struct Tags: Equatable, Hashable, Sendable {
+    public struct Tags: Hashable, Sendable {
 
         /// Whether or not all the standard mandatory tags for
         /// PGN archival are set.

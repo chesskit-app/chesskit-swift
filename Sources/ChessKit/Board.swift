@@ -567,7 +567,7 @@ public struct Board: Sendable {
 
 extension Board {
     /// Represents an end result of a standard chess game.
-    public enum EndResult: Equatable, Sendable {
+    public enum EndResult: Hashable, Sendable {
         /// The board represents a win for the given color.
         case win(Piece.Color)
         /// The board represents a draw with a given reason.

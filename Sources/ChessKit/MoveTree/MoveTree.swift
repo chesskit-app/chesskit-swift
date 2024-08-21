@@ -7,7 +7,7 @@
 ///
 /// The tree maintains the move order including variations and
 /// provides index-based access for any element in the tree.
-public struct MoveTree {
+public struct MoveTree: Hashable {
 
     /// The index of the root of the move tree.
     ///
@@ -263,7 +263,7 @@ public struct MoveTree {
 
     /// An element for representing the ``MoveTree`` in
     /// PGN (Portable Game Notation) format.
-    public enum PGNElement: Hashable, Equatable, Sendable {
+    public enum PGNElement: Hashable, Sendable {
         /// e.g. `1.`
         case whiteNumber(Int)
         /// e.g. `1...`
@@ -340,7 +340,7 @@ extension MoveTree: Equatable {
 extension MoveTree {
 
     /// Object that represents a node in the move tree.
-    class Node: Equatable {
+    class Node: Hashable {
 
         /// The move for this node.
         var move: Move
@@ -360,6 +360,15 @@ extension MoveTree {
         // MARK: Equatable
         static func == (lhs: Node, rhs: Node) -> Bool {
             lhs.index == rhs.index && lhs.move == rhs.move
+        }
+
+        // MARK: - Hashable
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(move)
+            hasher.combine(index)
+            hasher.combine(previous)
+            hasher.combine(next)
+            hasher.combine(children)
         }
 
     }

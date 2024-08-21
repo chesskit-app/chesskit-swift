@@ -4,7 +4,7 @@
 //
 
 /// Represents a piece on the chess board.
-public struct Piece: Equatable, Hashable, Sendable {
+public struct Piece: Hashable, Sendable {
 
     /// Represents the color of a piece.
     public enum Color: String, CaseIterable, Sendable {

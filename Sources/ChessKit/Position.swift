@@ -4,7 +4,7 @@
 //
 
 /// Represents the collection of pieces on the chess board.
-public struct Position: Equatable, Sendable {
+public struct Position: Sendable {
 
     /// The pieces currently existing on the board in this position.
     public var pieces: [Piece] {
@@ -210,6 +210,7 @@ public struct Position: Equatable, Sendable {
 
 }
 
+// MARK: - Sample positions
 extension Position {
     /// A random chess position that can be used for testing.
     public static let test = Position(pieces: [
@@ -227,6 +228,7 @@ extension Position {
     public static let standard = Position(fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")!
 }
 
+// MARK: - CustomStringConvertible
 extension Position: CustomStringConvertible {
 
     public var description: String {
@@ -235,6 +237,7 @@ extension Position: CustomStringConvertible {
 
 }
 
+// MARK: - Hashable
 extension Position: Hashable {
 
     public func hash(into hasher: inout Hasher) {

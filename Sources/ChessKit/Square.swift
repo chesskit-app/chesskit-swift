@@ -3,7 +3,7 @@
 //  ChessKit
 //
 
-public enum Square: Int, Equatable, CaseIterable, Sendable {
+public enum Square: Int, CaseIterable, Sendable {
     /// The file on the chess board, from a to h.
     public enum File: String, CaseIterable, Sendable {
         case a, b, c, d, e, f, g, h
@@ -45,7 +45,7 @@ public enum Square: Int, Equatable, CaseIterable, Sendable {
     }
 
     /// The rank on the chess board, from 1 to 8.
-    public struct Rank: ExpressibleByIntegerLiteral, Equatable, Hashable, Sendable {
+    public struct Rank: ExpressibleByIntegerLiteral, Hashable, Sendable {
         /// The possible range of Rank numbers.
         public static let range = 1...8
 

@@ -4,7 +4,7 @@
 //
 
 /// Structure that captures legal castling moves.
-struct LegalCastlings: Equatable, Hashable, Sendable {
+struct LegalCastlings: Hashable, Sendable {
 
     private var legal: [Castling]
 
@@ -55,7 +55,7 @@ struct LegalCastlings: Equatable, Hashable, Sendable {
 ///
 /// Contains various characteristics of the castling move
 /// such as king and rook start and end squares and notation.
-public struct Castling: Equatable, Hashable, Sendable {
+public struct Castling: Hashable, Sendable {
 
     /// Kingside castle for black.
     static let bK = Castling(side: .king, color: .black)
