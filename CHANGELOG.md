@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.12.1
+Released Wednesday, September 11, 2024.
 
 ### Bug Fixes
 * Fix `MoveTree.fullVariation(for:)` returning blank array when `.minimum` is passed as the index.
