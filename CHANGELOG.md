@@ -1,3 +1,10 @@
+# [unreleased]
+
+### Bug Fixes
+* Fix `MoveTree.fullVariation(for:)` returning blank array when `.minimum` is passed as the index.
+  * If this index is passed, it will automatically start from the next (valid) index and return the moves for that index.
+  * In practice this will mean the main variation will be returned (starting from white's first move).
+
 # ChessKit 0.12.0
 Released Wednesday, August 21, 2024.
 

@@ -105,6 +105,7 @@ public struct MoveTree: Hashable {
     /// from the starting move until the move defined by `index`, accounting
     /// for any branching variations in between.
     public func history(for index: Index) -> [Index] {
+        let index = index == .minimum ? .minimum.next : index
         var currentNode = dictionary[index]
         var history: [Index] = []
 
@@ -128,6 +129,7 @@ public struct MoveTree: Hashable {
     /// from the move after the move defined by `index` to the last move
     /// of the variation.
     public func future(for index: Index) -> [Index] {
+        let index = index == .minimum ? .minimum.next : index
         var currentNode = dictionary[index]
         var future: [Index] = []
 
