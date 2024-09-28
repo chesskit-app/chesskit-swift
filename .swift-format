@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "indentation": {
+        "spaces": 2
+    },
+    "indentConditionalCompilationBlocks": false,
+    "lineBreakBetweenDeclarationAttributes": false,
+    "lineLength": 200,
+    "multiElementCollectionTrailingCommas": false,
+    "respectsExistingLineBreaks": true,
+    "rules": {
+        "NoAccessLevelOnExtensionDeclaration": false,
+        "UseWhereClausesInForLoops": true
+    }
+}
