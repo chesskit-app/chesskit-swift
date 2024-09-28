@@ -46,9 +46,9 @@ public struct Move: Hashable, Sendable {
   /// The piece that was promoted to, if applicable.
   public internal(set) var promotedPiece: Piece?
   /// The move disambiguation, if applicable.
-  var disambiguation: Disambiguation?
+  public internal(set) var disambiguation: Disambiguation?
   /// The check state resulting from the move.
-  var checkState: CheckState
+  public internal(set) var checkState: CheckState
   /// The move assessment annotation.
   public var assessment: Assessment
   /// The comment associated with a move.
