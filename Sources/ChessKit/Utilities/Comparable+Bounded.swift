@@ -4,7 +4,7 @@
 //
 
 extension Comparable {
-    func bounded(by limits: ClosedRange<Self>) -> Self {
-        min(max(self, limits.lowerBound), limits.upperBound)
-    }
+  func bounded(by limits: ClosedRange<Self>) -> Self {
+    min(max(self, limits.lowerBound), limits.upperBound)
+  }
 }
