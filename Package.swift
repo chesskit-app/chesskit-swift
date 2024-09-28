@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 
 import PackageDescription
 
@@ -12,22 +12,10 @@ let package = Package(
     .watchOS(.v6)
   ],
   products: [
-    .library(
-      name: "ChessKit",
-      targets: ["ChessKit"]
-    )
+    .library(name: "ChessKit", targets: ["ChessKit"])
   ],
   targets: [
-    .target(
-      name: "ChessKit",
-      dependencies: [],
-      swiftSettings: [
-        .enableExperimentalFeature("StrictConcurrency")
-      ]
-    ),
-    .testTarget(
-      name: "ChessKitTests",
-      dependencies: ["ChessKit"]
-    )
+    .target(name: "ChessKit"),
+    .testTarget(name: "ChessKitTests", dependencies: ["ChessKit"])
   ]
 )

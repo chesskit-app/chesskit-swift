@@ -220,8 +220,10 @@ public struct Board: Sendable {
     let checkState = self.checkState(for: move.piece.color)
     processedMove.checkState = checkState
 
+    // draw by repetition
     positionHashCounts[position.hashValue, default: 0] += 1
 
+    // board state notification
     if checkState == .checkmate {
       delegate?.didEnd(with: .win(move.piece.color))
     } else if checkState == .stalemate {

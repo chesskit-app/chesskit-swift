@@ -7,7 +7,7 @@
 ///
 /// The tree maintains the move order including variations and
 /// provides index-based access for any element in the tree.
-public struct MoveTree: Hashable {
+public struct MoveTree: Hashable, Sendable {
 
   /// The index of the root of the move tree.
   ///
@@ -343,7 +343,7 @@ extension MoveTree: Equatable {
 extension MoveTree {
 
   /// Object that represents a node in the move tree.
-  class Node: Hashable {
+  final class Node: Hashable, @unchecked Sendable {
 
     /// The move for this node.
     var move: Move
@@ -365,7 +365,7 @@ extension MoveTree {
       lhs.index == rhs.index && lhs.move == rhs.move
     }
 
-    // MARK: - Hashable
+    // MARK: Hashable
     func hash(into hasher: inout Hasher) {
       hasher.combine(move)
       hasher.combine(index)
