@@ -8,7 +8,7 @@
 /// as pawn promotions and end results.
 public protocol BoardDelegate: AnyObject, Sendable {
   func didPromote(with move: Move)
-  func didCheckKing(ofColor: Piece.Color)
+  func didCheckKing(ofColor color: Piece.Color)
   func didEnd(with result: Board.EndResult)
 }
 
@@ -233,7 +233,7 @@ public struct Board: Sendable {
     } else if positionHashCounts[position.hashValue] == 3 {
       delegate?.didEnd(with: .draw(.repetition))
     } else if checkState == .check {
-      delegate?.didCheckKing(ofColor: processedMove.piece.color)
+      delegate?.didCheckKing(ofColor: processedMove.piece.color.opposite)
     }
 
     // pawn promotion

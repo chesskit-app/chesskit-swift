@@ -352,8 +352,23 @@ final class BoardTests: XCTestCase {
 
   func testCheckMove() {
     var board = Board(position: .init(fen: "k7/7R/8/8/8/8/K7/8 w - - 0 1")!)
+
+    nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns check result")
+
+    let delegate = MockBoardDelegate(didCheckKing: { color in
+      if color == .black {
+        expectation?.fulfill()
+        expectation = nil
+      } else {
+        XCTFail()
+      }
+    })
+
+    board.delegate = delegate
     let move = board.move(pieceAt: .h7, to: .h8)
     XCTAssertEqual(move?.checkState, .check)
+
+    waitForExpectations(timeout: 1.0)
   }
 
   func testCheckmateMove() {
