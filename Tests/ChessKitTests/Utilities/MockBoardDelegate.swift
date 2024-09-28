@@ -21,6 +21,10 @@ final class MockBoardDelegate: BoardDelegate {
     didPromote?(move)
   }
 
+  func didCheckKing(ofColor: Piece.Color) {
+
+  }
+
   func didEnd(with result: Board.EndResult) {
     didEnd?(result)
   }
