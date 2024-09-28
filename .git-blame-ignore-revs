@@ -1,0 +1,6 @@
+# List of commits to ignore on git-blame.
+#
+# To activate run `git config blame.ignoreRevsFile .git-blame-ignore-revs`
+
+# swift format
+873661ac5bc64f0194a4a0addbc40c2d83d01b50
