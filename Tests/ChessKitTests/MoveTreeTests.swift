@@ -27,6 +27,13 @@ final class MoveTreeTests: XCTestCase {
     XCTAssertEqual(moveTree[.minimum.next], e4)
   }
 
+  func testNodeHashValue() {
+    var moveTree = MoveTree()
+    let e4 = Move(san: "e4", position: .standard)
+    moveTree[.minimum.next] = e4
+    XCTAssertNotNil(moveTree.dictionary[.minimum.next]?.hashValue)
+  }
+
   func testSameVariationComparability() {
     let wIndex = MoveTree.Index(number: 4, color: .white, variation: 2)
     XCTAssertLessThan(wIndex, wIndex.next)
