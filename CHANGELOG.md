@@ -1,7 +1,12 @@
 # [unreleased]
 
+### New Features
 * `BoardDelegate` now notifies when king is in check, and provides the color of the checked king, see [Issue #38](https://github.com/chesskit-app/chesskit-swift/issues/38).
 * `Move.checkState` and `Move.disambiguation` are now publicly accessible, see [Issue #38](https://github.com/chesskit-app/chesskit-swift/issues/38).
+
+### Technical Changes
+* Enable Swift 6 language mode package-wide.
+* `Game` and `MoveTree` are now `Sendable` types.
 
 # ChessKit 0.12.1
 Released Wednesday, September 11, 2024.

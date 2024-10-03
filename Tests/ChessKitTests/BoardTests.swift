@@ -34,7 +34,7 @@ final class BoardTests: XCTestCase {
     XCTAssertTrue(board.position.enPassantIsPossible)
   }
 
-  func testWhitePromotion() {
+  @MainActor func testWhitePromotion() {
     let pawn = Piece(.pawn, color: .white, square: .e7)
     let queen = Piece(.queen, color: .white, square: .e8)
     var board = Board(position: .init(pieces: [pawn]))
@@ -58,7 +58,7 @@ final class BoardTests: XCTestCase {
     XCTAssertEqual(promotionMove.end, .e8)
   }
 
-  func testBlackPromotion() {
+  @MainActor func testBlackPromotion() {
     let pawn = Piece(.pawn, color: .black, square: .e2)
     let queen = Piece(.queen, color: .black, square: .e1)
     var board = Board(position: .init(pieces: [pawn]))
@@ -82,7 +82,7 @@ final class BoardTests: XCTestCase {
     XCTAssertEqual(promotionMove.end, .e1)
   }
 
-  func testFiftyMoveRule() {
+  @MainActor func testFiftyMoveRule() {
     var board = Board(position: .fiftyMove)
     nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns fifty move draw result")
 
@@ -102,7 +102,7 @@ final class BoardTests: XCTestCase {
     waitForExpectations(timeout: 1.0)
   }
 
-  func testInsufficientMaterial() {
+  @MainActor func testInsufficientMaterial() {
     var board = Board(position: .init(fen: "k7/b6P/8/8/8/8/8/K7 w - - 0 1")!)
     nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns insufficient material draw result")
 
@@ -165,7 +165,7 @@ final class BoardTests: XCTestCase {
     XCTAssertTrue(board4.position.hasInsufficientMaterial)
   }
 
-  func testThreefoldRepetition() {
+  @MainActor func testThreefoldRepetition() {
     var board = Board(position: .standard)
 
     board.move(pieceAt: .e2, to: .e4)
@@ -350,7 +350,7 @@ final class BoardTests: XCTestCase {
     XCTAssertNil(move)
   }
 
-  func testCheckMove() {
+  @MainActor func testCheckMove() {
     var board = Board(position: .init(fen: "k7/7R/8/8/8/8/K7/8 w - - 0 1")!)
 
     nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns check result")
@@ -371,7 +371,7 @@ final class BoardTests: XCTestCase {
     waitForExpectations(timeout: 1.0)
   }
 
-  func testCheckmateMove() {
+  @MainActor func testCheckmateMove() {
     var board = Board(position: .init(fen: "k7/7R/6R1/8/8/8/K7/8 w - - 0 1")!)
 
     nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns checkmate result")

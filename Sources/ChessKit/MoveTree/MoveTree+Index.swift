@@ -7,6 +7,7 @@ extension MoveTree {
   /// Object that represents the index of a node in the move tree.
   public struct Index: Hashable, Sendable {
 
+    /// Variation number corresponding to the main variation of the tree.
     public static let mainVariation = 0
 
     /// The move number.
@@ -86,6 +87,7 @@ extension MoveTree {
 
 }
 
+// MARK: - Comparable
 extension MoveTree.Index: Comparable {
   public static func < (lhs: Self, rhs: Self) -> Bool {
     if lhs.variation == rhs.variation {

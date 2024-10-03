@@ -10,7 +10,7 @@ import Foundation
 /// This object is the entry point for interacting with a full
 /// chess game within `ChessKit`. It provides methods for
 /// making moves and publishes the played moves in an observable way.
-public struct Game: Hashable {
+public struct Game: Hashable, Sendable {
 
   // MARK: - Properties
 

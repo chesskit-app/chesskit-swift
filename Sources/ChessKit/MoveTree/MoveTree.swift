@@ -3,11 +3,13 @@
 //  ChessKit
 //
 
+import Foundation
+
 /// A tree-like data structure that represents the moves of a chess game.
 ///
 /// The tree maintains the move order including variations and
 /// provides index-based access for any element in the tree.
-public struct MoveTree: Hashable {
+public struct MoveTree: Hashable, Sendable {
 
   /// The index of the root of the move tree.
   ///
@@ -26,6 +28,10 @@ public struct MoveTree: Hashable {
   public var indices: [Index] {
     Array(dictionary.keys)
   }
+
+  /// Lock to restrict modification of tree nodes
+  /// to ensure `Sendable` conformance for ``Node``.
+  private static let nodeLock = NSLock()
 
   /// Adds a move to the move tree.
   ///
@@ -67,7 +73,9 @@ public struct MoveTree: Hashable {
       }
     }
 
-    dictionary[newIndex] = newNode
+    Self.nodeLock.withLock {
+      dictionary[newIndex] = newNode
+    }
     newNode.index = newIndex
 
     if newIndex.variation == Index.mainVariation {
@@ -257,8 +265,10 @@ public struct MoveTree: Hashable {
     assessment: Move.Assessment = .null,
     comment: String = ""
   ) -> Move? {
-    dictionary[index]?.move.assessment = assessment
-    dictionary[index]?.move.comment = comment
+    Self.nodeLock.withLock {
+      dictionary[index]?.move.assessment = assessment
+      dictionary[index]?.move.comment = comment
+    }
     return dictionary[index]?.move
   }
 
@@ -343,7 +353,7 @@ extension MoveTree: Equatable {
 extension MoveTree {
 
   /// Object that represents a node in the move tree.
-  class Node: Hashable {
+  class Node: Hashable, @unchecked Sendable {
 
     /// The move for this node.
     var move: Move
@@ -365,7 +375,7 @@ extension MoveTree {
       lhs.index == rhs.index && lhs.move == rhs.move
     }
 
-    // MARK: - Hashable
+    // MARK: Hashable
     func hash(into hasher: inout Hasher) {
       hasher.combine(move)
       hasher.combine(index)
