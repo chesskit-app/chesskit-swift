@@ -23,22 +23,24 @@ import ChessKit
 ## Features
 
 * Representation of chess elements
-    * `Piece`
-    * `Square`
-    * `Move`
-    * `Position`
-    * `Board`
-    * `Clock`
-    * `Game`
-    * Special moves (castling, en passant)
+  * `Piece`: represents a single piece on the board, given by its color, type, and location on the board
+  * `Square`: represents a square on the board
+  * `Move`: represents a piece move, along with other metadata such as captures, annotations, and disambiguations
+  * `Position`: represents a single position on the chess board
+  * `Board`: validate and make moves in accordance with chess rules
+  * `Game`: manage positions throughout a game and PGN tags
+  * Special moves (castling, en passant): handled automatically by `Position` and `Board`
 * Move validation
-    * Implemented using highly performant `UInt64` [bitboards](https://www.chessprogramming.org/Bitboards).
+  * Implemented using highly performant `UInt64` [bitboards](https://www.chessprogramming.org/Bitboards).
+* Move branching and variations
+  * Implemented using a performant tree-like data structure `MoveTree`.
 * Pawn promotion handling
-* Game states (check, stalemate, checkmate, etc.)
+* Game states (check, stalemate, checkmate, draws)
 * Chess notation string parsing
-    * PGN
-    * FEN
-    * SAN
+  * `PGNParser`
+  * `FENParser`
+  * `SANParser`
+  * `EngineLANParser` (for use with [UCI](https://www.wbec-ridderkerk.nl/html/UCIProtocol.html) engines)
 
 ## Examples
 
@@ -105,7 +107,7 @@ let board = Board()
 print(board.legalMoves(forPieceAt: .e2))    // [.e3, .e4]
 ```
 
-* Parse [FEN](https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation) into a `Position` object
+* Parse [FEN](https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation) into a `Position` object, [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) (into `Game`), or [SAN](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) (into `Move`).
 ``` swift
 // parse FEN using Position initializer
 let fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
@@ -113,10 +115,7 @@ let position = Position(fen: fen)
 
 // convert Position to FEN string
 let fenString = position.fen
-```
 
-* Similarly, parse [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) (into `Game`) or [SAN](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) (into `Move`).
-``` swift
 // parse PGN using Game initializer
 let game = Game(pgn: "1. e4 e5 2. Nf3")
 

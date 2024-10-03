@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.13.0
+Released Thursday, October 3, 2024.
 
 ### New Features
 * `BoardDelegate` now notifies when king is in check, and provides the color of the checked king, see [Issue #38](https://github.com/chesskit-app/chesskit-swift/issues/38).
