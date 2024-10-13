@@ -36,6 +36,14 @@ public class FENParser {
             return nil
         }
 
+        guard separatedFen[0].filter({ $0 == "K" }).count == 1 else {
+            return nil
+        }
+
+        guard separatedFen[0].filter({ $0 == "k" }).count == 1 else {
+            return nil
+        }
+
         // piece placement
 
         let piecePlacementByRank = separatedFen[0]
