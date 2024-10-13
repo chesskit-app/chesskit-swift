@@ -50,6 +50,9 @@ public class FENParser {
             .components(separatedBy: "/")
             .enumerated()
 
+        var kSquare: Square = .e8
+        var KSquare: Square = .e1
+
         let pieces = piecePlacementByRank.compactMap { (index, rankString) -> [Piece]? in
             let piecesInRank = rankString.map(String.init)
             let rank = Square.Rank(Square.Rank.range.upperBound - index)
@@ -65,10 +68,22 @@ public class FENParser {
                     fileNumber += 1
                     let file = Square.File(fileNumber)
                     let square = Square(file, rank)
+
+                    switch s {
+                    case "k": kSquare = square
+                    case "K": KSquare = square
+                    default: break
+                    }
+
                     return Piece(fen: s, square: square)
                 }
             }
         }.flatMap { $0 }
+
+        guard abs(kSquare.rank.value - KSquare.rank.value) > 1 ||
+              abs(kSquare.file.number - KSquare.file.number) > 1 else {
+            return nil
+        }
 
         // side to move
 
