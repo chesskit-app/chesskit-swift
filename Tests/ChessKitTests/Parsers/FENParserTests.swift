@@ -93,4 +93,20 @@ class FENParserTests: XCTestCase {
         XCTAssertEqual(Position.fiftyMove.fen, fiftyMoveFen)
     }
 
+    func testKingsCount() {
+        let standardFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        XCTAssertNotNil(Position(fen: standardFen))
+
+        let oneKingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQQBNR w KQkq - 0 1"
+        let threeKingsFen = "rnbqkbnr/kppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        XCTAssertNil(Position(fen: oneKingFen))
+        XCTAssertNil(Position(fen: threeKingsFen))
+    }
+    
+    func testAdjacentKings() {
+        let adjacentKings1 = "rnbqbnr1/pppppppp/8/8/8/8/PPPkPPPP/RNBQKBNR w KQkq - 0 1"
+        let adjacentKings2 = "rnbqkKnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQBNR1 w KQkq - 0 1"
+        XCTAssertNil(Position(fen: adjacentKings1))
+        XCTAssertNil(Position(fen: adjacentKings2))
+    }
 }
