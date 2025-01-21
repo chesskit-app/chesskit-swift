@@ -7,6 +7,7 @@
 /// events related to changes in position on the board such
 /// as pawn promotions and end results.
 public protocol BoardDelegate: AnyObject, Sendable {
+  func willPromote(with move: Move)
   func didPromote(with move: Move)
   func didCheckKing(ofColor color: Piece.Color)
   func didEnd(with result: Board.EndResult)
@@ -241,7 +242,14 @@ public struct Board: Sendable {
     // pawn promotion
     if move.piece.kind == .pawn {
       if (move.end.rank == 8 && move.piece.color == .white) || (move.end.rank == 1 && move.piece.color == .black) {
-        delegate?.didPromote(with: move)
+          if move.promotedPiece == nil {
+              //Notify the user that the move resulted in
+              //a promotion and wait for promotion selection.
+              delegate?.willPromote(with: move)
+          } else {
+              //Notify the user that a piece was promoted.
+              delegate?.didPromote(with: move)
+          }
       }
     }
 
