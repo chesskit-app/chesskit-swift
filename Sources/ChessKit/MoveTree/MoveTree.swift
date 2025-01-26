@@ -272,6 +272,22 @@ public struct MoveTree: Hashable, Sendable {
     return dictionary[index]?.move
   }
 
+  /// Appends a promoted piece to a move at a given index.
+  ///
+  /// - parameter promotedPiece: the piece to append to the move.
+  /// - parameter index: The index of the move to promote.
+  ///
+  /// - returns: The move updated with the given promoted piece.
+  ///
+  mutating func promotePiece(
+    _ promotedPiece: Piece,
+    at index: Index
+  ) -> Move? {
+    Self.nodeLock.withLock {
+      dictionary[index]?.move.promotedPiece = promotedPiece
+    }
+    return dictionary[index]?.move.promotedPiece != nil ? dictionary[index]?.move : nil
+  }
   // MARK: - PGN
 
   /// An element for representing the ``MoveTree`` in

@@ -178,6 +178,43 @@ public struct Game: Hashable, Sendable {
 
     return index
   }
+    
+
+  /// Promotes the piece the a given move to the selected piece.
+  ///
+  /// - parameter move: The move that promotes the piece.
+  /// - parameter kind: The kind of piece we would like to promote to.
+  /// - parameter index: The current move index to make the moves from.
+  /// If this parameter is `nil` or omitted, the move is made from the
+  /// last move in the main variation branch.
+  /// - returns: The updated move or nil if the update was unsuccessful
+  ///
+  /// This method does not make any move legality assumptions,
+  /// it will attempt to make the moves defined by `moveStrings` by moving
+  /// pieces at the provided starting/ending squares and making any
+  /// necessary captures, promotions, etc. It is the responsibility
+  /// of the caller to ensure the moves are legal, see the ``Board`` struct.
+  @discardableResult
+  public mutating func completePromotion(
+    of move: Move,
+    to kind: Piece.Kind,
+    at index: MoveTree.Index? = nil
+  ) -> Move? {
+    let index = index ?? moves.endIndex
+    let promotedPiece = Piece(kind, color: move.piece.color, square: move.end)
+    
+    guard var position = positions[index] else {
+            return nil
+    }
+        
+    var updatedMove = move
+    updatedMove.promotedPiece = promotedPiece
+
+    position.promote(pieceAt: move.end, to: kind)
+        
+    positions[moves.endIndex] = position
+    return moves.promotePiece(promotedPiece, at: index)
+  }
 
   /// Annotates the move at the provided `index`.
   ///
