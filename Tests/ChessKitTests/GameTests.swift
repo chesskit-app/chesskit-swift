@@ -22,9 +22,10 @@ final class GameTests: XCTestCase {
   // MARK: - Setup
 
   override func setUp() {
+    let minimum = MoveTree.Index.getMinimum()
     game.tags = Self.mockTags
 
-    game.make(moves: ["e4", "e5", "Nf3", "Nc6", "Bc4"], from: .minimum)
+    game.make(moves: ["e4", "e5", "Nf3", "Nc6", "Bc4"], from: minimum)
 
     // add 2. Nc3 ... variation to 2. Nf3
     game.make(moves: ["Nc3", "Nf6", "Bc4"], from: nf3Index.previous)
@@ -36,8 +37,8 @@ final class GameTests: XCTestCase {
     game.make(moves: ["f5", "exf5"], from: nc6Index2.previous)
 
     // make repeat moves to test proper handling
-    game.make(move: "e4", from: .minimum)
-    game.make(move: "e5", from: .minimum.next)
+    game.make(move: "e4", from: minimum)
+    game.make(move: "e5", from: minimum.next)
     game.make(moves: ["Nc3", "Nf6"], from: nf3Index.previous)
   }
 
@@ -107,8 +108,8 @@ final class GameTests: XCTestCase {
       ),
       nf3Index
     )
-
-    XCTAssertEqual(game.moves.index(before: .minimum.next), .minimum)
+    let minimum = MoveTree.Index.getMinimum()
+    XCTAssertEqual(game.moves.index(before: minimum.next), minimum)
     XCTAssertEqual(game.moves.index(after: nc3Index), nf6Index)
   }
 

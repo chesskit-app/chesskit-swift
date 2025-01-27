@@ -37,8 +37,9 @@ public struct Game: Hashable, Sendable {
   ///
   /// Defaults to the starting position.
   public init(startingWith position: Position = .standard, tags: Tags? = nil) {
-    moves = MoveTree()
-    let startingIndex = position.sideToMove == .white ? MoveTree.Index.minimum : .minimum.next
+    let startingIndex = MoveTree.Index.getMinimum(for: position.sideToMove)
+      
+    moves = MoveTree(firstSideToMove: position.sideToMove)
     self.startingIndex = startingIndex
     positions = [startingIndex: position]
     self.tags = tags ?? .init()
@@ -58,7 +59,7 @@ public struct Game: Hashable, Sendable {
     }
 
     moves = parsed.moves
-    startingIndex = .minimum
+    startingIndex = parsed.startingIndex
     positions = parsed.positions
     tags = parsed.tags
   }

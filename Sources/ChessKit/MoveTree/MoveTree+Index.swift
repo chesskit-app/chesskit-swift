@@ -31,14 +31,6 @@ extension MoveTree {
       self.variation = variation
     }
 
-    /// The minimum value of `MoveTree.Index(number: 0, color: .black)`
-    ///
-    /// This represents the starting position of the game.
-    ///
-    /// i.e. `MoveTree.Index(number: 1, color: .white)` is returned by `MoveTree.Index.minimum.next`
-    /// which is the first move of the game (played by white).
-    public static let minimum = Index(number: 0, color: .black)
-
     /// The previous index.
     ///
     /// This assumes `variation` is constant.
@@ -82,9 +74,21 @@ extension MoveTree {
         )
       }
     }
-
+    
+    /// The minimum value of `MoveTree.Index(number: 0, color: .black)` for white
+    /// and `MoveTree.Index(number: 1, color: .white)`
+    ///
+    /// This represents the starting position of the game, before the first move has been made.
+    ///
+    static func getMinimum(for firstToMove: Piece.Color = .white) -> Index {
+      return switch firstToMove {
+      case .white:
+          Index(number: 0, color: .black)
+      case .black:
+          Index(number: 1, color: .white)
+      }
+    }
   }
-
 }
 
 // MARK: - Comparable
