@@ -16,8 +16,6 @@ public struct Game: Hashable, Sendable {
 
   /// The move tree representing all moves made in the game.
   public private(set) var moves: MoveTree
-  /// The move tree index of the starting position in the game.
-  public private(set) var startingIndex: MoveTree.Index
   /// A dictionary of every position in the game, keyed by move index.
   public private(set) var positions: [MoveTree.Index: Position]
   /// Contains the tag pairs for this game.
@@ -25,7 +23,13 @@ public struct Game: Hashable, Sendable {
 
   /// The starting position of the game.
   public var startingPosition: Position? {
-    positions[startingIndex]
+      positions[moves.startIndex]
+  }
+    
+  /// The move tree index of the starting position in the game.
+  @available(*, deprecated, message: "Use moves.startIndex instead")
+  public var startingIndex: MoveTree.Index {
+    moves.startIndex
   }
 
   // MARK: - Initializer
@@ -37,10 +41,10 @@ public struct Game: Hashable, Sendable {
   ///
   /// Defaults to the starting position.
   public init(startingWith position: Position = .standard, tags: Tags? = nil) {
-    let startingIndex = MoveTree.Index.getMinimum(for: position.sideToMove)
-      
     moves = MoveTree(firstSideToMove: position.sideToMove)
-    self.startingIndex = startingIndex
+    
+    let startingIndex = moves.startIndex
+      
     positions = [startingIndex: position]
     self.tags = tags ?? .init()
 
@@ -59,7 +63,6 @@ public struct Game: Hashable, Sendable {
     }
 
     moves = parsed.moves
-    startingIndex = parsed.startingIndex
     positions = parsed.positions
     tags = parsed.tags
   }

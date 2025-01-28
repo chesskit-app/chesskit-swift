@@ -80,7 +80,7 @@ extension MoveTree {
     ///
     /// This represents the starting position of the game, before the first move has been made.
     ///
-    static func getMinimum(for firstToMove: Piece.Color = .white) -> Index {
+    internal static func getMinimum(for firstToMove: Piece.Color = .white) -> Index {
       return switch firstToMove {
       case .white:
           Index(number: 0, color: .black)

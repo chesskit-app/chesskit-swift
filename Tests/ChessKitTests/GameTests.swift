@@ -52,7 +52,7 @@ final class GameTests: XCTestCase {
   func testStartingPosition() {
     let game1 = Game(startingWith: .standard)
     XCTAssertEqual(
-      game1.startingIndex,
+      game1.moves.startIndex,
       .init(number: 0, color: .black, variation: 0)
     )
     XCTAssertEqual(game1.startingPosition, .standard)
@@ -61,11 +61,11 @@ final class GameTests: XCTestCase {
     var game2 = Game(startingWith: .init(fen: fen)!)
 
     XCTAssertEqual(
-      game2.startingIndex,
+      game2.moves.startIndex,
       .init(number: 1, color: .white, variation: 0)
     )
     XCTAssertEqual(game2.startingPosition, .init(fen: fen)!)
-    game2.make(move: "O-O", from: game2.startingIndex)
+    game2.make(move: "O-O", from: game2.moves.startIndex)
     XCTAssertEqual(
       game2.moves.index(after: game2.moves.minimumIndex),
       .init(number: 1, color: .black, variation: 0)
