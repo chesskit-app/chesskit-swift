@@ -23,7 +23,7 @@ public struct MoveTree: Hashable, Sendable {
   private(set) var dictionary: [Index: Node] = [:]
   /// The root node of the tree.
   private var root: Node?
-    
+  // The color to move first for the current game. 
   private let firstSideToMove: Piece.Color
 
   /// A set containing the indices of all the moves stored in the tree.
