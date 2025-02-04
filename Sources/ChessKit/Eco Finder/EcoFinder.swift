@@ -24,7 +24,7 @@ public struct EcoFinder: Sendable {
     /// - Throws: FileNotFound - If there is no ECO file at the expected location
     /// - Throws: CouldNotOpenFile - if file read has failed for some reason
     /// - Note: As long as this framework is unmodified, errors should never be thrown as the eco file is bundles with the framework itself.
-    init() async throws {
+    public init() async throws {
         guard let fileUrl = Bundle.module.url(forResource: "eco", withExtension: "tsv") else { throw EcoFinderError.FileNotFound }
         guard let file = freopen(fileUrl.path(), "r", stdin) else { throw EcoFinderError.CouldNotOpenFile }
         defer { fclose(file) }

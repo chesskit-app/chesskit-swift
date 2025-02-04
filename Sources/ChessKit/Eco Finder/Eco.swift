@@ -10,9 +10,15 @@
 ///A data object representing the chess opening
 public struct Eco: Sendable {
     ///The name of the opening, for example: "Scotch Game"
-    let name: String
+    public let name: String
     ///The eco code of the opening, for example: "C45"
-    let ecoCode: String
+    public let ecoCode: String
     /// A pgn string representing the moves of this opening
-    let moves: String
+    public let moves: String
+    
+    internal init(name: String, ecoCode: String, moves: String) {
+        self.name = name
+        self.ecoCode = ecoCode
+        self.moves = moves
+    }
 }
