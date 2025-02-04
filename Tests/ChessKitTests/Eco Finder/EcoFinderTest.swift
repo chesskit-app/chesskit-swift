@@ -8,7 +8,7 @@
 import Testing
 @testable import ChessKit
 
-@Suite
+@Suite(.serialized)
 struct EcoFinderTest {
     let bongcloudName = "Bongcloud Attack"
     let bongcloudCode = "C20"
@@ -42,6 +42,34 @@ struct EcoFinderTest {
         #expect(kingsPawnEco?.ecoCode == kingsPawnGameCode)
         #expect(kingsPawnEco?.name == kingsPawnGameName)
         #expect(kingsPawnEco?.moves == kingsPawnGamePGNString)
+    }
+    
+    @Test
+    func testPGNGetFirstEcoInFile_shouldFindVantKruijsOpening() {
+        let vantKruijsOpeningName = "Van't Kruijs Opening"
+        let vantKruijsOpeningCode = "A00"
+        let vantKruijsOpeningPGNString = "1. e3"
+
+        let vantKruijsOpeningEco = ecoFinder.getEco(pgn: vantKruijsOpeningPGNString)
+        
+        #expect(vantKruijsOpeningEco != nil)
+        #expect(vantKruijsOpeningEco?.ecoCode == vantKruijsOpeningCode)
+        #expect(vantKruijsOpeningEco?.name == vantKruijsOpeningName)
+        #expect(vantKruijsOpeningEco?.moves == vantKruijsOpeningPGNString)
+    }
+    
+    @Test
+    func testPGNGetLastEcoInFile_shouldFindGentGambit() {
+        let gentGambitName = "Amar Opening: Paris Gambit, Gent Gambit"
+        let gentGambitCode = "A00"
+        let gentGambitPGNString = "1. Nh3 d5 2. g3 e5 3. f4 Bxh3 4. Bxh3 exf4 5. O-O fxg3 6. hxg3"
+
+        let gentGambitEco = ecoFinder.getEco(pgn: gentGambitPGNString)
+        
+        #expect(gentGambitEco != nil)
+        #expect(gentGambitEco?.ecoCode == gentGambitCode)
+        #expect(gentGambitEco?.name == gentGambitName)
+        #expect(gentGambitEco?.moves == gentGambitPGNString)
     }
     
     @Test
