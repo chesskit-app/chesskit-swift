@@ -15,7 +15,10 @@ let package = Package(
     .library(name: "ChessKit", targets: ["ChessKit"])
   ],
   targets: [
-    .target(name: "ChessKit"),
-    .testTarget(name: "ChessKitTests", dependencies: ["ChessKit"])
+    .target(name: "ChessKit", resources: [
+        .copy("Eco Finder/eco.tsv")
+    ]),
+    .testTarget(name: "ChessKitTests",
+                dependencies: ["ChessKit"])
   ]
 )
