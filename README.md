@@ -41,6 +41,14 @@ import ChessKit
   * `FENParser`
   * `SANParser`
   * `EngineLANParser` (for use with [UCI](https://www.wbec-ridderkerk.nl/html/UCIProtocol.html) engines)
+* Eco Finder [(encyclopedia of chess openings)](https://en.wikipedia.org/wiki/Encyclopaedia_of_Chess_Openings)  
+  Retrive an ECO using
+  * PGN 
+  * FEN
+  * `Game`
+  * `[Move]` 
+  * `Position`
+  * Opening Name
 
 ## Examples
 
@@ -127,6 +135,19 @@ let move = Move(san: "e4", in: .standard)
 
 // convert Move to SAN string
 let sanString = move.san
+```
+
+* Eco Finder
+``` swift
+let ecoFinder = try? EcoFinder()
+
+let fen = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2" // Sicilian Defense
+ecoFinder.getEco(for: fen, positionType: .FEN)
+ecoFinder.getEco(by: "King's Pawn Game")
+
+let pgn = "1. e4 e5" // King's Pawn Game
+try? self.ecoFinder.searchEco(for: pgn)
+
 ```
 
 ## License

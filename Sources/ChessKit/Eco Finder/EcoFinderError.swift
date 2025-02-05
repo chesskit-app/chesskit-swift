@@ -8,7 +8,7 @@
 public enum EcoFinderError: Error, Equatable, Sendable {
     case FileNotFound
     case CouldNotOpenFile
-    case EcoNotFound(String)
+    case EcoNotFound
     
     
     var description: String {
@@ -17,8 +17,8 @@ public enum EcoFinderError: Error, Equatable, Sendable {
             return "ECO file not found"
         case .CouldNotOpenFile:
             return "Could not open ECO file"
-        case .EcoNotFound(let input):
-            return "ECO not found for \(input)"
+        case .EcoNotFound:
+            return "No opening found for the given input"
         }
     }
 }
