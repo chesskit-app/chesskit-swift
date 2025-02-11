@@ -100,7 +100,7 @@ public struct EcoFinder: Sendable {
     ///
     /// - Throws: ``EcoFinderError/EcoNotFound`` excetion if no ECO found for the given PGN string. Since all possible first moves are covered, receiving this probably means something is wrong with the input
     /// - NOTE: This function should work for SAN notation as well.
-    /// - NOTE: For FEN strings, use ``getEco(for:)`` as FENs only have one possible output.
+    /// - NOTE: For FEN strings, use ``getEco(for:)-5d0ig`` as FENs only have one possible output.
     public func searchEco(for pgn: String) throws -> Eco {
         let moves: [Move] = parsePGN(pgn)
         return try searchEcoForMovesArray(moves)
