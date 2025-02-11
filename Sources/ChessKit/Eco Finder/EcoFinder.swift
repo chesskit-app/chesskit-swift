@@ -7,8 +7,6 @@
 
 import Foundation
 
-//TODO: UPDATE LIBRARY DOCS WITH OPENING FINDER FEATURE AND EXAMPLE
-
 /// Find an ECO [(encyclopedia of chess openings)](https://en.wikipedia.org/wiki/Encyclopaedia_of_Chess_Openings) in the internal openings library of ChessKit framework.
 /// Openings library file curtesy of [lichess openings library](https://github.com/lichess-org/chess-openings/tree/master)
 public struct EcoFinder: Sendable {
