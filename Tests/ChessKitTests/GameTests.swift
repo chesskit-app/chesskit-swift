@@ -22,9 +22,10 @@ final class GameTests: XCTestCase {
   // MARK: - Setup
 
   override func setUp() {
+    let minimum = MoveTree.Index.getMinimum()
     game.tags = Self.mockTags
 
-    game.make(moves: ["e4", "e5", "Nf3", "Nc6", "Bc4"], from: .minimum)
+    game.make(moves: ["e4", "e5", "Nf3", "Nc6", "Bc4"], from: minimum)
 
     // add 2. Nc3 ... variation to 2. Nf3
     game.make(moves: ["Nc3", "Nf6", "Bc4"], from: nf3Index.previous)
@@ -36,8 +37,8 @@ final class GameTests: XCTestCase {
     game.make(moves: ["f5", "exf5"], from: nc6Index2.previous)
 
     // make repeat moves to test proper handling
-    game.make(move: "e4", from: .minimum)
-    game.make(move: "e5", from: .minimum.next)
+    game.make(move: "e4", from: minimum)
+    game.make(move: "e5", from: minimum.next)
     game.make(moves: ["Nc3", "Nf6"], from: nf3Index.previous)
   }
 
@@ -51,7 +52,7 @@ final class GameTests: XCTestCase {
   func testStartingPosition() {
     let game1 = Game(startingWith: .standard)
     XCTAssertEqual(
-      game1.startingIndex,
+      game1.moves.startIndex,
       .init(number: 0, color: .black, variation: 0)
     )
     XCTAssertEqual(game1.startingPosition, .standard)
@@ -60,11 +61,11 @@ final class GameTests: XCTestCase {
     var game2 = Game(startingWith: .init(fen: fen)!)
 
     XCTAssertEqual(
-      game2.startingIndex,
+      game2.moves.startIndex,
       .init(number: 1, color: .white, variation: 0)
     )
     XCTAssertEqual(game2.startingPosition, .init(fen: fen)!)
-    game2.make(move: "O-O", from: game2.startingIndex)
+    game2.make(move: "O-O", from: game2.moves.startIndex)
     XCTAssertEqual(
       game2.moves.index(after: game2.moves.minimumIndex),
       .init(number: 1, color: .black, variation: 0)
@@ -107,8 +108,8 @@ final class GameTests: XCTestCase {
       ),
       nf3Index
     )
-
-    XCTAssertEqual(game.moves.index(before: .minimum.next), .minimum)
+    let minimum = MoveTree.Index.getMinimum()
+    XCTAssertEqual(game.moves.index(before: minimum.next), minimum)
     XCTAssertEqual(game.moves.index(after: nc3Index), nf6Index)
   }
 

@@ -9,29 +9,43 @@ import XCTest
 final class MoveTreeTests: XCTestCase {
 
   func testEmptyCollection() {
+    let minimum = MoveTree.Index.getMinimum()
     let moveTree = MoveTree()
+      
     XCTAssertTrue(moveTree.isEmpty)
-    XCTAssertEqual(moveTree.startIndex, .minimum)
-    XCTAssertEqual(moveTree.endIndex, .minimum)
+    XCTAssertEqual(moveTree.startIndex, minimum)
+    XCTAssertEqual(moveTree.endIndex, minimum)
 
-    XCTAssertFalse(moveTree.hasIndex(before: .minimum))
-    XCTAssertFalse(moveTree.hasIndex(after: .minimum))
+    XCTAssertFalse(moveTree.hasIndex(before: minimum))
+    XCTAssertFalse(moveTree.hasIndex(after: minimum))
   }
 
   func testSubscript() {
     var moveTree = MoveTree()
-    XCTAssertNil(moveTree[.minimum])
+    let minimum = MoveTree.Index.getMinimum()
+    XCTAssertNil(moveTree[minimum])
 
     let e4 = Move(san: "e4", position: .standard)
-    moveTree[.minimum.next] = e4
-    XCTAssertEqual(moveTree[.minimum.next], e4)
+    moveTree[minimum.next] = e4
+    XCTAssertEqual(moveTree[minimum.next], e4)
   }
 
-  func testNodeHashValue() {
+  func testNodeHashValueForWhite() {
     var moveTree = MoveTree()
+    let minimum = MoveTree.Index.getMinimum()
+
     let e4 = Move(san: "e4", position: .standard)
-    moveTree[.minimum.next] = e4
-    XCTAssertNotNil(moveTree.dictionary[.minimum.next]?.hashValue)
+    moveTree[minimum.next] = e4
+    XCTAssertNotNil(moveTree.dictionary[minimum.next]?.hashValue)
+  }
+
+  func testNodeHashValueForBlack() {
+    var moveTree = MoveTree(firstSideToMove: .black)
+    let minimum = MoveTree.Index.getMinimum(for: .black)
+    let position = Position(fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1")! //Starting position, but black makes the first move
+    let e5 = Move(san: "e5", position: position)
+    moveTree[minimum.next] = e5
+    XCTAssertNotNil(moveTree.dictionary[minimum.next]?.hashValue)
   }
 
   func testSameVariationComparability() {
@@ -71,6 +85,7 @@ extension MoveTreeTests {
   @available(*, deprecated)
   func testDeprecated() {
     var moveTree = MoveTree()
+    let minimum = MoveTree.Index.getMinimum()
 
     let move1 = Move(san: "e4", position: .standard)!
     let move2 = Move(san: "e5", position: .init(fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2")!)!
@@ -90,10 +105,10 @@ extension MoveTreeTests {
     XCTAssertEqual(moveTree.move(at: i2), moveTree[i2])
     XCTAssertEqual(moveTree.move(at: i2), move2)
 
-    XCTAssertNil(moveTree.previousIndex(for: .minimum))
+    XCTAssertNil(moveTree.previousIndex(for: minimum))
     XCTAssertNil(moveTree.nextIndex(for: i2))
 
-    XCTAssertEqual(moveTree.nextIndex(for: .minimum), i1)
+    XCTAssertEqual(moveTree.nextIndex(for: minimum), i1)
   }
 
 }

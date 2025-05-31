@@ -14,21 +14,28 @@ public struct MoveTree: Hashable, Sendable {
   /// The index of the root of the move tree.
   ///
   /// Defaults to `MoveTree.Index.minimum`.
-  var minimumIndex: Index = .minimum
+  var minimumIndex: Index
 
   /// The last index of the main variation of the move tree.
-  private(set) var lastMainVariationIndex: Index = .minimum
+  private(set) var lastMainVariationIndex: Index
 
   /// Dictionary representation of the tree for faster access.
   private(set) var dictionary: [Index: Node] = [:]
   /// The root node of the tree.
   private var root: Node?
+  // The color to move first for the current game. 
+  private let firstSideToMove: Piece.Color
 
   /// A set containing the indices of all the moves stored in the tree.
   public var indices: [Index] {
     Array(dictionary.keys)
   }
 
+  init(firstSideToMove: Piece.Color = .white) {
+    self.firstSideToMove = firstSideToMove
+    minimumIndex = MoveTree.Index.getMinimum(for: firstSideToMove)
+    lastMainVariationIndex = MoveTree.Index.getMinimum(for: firstSideToMove)
+  }
   /// Lock to restrict modification of tree nodes
   /// to ensure `Sendable` conformance for ``Node``.
   private static let nodeLock = NSLock()
@@ -117,7 +124,8 @@ public struct MoveTree: Hashable, Sendable {
   /// from the starting move until the move defined by `index`, accounting
   /// for any branching variations in between.
   public func history(for index: Index) -> [Index] {
-    let index = index == .minimum ? .minimum.next : index
+    let minimum = MoveTree.Index.getMinimum(for: firstSideToMove)
+    let index = index == minimum ? minimum.next : index
     var currentNode = dictionary[index]
     var history: [Index] = []
 
@@ -141,7 +149,8 @@ public struct MoveTree: Hashable, Sendable {
   /// from the move after the move defined by `index` to the last move
   /// of the variation.
   public func future(for index: Index) -> [Index] {
-    let index = index == .minimum ? .minimum.next : index
+    let minimum = MoveTree.Index.getMinimum(for: firstSideToMove)
+    let index = index == minimum ? minimum.next : index
     var currentNode = dictionary[index]
     var future: [Index] = []
 
@@ -362,7 +371,7 @@ extension MoveTree {
     /// The move for this node.
     var move: Move
     /// The index for this node.
-    fileprivate(set) var index: Index = .minimum
+    fileprivate(set) var index: Index = MoveTree.Index.getMinimum()
     /// The previous node.
     fileprivate(set) var previous: Node?
     /// The next node.
