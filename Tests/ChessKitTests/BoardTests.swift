@@ -39,20 +39,33 @@ final class BoardTests: XCTestCase {
     let queen = Piece(.queen, color: .white, square: .e8)
     var board = Board(position: .init(pieces: [pawn]))
 
-    nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns promotion move")
+    let willPromoteExpectation = self.expectation(
+      description: "Board will promote"
+    )
+    let didPromoteExpecatation = self.expectation(
+      description: "Board did promote"
+    )
 
-    let delegate = MockBoardDelegate(didPromote: { move in
-      let newPawn = Piece(.pawn, color: .white, square: .e8)
-      XCTAssertEqual(move.piece, newPawn)
-      expectation?.fulfill()
-      expectation = nil
-    })
+    let delegate = MockBoardDelegate(
+      willPromote: { [weak willPromoteExpectation] move in
+        let pawn = Piece(.pawn, color: .white, square: .e8)
+        XCTAssertEqual(move.piece, pawn)
+        XCTAssertNil(move.promotedPiece)
+        willPromoteExpectation?.fulfill()
+      },
+      didPromote: { [weak didPromoteExpecatation] move in
+        XCTAssertEqual(move.promotedPiece, queen)
+        didPromoteExpecatation?.fulfill()
+      }
+    )
     board.delegate = delegate
 
     let move = board.move(pieceAt: .e7, to: .e8)!
-    waitForExpectations(timeout: 1.0)
+    wait(for: [willPromoteExpectation], timeout: 1.0)
 
     let promotionMove = board.completePromotion(of: move, to: .queen)
+    wait(for: [didPromoteExpecatation], timeout: 1.0)
+
     XCTAssertEqual(promotionMove.result, .move)
     XCTAssertEqual(promotionMove.promotedPiece, queen)
     XCTAssertEqual(promotionMove.end, .e8)
@@ -63,20 +76,33 @@ final class BoardTests: XCTestCase {
     let queen = Piece(.queen, color: .black, square: .e1)
     var board = Board(position: .init(pieces: [pawn]))
 
-    nonisolated(unsafe) var expectation: XCTestExpectation? = self.expectation(description: "Board returns promotion move")
+    let willPromoteExpectation = self.expectation(
+      description: "Board will promote"
+    )
+    let didPromoteExpecatation = self.expectation(
+      description: "Board did promote"
+    )
 
-    let delegate = MockBoardDelegate(didPromote: { move in
-      let newPawn = Piece(.pawn, color: .black, square: .e1)
-      XCTAssertEqual(move.piece, newPawn)
-      expectation?.fulfill()
-      expectation = nil
-    })
+    let delegate = MockBoardDelegate(
+      willPromote: { [weak willPromoteExpectation] move in
+        let pawn = Piece(.pawn, color: .black, square: .e1)
+        XCTAssertEqual(move.piece, pawn)
+        XCTAssertNil(move.promotedPiece)
+        willPromoteExpectation?.fulfill()
+      },
+      didPromote: { [weak didPromoteExpecatation] move in
+        XCTAssertEqual(move.promotedPiece, queen)
+        didPromoteExpecatation?.fulfill()
+      }
+    )
     board.delegate = delegate
 
     let move = board.move(pieceAt: .e2, to: .e1)!
-    waitForExpectations(timeout: 1.0)
+    wait(for: [willPromoteExpectation], timeout: 1.0)
 
     let promotionMove = board.completePromotion(of: move, to: .queen)
+    wait(for: [didPromoteExpecatation], timeout: 1.0)
+
     XCTAssertEqual(promotionMove.result, .move)
     XCTAssertEqual(promotionMove.promotedPiece, queen)
     XCTAssertEqual(promotionMove.end, .e1)
