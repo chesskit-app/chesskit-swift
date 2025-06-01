@@ -119,7 +119,7 @@ public struct Position: Sendable {
   /// This function assumes castling is valid for the provided `castling`. If the the king move is
   /// valid, it will be performed whether or not there is actually a piece on the `rookStart` square.
   ///
-  /// - Note: The rook will only be moved if the king move succeeds.
+  /// - note: The rook will only be moved if the king move succeeds.
   ///
   @discardableResult
   mutating func castle(_ castling: Castling) -> Piece? {

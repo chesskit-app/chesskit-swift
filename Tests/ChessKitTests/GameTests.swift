@@ -13,6 +13,7 @@ final class GameTests: XCTestCase {
   // MARK: - Indices used in tests
 
   private let nf3Index = MoveTree.Index(number: 2, color: .white, variation: 0)
+  private let bc4Index = MoveTree.Index(number: 3, color: .white, variation: 0)
   private let nc3Index = MoveTree.Index(number: 2, color: .white, variation: 1)
   private let nf6Index = MoveTree.Index(number: 2, color: .black, variation: 1)
   private let nc6Index = MoveTree.Index(number: 2, color: .black, variation: 2)
@@ -84,6 +85,25 @@ final class GameTests: XCTestCase {
     XCTAssertEqual(game.moves[.init(number: 3, color: .white)]?.san, "Bc4")
   }
 
+  func testMakeInvalidMoves() {
+    let movesBefore = game.moves
+
+    XCTAssertEqual(
+      game.make(move: "e1", from: .init(number: 10, color: .black)),
+      .init(number: 10, color: .black)
+    )
+    // test that `MoveTree` has not changed
+    XCTAssertEqual(movesBefore, game.moves)
+
+    XCTAssertEqual(
+      game.make(
+        move: .init(san: "e4", position: .standard)!,
+        from: .init(number: 100, color: .white)
+      ),
+      .init(number: 100, color: .white)
+    )
+  }
+
   func testMoveTree() {
     XCTAssertEqual(game.moves[nf3Index]?.san, "Nf3")
     XCTAssertEqual(game.moves[nc3Index]?.san, "Nc3")
@@ -91,22 +111,12 @@ final class GameTests: XCTestCase {
     XCTAssertEqual(game.moves[nf6Index]?.san, "Nf6")
     XCTAssertEqual(game.moves[nc6Index]?.san, "Nc6")
 
-    XCTAssertEqual(
-      game.moves.index(
-        before: nc6Index
-      ),
-      nc3Index
-    )
+    XCTAssertEqual(game.moves.index(before: nc6Index), nc3Index)
 
     XCTAssertEqual(game.moves[nc6Index2]?.san, "Nc6")
     XCTAssertEqual(game.moves[f5Index]?.san, "f5")
 
-    XCTAssertEqual(
-      game.moves.index(
-        before: f5Index
-      ),
-      nf3Index
-    )
+    XCTAssertEqual(game.moves.index(before: f5Index), nf3Index)
 
     XCTAssertEqual(game.moves.index(before: .minimum.next), .minimum)
     XCTAssertEqual(game.moves.index(after: nc3Index), nf6Index)
@@ -272,7 +282,7 @@ final class GameTests: XCTestCase {
       1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
       """
 
-    let game = Game(pgn: pgn)!
+    let game = Game(pgn: pgn)
     XCTAssertTrue(game.tags.isValid)
   }
 
@@ -284,13 +294,14 @@ final class GameTests: XCTestCase {
       1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
       """
 
-    let game = Game(pgn: pgn)!
+    let game = Game(pgn: pgn)
     XCTAssertFalse(game.tags.isValid)
     XCTAssertTrue(game.tags.$site.pgn.isEmpty)
   }
 
-  func testInvalidGame() {
-
+  func testGameWithPromotion() {
+    game.make(moves: ["f5", "d4", "fxe4", "d5", "exf3", "d6", "fxg2", "dxc7", "gxh1=Q+", "Ke2", "Nb4", "cxd8=Q+"], from: bc4Index)
+    XCTAssertTrue(game.moves.map(\.?.san).contains("gxh1=Q+"))
   }
 
 }

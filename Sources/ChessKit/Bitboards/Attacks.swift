@@ -194,7 +194,7 @@ struct Attacks: Sendable {
   /// Returns the possible moves for a sliding piece (bishop or rook)
   /// accounting for blocking pieces.
   ///
-  /// - Note: The first blocking piece encountered in each direction
+  /// - note: The first blocking piece encountered in each direction
   /// is included in the returned bitboard. It is up to the caller to handle
   /// captures or non-capturable pieces (i.e. same color pieces).
   private static func slidingAttacks(
