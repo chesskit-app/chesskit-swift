@@ -1,3 +1,2 @@
 retain_public: true
-targets:
-- ChessKit
+exclude_tests: true
