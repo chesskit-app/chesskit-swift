@@ -8,6 +8,9 @@
 * Fix issue where `MoveTree.endIndex` is not properly updated after the first half move (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
 * Fix issue where `BoardDelegate.didPromote()` was called before and after promotion (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
 
+### Breaking Changes
+* `Game(pgn:)` is no longer a failable initializer, it will now always create a non-`nil` `Game`.
+
 # ChessKit 0.13.0
 Released Thursday, October 3, 2024.
 

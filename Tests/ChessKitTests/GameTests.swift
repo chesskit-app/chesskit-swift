@@ -282,7 +282,7 @@ final class GameTests: XCTestCase {
       1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
       """
 
-    let game = Game(pgn: pgn)!
+    let game = Game(pgn: pgn)
     XCTAssertTrue(game.tags.isValid)
   }
 
@@ -294,14 +294,9 @@ final class GameTests: XCTestCase {
       1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
       """
 
-    let game = Game(pgn: pgn)!
+    let game = Game(pgn: pgn)
     XCTAssertFalse(game.tags.isValid)
     XCTAssertTrue(game.tags.$site.pgn.isEmpty)
-  }
-
-  func testInvalidGame() {
-    let game = Game(pgn: "invalid pgn string")
-    XCTAssertNil(game)
   }
 
   func testGameWithPromotion() {

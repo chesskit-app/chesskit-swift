@@ -40,7 +40,7 @@ public enum PGNParser {
   public static func parse(
     game pgn: String,
     startingWith position: Position = .standard
-  ) -> Game? {
+  ) -> Game {
     // ignoring tag pairs for now, movetext only
 
     let processedPGN =
@@ -88,16 +88,12 @@ public enum PGNParser {
 
     let moveText: [String]
 
-    do {
-      moveText = try NSRegularExpression(pattern: Pattern.moveText)
-        .matches(in: processedPGN, range: range)
-        .map {
-          NSString(string: pgn).substring(with: $0.range)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-    } catch {
-      return nil
-    }
+    moveText = try! NSRegularExpression(pattern: Pattern.moveText)
+      .matches(in: processedPGN, range: range)
+      .map {
+        NSString(string: pgn).substring(with: $0.range)
+          .trimmingCharacters(in: .whitespacesAndNewlines)
+      }
 
     let parsedMoves = moveText.compactMap { move -> ParsedMove? in
       let range = NSRange(0..<move.utf16.count)

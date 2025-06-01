@@ -50,12 +50,8 @@ public struct Game: Hashable, Sendable {
   ///
   /// - parameter pgn: A string containing a PGN representation of
   /// a game.
-  ///
-  /// This initalizer fails if the PGN is invalid.
-  public init?(pgn: String) {
-    guard let parsed = PGNParser.parse(game: pgn) else {
-      return nil
-    }
+  public init(pgn: String) {
+    let parsed = PGNParser.parse(game: pgn)
 
     moves = parsed.moves
     startingIndex = .minimum

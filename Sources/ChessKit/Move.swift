@@ -91,7 +91,7 @@ public struct Move: Hashable, Sendable {
 
   /// The engine LAN represenation of the move.
   ///
-  /// NOTE: This is intended for engine communication
+  /// - note: This is intended for engine communication
   /// so piece names, capture/check indicators, etc. are not included.
   public var lan: String {
     EngineLANParser.convert(move: self)

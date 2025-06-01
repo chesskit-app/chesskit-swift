@@ -85,7 +85,7 @@ public struct Piece: Hashable, Sendable {
 
   /// The FEN representation of the piece.
   ///
-  /// Note: This value does not convey any information regarding
+  /// - note: This value does not convey any information regarding
   /// the piece's location on the board (only kind and color).
   var fen: String {
     switch (color, kind) {
