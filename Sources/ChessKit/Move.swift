@@ -21,9 +21,9 @@ public struct Move: Hashable, Sendable {
 
     var notation: String {
       switch self {
-      case .none, .stalemate: return ""
-      case .check: return "+"
-      case .checkmate: return "#"
+      case .none, .stalemate: ""
+      case .check: "+"
+      case .checkmate: "#"
       }
     }
   }

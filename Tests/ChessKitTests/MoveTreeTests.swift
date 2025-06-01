@@ -62,6 +62,12 @@ final class MoveTreeTests: XCTestCase {
     XCTAssertGreaterThan(bIndex1.previous, bIndex2.previous)
   }
 
+  func testNonexistentIndexBeforeAndAfter() {
+    let tree = MoveTree()
+    XCTAssertEqual(tree.index(after: .minimum), .minimum)
+    XCTAssertEqual(tree.index(before: .minimum), .minimum)
+  }
+
 }
 
 // MARK: - Deprecated Tests
