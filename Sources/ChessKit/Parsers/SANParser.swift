@@ -14,7 +14,7 @@ public enum SANParser {
   /// - returns: A Swift representation of a move, or `nil` if the
   ///     SAN is invalid.
   ///
-  /// Make sure the provided `position` has the correct `sideToMove`
+  /// - note: Make sure the provided `position` has the correct `sideToMove`
   /// set or the parsing may fail due to invalid moves.
   public static func parse(
     move san: String,

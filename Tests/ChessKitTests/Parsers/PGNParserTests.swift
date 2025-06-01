@@ -42,6 +42,31 @@ final class PGNParserTests: XCTestCase {
     XCTAssertEqual(g3.tags.other["CustomTag"], "Value")
   }
 
+  func testValidResultParsing() {
+    let g1 = PGNParser.parse(game: "1. e4 e5 1/2-1/2")
+    XCTAssertEqual(g1.tags.result, "1/2-1/2")
+
+    let g2 = PGNParser.parse(game: "1. e4 e5 1-0")
+    XCTAssertEqual(g2.tags.result, "1-0")
+
+    let g3 = PGNParser.parse(game: "1. e4 e5 0-1")
+    XCTAssertEqual(g3.tags.result, "0-1")
+
+    let g4 = PGNParser.parse(game: "1. e4 e5 *")
+    XCTAssertEqual(g4.tags.result, "*")
+  }
+
+  func testInvalidResultParsing() {
+    let g1 = PGNParser.parse(game: "1. e4 e5 ***")
+    XCTAssertEqual(g1.tags.result, "")
+
+    let g2 = PGNParser.parse(game: "1. e4 e5 test")
+    XCTAssertEqual(g2.tags.result, "")
+
+    let g3 = PGNParser.parse(game: "1. e4 e5 1-00-1")
+    XCTAssertEqual(g3.tags.result, "")
+  }
+
   func testMoveTextParsing() {
     let game = PGNParser.parse(game: Game.fischerSpassky)
 
