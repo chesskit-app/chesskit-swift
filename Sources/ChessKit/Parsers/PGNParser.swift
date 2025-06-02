@@ -18,13 +18,7 @@ public enum PGNParser {
     /// The black move SAN string, annotation, and comment (can be `nil`).
     let blackMove: (san: String, annotation: Move.Assessment, comment: String)?
     /// The result of the game, if applicable.
-    let result: Result?
-
-    enum Result: String {
-      case whiteWin = "1-0"
-      case blackWin = "0-1"
-      case draw = "1/2-1/2"
-    }
+    let result: String?
   }
 
   // MARK: - Public
@@ -40,7 +34,7 @@ public enum PGNParser {
   public static func parse(
     game pgn: String,
     startingWith position: Position = .standard
-  ) -> Game? {
+  ) -> Game {
     // ignoring tag pairs for now, movetext only
 
     let processedPGN =
@@ -88,16 +82,12 @@ public enum PGNParser {
 
     let moveText: [String]
 
-    do {
-      moveText = try NSRegularExpression(pattern: Pattern.moveText)
-        .matches(in: processedPGN, range: range)
-        .map {
-          NSString(string: pgn).substring(with: $0.range)
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-    } catch {
-      return nil
-    }
+    moveText = try! NSRegularExpression(pattern: Pattern.moveText)
+      .matches(in: processedPGN, range: range)
+      .map {
+        NSString(string: pgn).substring(with: $0.range)
+          .trimmingCharacters(in: .whitespacesAndNewlines)
+      }
 
     let parsedMoves = moveText.compactMap { move -> ParsedMove? in
       let range = NSRange(0..<move.utf16.count)
@@ -162,6 +152,7 @@ public enum PGNParser {
         .matches(in: move, range: range)
         .map {
           NSString(string: move).substring(with: $0.range)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         }
         .first
 
@@ -182,7 +173,7 @@ public enum PGNParser {
         number: moveNumber,
         whiteMove: whiteMove,
         blackMove: blackMove,
-        result: ParsedMove.Result(rawValue: result ?? "")
+        result: result
       )
     }
 
@@ -221,7 +212,7 @@ public enum PGNParser {
       }
 
       if let result = move.result {
-        game.tags.result = result.rawValue
+        game.tags.result = result
       }
     }
 

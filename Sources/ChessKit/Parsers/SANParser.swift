@@ -14,7 +14,7 @@ public enum SANParser {
   /// - returns: A Swift representation of a move, or `nil` if the
   ///     SAN is invalid.
   ///
-  /// Make sure the provided `position` has the correct `sideToMove`
+  /// - note: Make sure the provided `position` has the correct `sideToMove`
   /// set or the parsing may fail due to invalid moves.
   public static func parse(
     move san: String,
@@ -103,13 +103,13 @@ public enum SANParser {
           .filter {
             switch disambiguation {
             case let .byFile(file):
-              return $0.square.file == file
+              $0.square.file == file
             case let .byRank(rank):
-              return $0.square.rank == rank
+              $0.square.rank == rank
             case let .bySquare(square):
-              return $0.square == square
+              $0.square == square
             case .none:
-              return true
+              true
             }
           }
           .first
@@ -197,9 +197,9 @@ public enum SANParser {
   ///
   private static func targetSquare(for san: String) -> Square? {
     if let range = san.range(of: Pattern.targetSquare, options: .regularExpression) {
-      return Square(String(san[range]))
+      Square(String(san[range]))
     } else {
-      return nil
+      nil
     }
   }
 

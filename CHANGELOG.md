@@ -1,3 +1,19 @@
+# [unreleased]
+
+### New Features
+* Add `willPromote()` to `BoardDelegate` (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
+  * Called when pawn reaches last rank but before `Board.completePromotion()` is called.
+
+### Improvements
+* `PGNParser` now parses `*` game results (indicating game in progress, abandoned, unknown, etc.).
+
+### Bug Fixes
+* Fix issue where `MoveTree.endIndex` is not properly updated after the first half move (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
+* Fix issue where `BoardDelegate.didPromote()` was called before and after promotion (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
+
+### Breaking Changes
+* `Game(pgn:)` is no longer a failable initializer, it will now always create a non-`nil` `Game`.
+
 # ChessKit 0.13.0
 Released Thursday, October 3, 2024.
 
