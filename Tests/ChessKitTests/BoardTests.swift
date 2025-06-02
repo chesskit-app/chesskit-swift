@@ -251,6 +251,17 @@ final class BoardTests: XCTestCase {
     XCTAssertTrue(board.canMove(pieceAt: .f7, to: .f6))
     XCTAssertTrue(board.canMove(pieceAt: .f7, to: .f5))
     XCTAssertFalse(board.canMove(pieceAt: .f7, to: .f4))
+
+    let board2 = Board(position: Position(fen: "rnbqkbnr/p1p1p1pp/1pPp4/8/8/4PpP1/PP1P1P1P/RNBQKBNR w KQkq - 0 1")!)
+    let legalF2PawnMoves = board2.legalMoves(forPieceAt: .f2)   // blocked white pawn
+    XCTAssertTrue(legalF2PawnMoves.isEmpty)
+    XCTAssertFalse(board2.canMove(pieceAt: .f2, to: .f3))
+    XCTAssertFalse(board2.canMove(pieceAt: .f2, to: .f4))
+
+    let legalC7PawnMoves = board2.legalMoves(forPieceAt: .c7)   // blocked black pawn
+    XCTAssertTrue(legalC7PawnMoves.isEmpty)
+    XCTAssertFalse(board2.canMove(pieceAt: .c7, to: .c6))
+    XCTAssertFalse(board2.canMove(pieceAt: .c7, to: .c5))
   }
 
   func testLegalKnightMoves() {
