@@ -208,6 +208,15 @@ struct BoardTests {
     #expect(board.canMove(pieceAt: .f7, to: .f6))
     #expect(board.canMove(pieceAt: .f7, to: .f5))
     #expect(!board.canMove(pieceAt: .f7, to: .f4))
+
+    // test pawns on starting rank can't hop over pieces
+    let position = Position(fen: "rnbqkbnr/p1p1p1pp/1pPp4/8/8/4PpP1/PP1P1P1P/RNBQKBNR w KQkq - 0 1")!
+    let b2 = Board(position: position)
+    let legalF2PawnMoves = b2.legalMoves(forPieceAt: .f2)
+    #expect(legalF2PawnMoves.isEmpty)
+
+    let legalC7PawnMoves = b2.legalMoves(forPieceAt: .c7)
+    #expect(legalC7PawnMoves.isEmpty)
   }
 
   @Test func legalKnightMoves() {
