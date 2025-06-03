@@ -10,6 +10,7 @@
 ### Bug Fixes
 * Fix issue where `MoveTree.endIndex` is not properly updated after the first half move (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
 * Fix issue where `BoardDelegate.didPromote()` was called before and after promotion (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
+* Fix issue where pawns on the starting rank could hop over pieces in front of them, see [Issue #49](https://github.com/chesskit-app/chesskit-swift/issues/49) (by [@joee-ca](https://github.com/joee-ca)).
 
 ### Breaking Changes
 * `Game(pgn:)` is no longer a failable initializer, it will now always create a non-`nil` `Game`.

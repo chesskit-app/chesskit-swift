@@ -235,28 +235,30 @@ final class BoardTests: XCTestCase {
   }
 
   func testLegalPawnMoves() {
-    let board = Board(position: .standard)
-    let legalC2PawnMoves = board.legalMoves(forPieceAt: .c2)
+    let b1 = Board(position: .standard)
+    let legalC2PawnMoves = b1.legalMoves(forPieceAt: .c2)
     XCTAssertEqual(legalC2PawnMoves.count, 2)
     XCTAssertTrue(legalC2PawnMoves.contains(.c3))
     XCTAssertTrue(legalC2PawnMoves.contains(.c4))
-    XCTAssertTrue(board.canMove(pieceAt: .c2, to: .c3))
-    XCTAssertTrue(board.canMove(pieceAt: .c2, to: .c4))
-    XCTAssertFalse(board.canMove(pieceAt: .c2, to: .c5))
+    XCTAssertTrue(b1.canMove(pieceAt: .c2, to: .c3))
+    XCTAssertTrue(b1.canMove(pieceAt: .c2, to: .c4))
+    XCTAssertFalse(b1.canMove(pieceAt: .c2, to: .c5))
 
-    let legalF7PawnMoves = board.legalMoves(forPieceAt: .f7)
+    let legalF7PawnMoves = b1.legalMoves(forPieceAt: .f7)
     XCTAssertEqual(legalF7PawnMoves.count, 2)
     XCTAssertTrue(legalF7PawnMoves.contains(.f6))
     XCTAssertTrue(legalF7PawnMoves.contains(.f5))
-    XCTAssertTrue(board.canMove(pieceAt: .f7, to: .f6))
-    XCTAssertTrue(board.canMove(pieceAt: .f7, to: .f5))
-    XCTAssertFalse(board.canMove(pieceAt: .f7, to: .f4))
+    XCTAssertTrue(b1.canMove(pieceAt: .f7, to: .f6))
+    XCTAssertTrue(b1.canMove(pieceAt: .f7, to: .f5))
+    XCTAssertFalse(b1.canMove(pieceAt: .f7, to: .f4))
 
-    let board2 = Board(position: Position(fen: "rnbqkbnr/p1p1p1pp/1pPp4/8/8/4PpP1/PP1P1P1P/RNBQKBNR w KQkq - 0 1")!)
-    let legalF2PawnMoves = board2.legalMoves(forPieceAt: .f2)   // blocked white pawn
+    // test pawns on starting rank can't hop over pieces
+    let position = Position(fen: "rnbqkbnr/p1p1p1pp/1pPp4/8/8/4PpP1/PP1P1P1P/RNBQKBNR w KQkq - 0 1")!
+    let b2 = Board(position: position)
+    let legalF2PawnMoves = b2.legalMoves(forPieceAt: .f2)
     XCTAssertTrue(legalF2PawnMoves.isEmpty)
 
-    let legalC7PawnMoves = board2.legalMoves(forPieceAt: .c7)   // blocked black pawn
+    let legalC7PawnMoves = b2.legalMoves(forPieceAt: .c7)
     XCTAssertTrue(legalC7PawnMoves.isEmpty)
   }
 
