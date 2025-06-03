@@ -186,7 +186,7 @@ public enum SANParser {
   /// - returns: Whether the SAN is valid.
   ///
   private static func isValid(san: String) -> Bool {
-    san.range(of: SANParser.Pattern.full, options: .regularExpression) != nil
+    san.range(of: SANParser.Pattern.strictFull, options: .regularExpression) != nil
   }
 
   /// Returns the target square for a SAN move.

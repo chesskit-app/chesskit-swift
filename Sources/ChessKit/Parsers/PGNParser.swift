@@ -107,6 +107,14 @@ public enum PGNParser {
         return nil
       }
 
+      let whiteMove =
+        try? NSRegularExpression(pattern: SANParser.Pattern.full)
+        .matches(in: m[0], range: NSRange(0..<m[0].utf16.count))
+        .compactMap {
+          NSString(string: m[0]).substring(with: $0.range)
+        }
+        .first ?? ""
+
       let whiteAnnotation =
         try? NSRegularExpression(pattern: Pattern.annotation)
         .matches(in: m[0], range: NSRange(0..<m[0].utf16.count))
@@ -125,10 +133,19 @@ public enum PGNParser {
         }
         .first ?? ""
 
+      var blackMove: String?
       var blackAnnotation: Move.Assessment?
       var blackComment: String?
 
       if m.count == 2 {
+        blackMove =
+          try? NSRegularExpression(pattern: SANParser.Pattern.full)
+          .matches(in: m[1], range: NSRange(0..<m[1].utf16.count))
+          .compactMap {
+            NSString(string: m[1]).substring(with: $0.range)
+          }
+          .first ?? ""
+
         blackAnnotation =
           try? NSRegularExpression(pattern: Pattern.annotation)
           .matches(in: m[1], range: NSRange(0..<m[1].utf16.count))
@@ -156,23 +173,23 @@ public enum PGNParser {
         }
         .first
 
-      let whiteMove = (
-        san: m[0],
+      let whiteMoveComponents = (
+        san: whiteMove ?? "",
         annotation: whiteAnnotation ?? .null,
         comment: whiteComment ?? ""
       )
-      let blackMove =
+      let blackMoveComponents =
         m.count == 2
         ? (
-          san: m[1],
+          san: blackMove ?? "",
           annotation: blackAnnotation ?? .null,
           comment: blackComment ?? ""
         ) : nil
 
       return ParsedMove(
         number: moveNumber,
-        whiteMove: whiteMove,
-        blackMove: blackMove,
+        whiteMove: whiteMoveComponents,
+        blackMove: blackMoveComponents,
         result: result
       )
     }
