@@ -5,11 +5,11 @@ import PackageDescription
 let package = Package(
   name: "ChessKit",
   platforms: [
-    .iOS(.v13),
+    .iOS(.v12),
     .macCatalyst(.v13),
-    .macOS(.v10_15),
-    .tvOS(.v13),
-    .watchOS(.v6),
+    .macOS(.v10_13),
+    .tvOS(.v12),
+    .watchOS(.v4),
     .visionOS(.v1)
   ],
   products: [
