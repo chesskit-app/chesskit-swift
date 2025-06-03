@@ -4,68 +4,68 @@
 //
 
 @testable import ChessKit
-import XCTest
+import Testing
 
-final class MoveTreeTests: XCTestCase {
+struct MoveTreeTests {
 
-  func testEmptyCollection() {
+  @Test func emptyCollection() {
     let moveTree = MoveTree()
-    XCTAssertTrue(moveTree.isEmpty)
-    XCTAssertEqual(moveTree.startIndex, .minimum)
-    XCTAssertEqual(moveTree.endIndex, .minimum)
+    #expect(moveTree.isEmpty)
+    #expect(moveTree.startIndex == .minimum)
+    #expect(moveTree.endIndex == .minimum)
 
-    XCTAssertFalse(moveTree.hasIndex(before: .minimum))
-    XCTAssertFalse(moveTree.hasIndex(after: .minimum))
+    #expect(!moveTree.hasIndex(before: .minimum))
+    #expect(!moveTree.hasIndex(after: .minimum))
   }
 
-  func testSubscript() {
+  @Test func subscriptAccess() {
     var moveTree = MoveTree()
-    XCTAssertNil(moveTree[.minimum])
+    #expect(moveTree[.minimum] == nil)
 
     let e4 = Move(san: "e4", position: .standard)
     moveTree[.minimum.next] = e4
-    XCTAssertEqual(moveTree[.minimum.next], e4)
+    #expect(moveTree[.minimum.next] == e4)
   }
 
-  func testNodeHashValue() {
+  @Test func ndeHashValue() {
     var moveTree = MoveTree()
     let e4 = Move(san: "e4", position: .standard)
     moveTree[.minimum.next] = e4
-    XCTAssertNotNil(moveTree.dictionary[.minimum.next]?.hashValue)
+    #expect(moveTree.dictionary[.minimum.next]?.hashValue != nil)
   }
 
-  func testSameVariationComparability() {
+  @Test func sameVariationComparability() {
     let wIndex = MoveTree.Index(number: 4, color: .white, variation: 2)
-    XCTAssertLessThan(wIndex, wIndex.next)
-    XCTAssertGreaterThan(wIndex, wIndex.previous)
+    #expect(wIndex < wIndex.next)
+    #expect(wIndex > wIndex.previous)
 
     let bIndex = MoveTree.Index(number: 4, color: .black, variation: 2)
-    XCTAssertLessThan(bIndex, bIndex.next)
-    XCTAssertGreaterThan(bIndex, bIndex.previous)
+    #expect(bIndex < bIndex.next)
+    #expect(bIndex > bIndex.previous)
   }
 
-  func testDifferentVariationComparability() {
+  @Test func differentVariationComparability() {
     let wIndex1 = MoveTree.Index(number: 4, color: .white, variation: 2)
     let wIndex2 = MoveTree.Index(number: 4, color: .white, variation: 3)
-    XCTAssertGreaterThan(wIndex1, wIndex2)
-    XCTAssertGreaterThan(wIndex1.next, wIndex2.next)
-    XCTAssertGreaterThan(wIndex1.previous, wIndex2.next)
-    XCTAssertGreaterThan(wIndex1.next, wIndex2.previous)
-    XCTAssertGreaterThan(wIndex1.previous, wIndex2.previous)
+    #expect(wIndex1 > wIndex2)
+    #expect(wIndex1.next > wIndex2.next)
+    #expect(wIndex1.previous > wIndex2.next)
+    #expect(wIndex1.next > wIndex2.previous)
+    #expect(wIndex1.previous > wIndex2.previous)
 
     let bIndex1 = MoveTree.Index(number: 4, color: .black, variation: 2)
     let bIndex2 = MoveTree.Index(number: 4, color: .black, variation: 3)
-    XCTAssertGreaterThan(bIndex1, bIndex2)
-    XCTAssertGreaterThan(bIndex1.next, bIndex2.next)
-    XCTAssertGreaterThan(bIndex1.previous, bIndex2.next)
-    XCTAssertGreaterThan(bIndex1.next, bIndex2.previous)
-    XCTAssertGreaterThan(bIndex1.previous, bIndex2.previous)
+    #expect(bIndex1 > bIndex2)
+    #expect(bIndex1.next > bIndex2.next)
+    #expect(bIndex1.previous > bIndex2.next)
+    #expect(bIndex1.next > bIndex2.previous)
+    #expect(bIndex1.previous > bIndex2.previous)
   }
 
-  func testNonexistentIndexBeforeAndAfter() {
+  @Test func nonexistentIndexBeforeAndAfter() {
     let tree = MoveTree()
-    XCTAssertEqual(tree.index(after: .minimum), .minimum)
-    XCTAssertEqual(tree.index(before: .minimum), .minimum)
+    #expect(tree.index(after: .minimum) == .minimum)
+    #expect(tree.index(before: .minimum) == .minimum)
   }
 
 }
@@ -75,7 +75,7 @@ final class MoveTreeTests: XCTestCase {
 extension MoveTreeTests {
 
   @available(*, deprecated)
-  func testDeprecated() {
+  @Test func deprecated() {
     var moveTree = MoveTree()
 
     let move1 = Move(san: "e4", position: .standard)!
@@ -87,19 +87,19 @@ extension MoveTreeTests {
     moveTree.add(move: move1)
     moveTree.add(move: move2, toParentIndex: i1)
 
-    XCTAssertEqual(moveTree.previousIndex(for: i1), moveTree.index(before: i1))
-    XCTAssertEqual(moveTree.nextIndex(for: i1), moveTree.index(after: i1))
+    #expect(moveTree.previousIndex(for: i1) == moveTree.index(before: i1))
+    #expect(moveTree.nextIndex(for: i1) == moveTree.index(after: i1))
 
-    XCTAssertEqual(moveTree.move(at: i1), moveTree[i1])
-    XCTAssertEqual(moveTree.move(at: i1), move1)
+    #expect(moveTree.move(at: i1) == moveTree[i1])
+    #expect(moveTree.move(at: i1) == move1)
 
-    XCTAssertEqual(moveTree.move(at: i2), moveTree[i2])
-    XCTAssertEqual(moveTree.move(at: i2), move2)
+    #expect(moveTree.move(at: i2) == moveTree[i2])
+    #expect(moveTree.move(at: i2) == move2)
 
-    XCTAssertNil(moveTree.previousIndex(for: .minimum))
-    XCTAssertNil(moveTree.nextIndex(for: i2))
+    #expect(moveTree.previousIndex(for: .minimum) == nil)
+    #expect(moveTree.nextIndex(for: i2) == nil)
 
-    XCTAssertEqual(moveTree.nextIndex(for: .minimum), i1)
+    #expect(moveTree.nextIndex(for: .minimum) == i1)
   }
 
 }

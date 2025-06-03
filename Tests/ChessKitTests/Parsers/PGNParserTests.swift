@@ -4,123 +4,83 @@
 //
 
 @testable import ChessKit
-import XCTest
+import Testing
 
-final class PGNParserTests: XCTestCase {
+struct PGNParserTests {
 
-  func testGameFromPGN() {
+  @Test func gameFromPGN() {
     let game = PGNParser.parse(game: Game.fischerSpassky)
     let gameFromPGN = Game(pgn: Game.fischerSpassky)
 
-    XCTAssertEqual(game, gameFromPGN)
+    #expect(game == gameFromPGN)
   }
 
-  func testTagParsing() {
+  @Test func tagParsing() {
     let game = PGNParser.parse(game: Game.fischerSpassky)
 
     // tags
-    XCTAssertEqual(game.tags.event, "F/S Return Match")
-    XCTAssertEqual(game.tags.site, "Belgrade, Serbia JUG")
-    XCTAssertEqual(game.tags.date, "1992.11.04")
-    XCTAssertEqual(game.tags.round, "29")
-    XCTAssertEqual(game.tags.white, "Fischer, Robert J.")
-    XCTAssertEqual(game.tags.black, "Spassky, Boris V.")
-    XCTAssertEqual(game.tags.result, "1/2-1/2")
+    #expect(game.tags.event == "F/S Return Match")
+    #expect(game.tags.site == "Belgrade, Serbia JUG")
+    #expect(game.tags.date == "1992.11.04")
+    #expect(game.tags.round == "29")
+    #expect(game.tags.white == "Fischer, Robert J.")
+    #expect(game.tags.black == "Spassky, Boris V.")
+    #expect(game.tags.result == "1/2-1/2")
   }
 
-  func testCustomTagParsing() {
+  @Test func customTagParsing() {
     // invalid pair
     let g1 = PGNParser.parse(game: "[a] 1. e4 e5")
-    XCTAssertNil(g1.tags.other["a"])
+    #expect(g1.tags.other["a"] == nil)
 
     // custom tag
     let g2 = PGNParser.parse(game: "[CustomTag \"Value\"] 1. e4 e5")
-    XCTAssertEqual(g2.tags.other["CustomTag"], "Value")
+    #expect(g2.tags.other["CustomTag"] == "Value")
 
     // duplicate tags
     let g3 = PGNParser.parse(game: "[CustomTag \"Value\"] [CustomTag \"Value2\"] 1. e4 e5")
-    XCTAssertEqual(g3.tags.other["CustomTag"], "Value")
+    #expect(g3.tags.other["CustomTag"] == "Value")
   }
 
-  func testValidResultParsing() {
+  @Test func validResultParsing() {
     let g1 = PGNParser.parse(game: "1. e4 e5 1/2-1/2")
-    XCTAssertEqual(g1.tags.result, "1/2-1/2")
+    #expect(g1.tags.result == "1/2-1/2")
 
     let g2 = PGNParser.parse(game: "1. e4 e5 1-0")
-    XCTAssertEqual(g2.tags.result, "1-0")
+    #expect(g2.tags.result == "1-0")
 
     let g3 = PGNParser.parse(game: "1. e4 e5 0-1")
-    XCTAssertEqual(g3.tags.result, "0-1")
+    #expect(g3.tags.result == "0-1")
 
     let g4 = PGNParser.parse(game: "1. e4 e5 *")
-    XCTAssertEqual(g4.tags.result, "*")
+    #expect(g4.tags.result == "*")
   }
 
-  func testInvalidResultParsing() {
+  @Test func invalidResultParsing() {
     let g1 = PGNParser.parse(game: "1. e4 e5 ***")
-    XCTAssertEqual(g1.tags.result, "")
+    #expect(g1.tags.result == "")
 
     let g2 = PGNParser.parse(game: "1. e4 e5 test")
-    XCTAssertEqual(g2.tags.result, "")
+    #expect(g2.tags.result == "")
 
     let g3 = PGNParser.parse(game: "1. e4 e5 1-00-1")
-    XCTAssertEqual(g3.tags.result, "")
+    #expect(g3.tags.result == "")
   }
 
-  func testMoveTextParsing() {
+  @Test func moveTextParsing() {
     let game = PGNParser.parse(game: Game.fischerSpassky)
 
     // starting position + 85 ply
-    XCTAssertEqual(game.positions.keys.count, 86)
+    #expect(game.positions.keys.count == 86)
 
-    XCTAssertEqual(
-      game.moves[
-        .init(
-          number: 1,
-          color: .white
-        )]?.assessment, .blunder)
-    XCTAssertEqual(
-      game.moves[
-        .init(
-          number: 1,
-          color: .black
-        )]?.assessment, .brilliant)
-    XCTAssertEqual(
-      game.moves[
-        .init(
-          number: 3,
-          color: .black
-        )]?.comment, "This opening is called the Ruy Lopez.")
-    XCTAssertEqual(
-      game.moves[
-        .init(
-          number: 4,
-          color: .white
-        )]?.comment, "test comment")
-    XCTAssertEqual(
-      game.moves[
-        .init(
-          number: 10,
-          color: .white
-        )]?.end, .d4)
-    XCTAssertEqual(
-      game.moves[
-        .init(
-          number: 18,
-          color: .black
-        )]?.piece.kind, .queen)
-    XCTAssertEqual(
-      game.moves[
-        .init(
-          number: 18,
-          color: .black
-        )]?.end, .e7)
-    XCTAssertEqual(
-      game.moves[
-        .init(
-          number: 36,
-          color: .white
-        )]?.checkState, .check)
+    #expect(game.moves[.init(number: 1, color: .white)]?.assessment == .blunder)
+    #expect(game.moves[.init(number: 1, color: .black)]?.assessment == .brilliant)
+    #expect(game.moves[.init(number: 3, color: .black)]?.comment == "This opening is called the Ruy Lopez.")
+    #expect(game.moves[.init(number: 4, color: .white)]?.comment == "test comment")
+    #expect(game.moves[.init(number: 10, color: .white)]?.end == .d4)
+    #expect(game.moves[.init(number: 18, color: .black)]?.piece.kind == .queen)
+    #expect(game.moves[.init(number: 18, color: .black)]?.end == .e7)
+    #expect(game.moves[.init(number: 36, color: .white)]?.checkState == .check)
   }
 
 }

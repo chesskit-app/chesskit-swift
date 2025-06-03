@@ -4,27 +4,27 @@
 //
 
 @testable import ChessKit
-import XCTest
+import Testing
 
-final class CastlingTests: XCTestCase {
+struct CastlingTests {
 
-  func testCastling() {
+  @Test func castling() {
     var board = Board(position: .castling)
-    XCTAssertTrue(board.position.legalCastlings.contains(.bK))
-    XCTAssertFalse(board.position.legalCastlings.contains(.wK))
-    XCTAssertFalse(board.position.legalCastlings.contains(.bQ))
-    XCTAssertTrue(board.position.legalCastlings.contains(.wQ))
+    #expect(board.position.legalCastlings.contains(.bK))
+    #expect(!board.position.legalCastlings.contains(.wK))
+    #expect(!board.position.legalCastlings.contains(.bQ))
+    #expect(board.position.legalCastlings.contains(.wQ))
 
     // white queenside castle
     let wQmove = board.move(pieceAt: .e1, to: .c1)!
-    XCTAssertEqual(wQmove.result, .castle(.wQ))
+    #expect(wQmove.result == .castle(.wQ))
 
     // black kingside castle
     let bkMove = board.move(pieceAt: .e8, to: .g8)!
-    XCTAssertEqual(bkMove.result, .castle(.bK))
+    #expect(bkMove.result == .castle(.bK))
   }
 
-  func testInvalidCastling() {
+  @Test func invalidCastling() {
     let position = Position(
       pieces: [
         .init(.queen, color: .black, square: .e8),
@@ -35,18 +35,18 @@ final class CastlingTests: XCTestCase {
     var board = Board(position: position)
 
     // attempt to castle while in check
-    XCTAssertFalse(board.canMove(pieceAt: .e1, to: .g1))
+    #expect(!board.canMove(pieceAt: .e1, to: .g1))
 
     // attempt to castle through check
     board.move(pieceAt: .e8, to: .f8)
-    XCTAssertFalse(board.canMove(pieceAt: .e1, to: .g1))
+    #expect(!board.canMove(pieceAt: .e1, to: .g1))
 
     // valid castling move
     board.move(pieceAt: .f8, to: .h8)
-    XCTAssertTrue(board.canMove(pieceAt: .e1, to: .g1))
+    #expect(board.canMove(pieceAt: .e1, to: .g1))
   }
 
-  func testInvalidCastlingThroughPiece() {
+  @Test func invalidCastlingThroughPiece() {
     let position = Position(
       pieces: [
         .init(.bishop, color: .white, square: .f1),
@@ -57,11 +57,11 @@ final class CastlingTests: XCTestCase {
     var board = Board(position: position)
 
     // attempt to castle through another piece
-    XCTAssertFalse(board.canMove(pieceAt: .e1, to: .g1))
+    #expect(!board.canMove(pieceAt: .e1, to: .g1))
 
     // valid castling move
     board.move(pieceAt: .f1, to: .c4)
-    XCTAssertTrue(board.canMove(pieceAt: .e1, to: .g1))
+    #expect(board.canMove(pieceAt: .e1, to: .g1))
   }
 
 }

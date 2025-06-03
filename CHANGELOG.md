@@ -6,6 +6,8 @@
 
 ### Improvements
 * `PGNParser` now parses `*` game results (indicating game in progress, abandoned, unknown, etc.).
+* Add `CustomStringConvertible` conformance to `Piece`, `Piece.Color`, and `Piece.Kind`.
+* Migrate all unit tests (expect performance tests) from `XCTest` to `Swift Testing`.
 
 ### Bug Fixes
 * Fix issue where `MoveTree.endIndex` is not properly updated after the first half move (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
