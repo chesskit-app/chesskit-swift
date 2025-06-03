@@ -445,7 +445,8 @@ public struct Board: Sendable {
     let singleMove = movement(1)
 
     // double pawn push for starting move
-    let extraMove = isOnStartingRank ? movement(2) : 0
+    let hasSingleMove = singleMove & ~set.all != 0
+    let extraMove = (isOnStartingRank && hasSingleMove) ? movement(2) : 0
 
     // en passant move
     var enPassantMove = Bitboard(0)
