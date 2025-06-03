@@ -4,29 +4,29 @@
 //
 
 @testable import ChessKit
-import XCTest
+import Testing
 
-final class SpecialMoveTests: XCTestCase {
+struct SpecialMoveTests {
 
-  func testLegalCastlingInvalidationForKings() {
+  @Test func legalCastlingInvalidationForKings() {
     let blackKing = Piece(.king, color: .black, square: .e8)
     let whiteKing = Piece(.king, color: .white, square: .e1)
 
     var legalCastlings = LegalCastlings()
     legalCastlings.invalidateCastling(for: blackKing)
-    XCTAssertFalse(legalCastlings.contains(.bK))
-    XCTAssertFalse(legalCastlings.contains(.bQ))
-    XCTAssertTrue(legalCastlings.contains(.wK))
-    XCTAssertTrue(legalCastlings.contains(.wQ))
+    #expect(!legalCastlings.contains(.bK))
+    #expect(!legalCastlings.contains(.bQ))
+    #expect(legalCastlings.contains(.wK))
+    #expect(legalCastlings.contains(.wQ))
 
     legalCastlings.invalidateCastling(for: whiteKing)
-    XCTAssertFalse(legalCastlings.contains(.bK))
-    XCTAssertFalse(legalCastlings.contains(.bQ))
-    XCTAssertFalse(legalCastlings.contains(.wK))
-    XCTAssertFalse(legalCastlings.contains(.wQ))
+    #expect(!legalCastlings.contains(.bK))
+    #expect(!legalCastlings.contains(.bQ))
+    #expect(!legalCastlings.contains(.wK))
+    #expect(!legalCastlings.contains(.wQ))
   }
 
-  func testLegalCastlingInvalidationForRooks() {
+  @Test func legalCastlingInvalidationForRooks() {
     let blackKingsideRook = Piece(.rook, color: .black, square: .h8)
     let blackQueensideRook = Piece(.rook, color: .black, square: .a8)
     let whiteKingsideRook = Piece(.rook, color: .white, square: .h1)
@@ -34,50 +34,50 @@ final class SpecialMoveTests: XCTestCase {
 
     var legalCastlings = LegalCastlings()
     legalCastlings.invalidateCastling(for: blackKingsideRook)
-    XCTAssertFalse(legalCastlings.contains(.bK))
-    XCTAssertTrue(legalCastlings.contains(.bQ))
-    XCTAssertTrue(legalCastlings.contains(.wK))
-    XCTAssertTrue(legalCastlings.contains(.wQ))
+    #expect(!legalCastlings.contains(.bK))
+    #expect(legalCastlings.contains(.bQ))
+    #expect(legalCastlings.contains(.wK))
+    #expect(legalCastlings.contains(.wQ))
 
     legalCastlings.invalidateCastling(for: blackQueensideRook)
-    XCTAssertFalse(legalCastlings.contains(.bK))
-    XCTAssertFalse(legalCastlings.contains(.bQ))
-    XCTAssertTrue(legalCastlings.contains(.wK))
-    XCTAssertTrue(legalCastlings.contains(.wQ))
+    #expect(!legalCastlings.contains(.bK))
+    #expect(!legalCastlings.contains(.bQ))
+    #expect(legalCastlings.contains(.wK))
+    #expect(legalCastlings.contains(.wQ))
 
     legalCastlings.invalidateCastling(for: whiteKingsideRook)
-    XCTAssertFalse(legalCastlings.contains(.bK))
-    XCTAssertFalse(legalCastlings.contains(.bQ))
-    XCTAssertFalse(legalCastlings.contains(.wK))
-    XCTAssertTrue(legalCastlings.contains(.wQ))
+    #expect(!legalCastlings.contains(.bK))
+    #expect(!legalCastlings.contains(.bQ))
+    #expect(!legalCastlings.contains(.wK))
+    #expect(legalCastlings.contains(.wQ))
 
     legalCastlings.invalidateCastling(for: whiteQueensideRook)
-    XCTAssertFalse(legalCastlings.contains(.bK))
-    XCTAssertFalse(legalCastlings.contains(.bQ))
-    XCTAssertFalse(legalCastlings.contains(.wK))
-    XCTAssertFalse(legalCastlings.contains(.wQ))
+    #expect(!legalCastlings.contains(.bK))
+    #expect(!legalCastlings.contains(.bQ))
+    #expect(!legalCastlings.contains(.wK))
+    #expect(!legalCastlings.contains(.wQ))
   }
 
-  func testEnPassantCaptureSquare() {
+  @Test func enPassantCaptureSquare() {
     let blackPawn = Piece(.pawn, color: .black, square: .d5)
     let blackEnPassant = EnPassant(pawn: blackPawn)
-    XCTAssertEqual(blackEnPassant.captureSquare, Square.d6)
-    XCTAssertTrue(blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .e5)))
-    XCTAssertTrue(blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .c5)))
-    XCTAssertFalse(blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .e5)))
-    XCTAssertFalse(blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .f5)))
-    XCTAssertFalse(blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .b5)))
-    XCTAssertFalse(blackEnPassant.couldBeCaptured(by: Piece(.bishop, color: .white, square: .c5)))
+    #expect(blackEnPassant.captureSquare == Square.d6)
+    #expect(blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .e5)))
+    #expect(blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .c5)))
+    #expect(!blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .e5)))
+    #expect(!blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .f5)))
+    #expect(!blackEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .b5)))
+    #expect(!blackEnPassant.couldBeCaptured(by: Piece(.bishop, color: .white, square: .c5)))
 
     let whitePawn = Piece(.pawn, color: .white, square: .d4)
     let whiteEnPassant = EnPassant(pawn: whitePawn)
-    XCTAssertEqual(whiteEnPassant.captureSquare, Square.d3)
-    XCTAssertTrue(whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .e4)))
-    XCTAssertTrue(whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .c4)))
-    XCTAssertFalse(whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .e4)))
-    XCTAssertFalse(whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .f4)))
-    XCTAssertFalse(whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .b4)))
-    XCTAssertFalse(whiteEnPassant.couldBeCaptured(by: Piece(.bishop, color: .black, square: .c4)))
+    #expect(whiteEnPassant.captureSquare == Square.d3)
+    #expect(whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .e4)))
+    #expect(whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .c4)))
+    #expect(!whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .white, square: .e4)))
+    #expect(!whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .f4)))
+    #expect(!whiteEnPassant.couldBeCaptured(by: Piece(.pawn, color: .black, square: .b4)))
+    #expect(!whiteEnPassant.couldBeCaptured(by: Piece(.bishop, color: .black, square: .c4)))
   }
 
 }

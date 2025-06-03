@@ -122,3 +122,31 @@ public struct Piece: Hashable, Sendable {
   }
 
 }
+
+extension Piece: CustomStringConvertible {
+  public var description: String {
+    "\(String(describing: color)) \(String(describing: kind)) on \(square.notation)"
+  }
+}
+
+extension Piece.Color: CustomStringConvertible {
+  public var description: String {
+    switch self {
+    case .white: "White"
+    case .black: "Black"
+    }
+  }
+}
+
+extension Piece.Kind: CustomStringConvertible {
+  public var description: String {
+    switch self {
+    case .pawn: "Pawn"
+    case .bishop: "Bishop"
+    case .knight: "Knight"
+    case .rook: "Rook"
+    case .queen: "Queen"
+    case .king: "King"
+    }
+  }
+}

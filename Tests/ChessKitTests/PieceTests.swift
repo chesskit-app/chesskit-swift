@@ -4,107 +4,115 @@
 //
 
 @testable import ChessKit
-import XCTest
+import Testing
 
-final class PieceTests: XCTestCase {
+struct PieceTests {
 
-  func testNotation() {
+  @Test func notation() {
     let pawn = Piece.Kind.pawn
-    XCTAssertEqual(pawn.notation, "")
+    #expect(pawn.notation == "")
+    #expect(String(describing: pawn) == "Pawn")
 
     let bishop = Piece.Kind.bishop
-    XCTAssertEqual(bishop.notation, "B")
+    #expect(bishop.notation == "B")
+    #expect(String(describing: bishop) == "Bishop")
 
     let knight = Piece.Kind.knight
-    XCTAssertEqual(knight.notation, "N")
+    #expect(knight.notation == "N")
+    #expect(String(describing: knight) == "Knight")
 
     let rook = Piece.Kind.rook
-    XCTAssertEqual(rook.notation, "R")
+    #expect(rook.notation == "R")
+    #expect(String(describing: rook) == "Rook")
 
     let queen = Piece.Kind.queen
-    XCTAssertEqual(queen.notation, "Q")
+    #expect(queen.notation == "Q")
+    #expect(String(describing: queen) == "Queen")
 
     let king = Piece.Kind.king
-    XCTAssertEqual(king.notation, "K")
+    #expect(king.notation == "K")
+    #expect(String(describing: king) == "King")
   }
 
-  func testPieceColor() {
+  @Test func pieceColor() {
     let white = Piece.Color.white
-    XCTAssertEqual(white.rawValue, "w")
-    XCTAssertEqual(white.opposite, .black)
+    #expect(white.rawValue == "w")
+    #expect(white.opposite == .black)
+    #expect(String(describing: white) == "White")
 
     let black = Piece.Color.black
-    XCTAssertEqual(black.rawValue, "b")
-    XCTAssertEqual(black.opposite, .white)
+    #expect(black.rawValue == "b")
+    #expect(black.opposite == .white)
+    #expect(String(describing: black) == "Black")
   }
 
-  func testFenRepresentation() {
+  @Test func fenRepresentation() {
     let sq = Square.a1
 
     let wP = Piece(fen: "P", square: sq)
-    XCTAssertEqual(wP?.color, .white)
-    XCTAssertEqual(wP?.kind, .pawn)
-    XCTAssertEqual(wP?.square, sq)
+    #expect(wP?.color == .white)
+    #expect(wP?.kind == .pawn)
+    #expect(wP?.square == sq)
 
     let wB = Piece(fen: "B", square: sq)
-    XCTAssertEqual(wB?.color, .white)
-    XCTAssertEqual(wB?.kind, .bishop)
-    XCTAssertEqual(wB?.square, sq)
+    #expect(wB?.color == .white)
+    #expect(wB?.kind == .bishop)
+    #expect(wB?.square == sq)
 
     let wN = Piece(fen: "N", square: sq)
-    XCTAssertEqual(wN?.color, .white)
-    XCTAssertEqual(wN?.kind, .knight)
-    XCTAssertEqual(wN?.square, sq)
+    #expect(wN?.color == .white)
+    #expect(wN?.kind == .knight)
+    #expect(wN?.square == sq)
 
     let wR = Piece(fen: "R", square: sq)
-    XCTAssertEqual(wR?.color, .white)
-    XCTAssertEqual(wR?.kind, .rook)
-    XCTAssertEqual(wR?.square, sq)
+    #expect(wR?.color == .white)
+    #expect(wR?.kind == .rook)
+    #expect(wR?.square == sq)
 
     let wQ = Piece(fen: "Q", square: sq)
-    XCTAssertEqual(wQ?.color, .white)
-    XCTAssertEqual(wQ?.kind, .queen)
-    XCTAssertEqual(wQ?.square, sq)
+    #expect(wQ?.color == .white)
+    #expect(wQ?.kind == .queen)
+    #expect(wQ?.square == sq)
 
     let wK = Piece(fen: "K", square: sq)
-    XCTAssertEqual(wK?.color, .white)
-    XCTAssertEqual(wK?.kind, .king)
-    XCTAssertEqual(wK?.square, sq)
+    #expect(wK?.color == .white)
+    #expect(wK?.kind == .king)
+    #expect(wK?.square == sq)
 
     let bP = Piece(fen: "p", square: sq)
-    XCTAssertEqual(bP?.color, .black)
-    XCTAssertEqual(bP?.kind, .pawn)
-    XCTAssertEqual(bP?.square, sq)
+    #expect(bP?.color == .black)
+    #expect(bP?.kind == .pawn)
+    #expect(bP?.square == sq)
 
     let bB = Piece(fen: "b", square: sq)
-    XCTAssertEqual(bB?.color, .black)
-    XCTAssertEqual(bB?.kind, .bishop)
-    XCTAssertEqual(bB?.square, sq)
+    #expect(bB?.color == .black)
+    #expect(bB?.kind == .bishop)
+    #expect(bB?.square == sq)
 
     let bN = Piece(fen: "n", square: sq)
-    XCTAssertEqual(bN?.color, .black)
-    XCTAssertEqual(bN?.kind, .knight)
-    XCTAssertEqual(bN?.square, sq)
+    #expect(bN?.color == .black)
+    #expect(bN?.kind == .knight)
+    #expect(bN?.square == sq)
 
     let bR = Piece(fen: "r", square: sq)
-    XCTAssertEqual(bR?.color, .black)
-    XCTAssertEqual(bR?.kind, .rook)
-    XCTAssertEqual(bR?.square, sq)
+    #expect(bR?.color == .black)
+    #expect(bR?.kind == .rook)
+    #expect(bR?.square == sq)
 
     let bQ = Piece(fen: "q", square: sq)
-    XCTAssertEqual(bQ?.color, .black)
-    XCTAssertEqual(bQ?.kind, .queen)
-    XCTAssertEqual(bQ?.square, sq)
+    #expect(bQ?.color == .black)
+    #expect(bQ?.kind == .queen)
+    #expect(bQ?.square == sq)
 
     let bK = Piece(fen: "k", square: sq)
-    XCTAssertEqual(bK?.color, .black)
-    XCTAssertEqual(bK?.kind, .king)
-    XCTAssertEqual(bK?.square, sq)
+    #expect(bK?.color == .black)
+    #expect(bK?.kind == .king)
+    #expect(bK?.square == sq)
   }
 
-  func testInvalidFenRepresentation() {
+  @Test func invalidFenRepresentation() {
     let invalidFen = Piece(fen: "invalid", square: .a1)
-    XCTAssertNil(invalidFen)
+    #expect(invalidFen == nil)
   }
 
 }
