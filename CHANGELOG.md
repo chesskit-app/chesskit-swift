@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.14.0
+Released Tuesday, June 3, 2025.
 
 ### New Features
 * Add `willPromote()` to `BoardDelegate` (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
