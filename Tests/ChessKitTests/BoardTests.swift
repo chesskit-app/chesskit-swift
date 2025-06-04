@@ -461,7 +461,6 @@ struct BoardTests {
 }
 
 // MARK: - Deprecated Tests
-
 extension BoardTests {
 
   @available(*, deprecated)

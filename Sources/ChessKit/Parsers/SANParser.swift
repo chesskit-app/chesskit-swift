@@ -23,12 +23,12 @@ public enum SANParser {
     guard isValid(san: san) else { return nil }
 
     let color = position.sideToMove
-    var checkstate = Move.CheckState.none
+    var checkState = Move.CheckState.none
 
     if san.contains("#") {
-      checkstate = .checkmate
+      checkState = .checkmate
     } else if san.contains("+") {
-      checkstate = .check
+      checkState = .check
     }
 
     // castling
@@ -46,7 +46,7 @@ public enum SANParser {
         piece: Piece(.king, color: color, square: castling.kingStart),
         start: castling.kingStart,
         end: castling.kingEnd,
-        checkState: checkstate
+        checkState: checkState
       )
     }
 
@@ -73,10 +73,16 @@ public enum SANParser {
 
       var move: Move
 
-      if isCapture(san: san), let capturedPiece = position.piece(at: end) {
-        move = Move(result: .capture(capturedPiece), piece: pawn, start: start, end: capturedPiece.square, checkState: checkstate)
+      if isCapture(san: san) {
+        if let capturedPiece = position.piece(at: end) {
+          move = Move(result: .capture(capturedPiece), piece: pawn, start: start, end: capturedPiece.square, checkState: checkState)
+        } else if let ep = position.enPassant, ep.captureSquare == end {
+          move = Move(result: .capture(ep.pawn), piece: pawn, start: start, end: end, checkState: checkState)
+        } else {
+          move = Move(result: .move, piece: pawn, start: start, end: end, checkState: checkState)
+        }
       } else {
-        move = Move(result: .move, piece: pawn, start: start, end: end, checkState: checkstate)
+        move = Move(result: .move, piece: pawn, start: start, end: end, checkState: checkState)
       }
 
       if let promotionPieceKind = promotionPiece(for: san) {
@@ -122,9 +128,9 @@ public enum SANParser {
         piece.square = end
 
         if isCapture(san: san), let capturedPiece = position.piece(at: end) {
-          move = Move(result: .capture(capturedPiece), piece: piece, start: start, end: end, checkState: checkstate)
+          move = Move(result: .capture(capturedPiece), piece: piece, start: start, end: end, checkState: checkState)
         } else {
-          move = Move(result: .move, piece: piece, start: start, end: end, checkState: checkstate)
+          move = Move(result: .move, piece: piece, start: start, end: end, checkState: checkState)
         }
 
         move?.disambiguation = disambiguation
