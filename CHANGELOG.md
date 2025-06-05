@@ -3,10 +3,6 @@
 ### Bug Fixes
 * Fix `SANParser` not parsing en passant captures properly (by Rob Raese).
 
-### Deprecations
-* The `enPassantIsPossible` parameter of the `Position` initializer has been deprecated.
-  * This property is automatically set depending on the value of `enPassant` passed to the initializer.
-
 # ChessKit 0.14.0
 Released Tuesday, June 3, 2025.
 

@@ -245,24 +245,6 @@ extension Position: Hashable {
 // MARK: - Deprecated
 extension Position {
 
-  /// Initialize a position with a given array of pieces and characteristics.
-  @available(*, deprecated, message: "Use initializer without `enPassantIsPossible`")
-  init(
-    pieces: [Piece],
-    sideToMove: Piece.Color = .white,
-    legalCastlings: LegalCastlings = LegalCastlings(),
-    enPassant: EnPassant? = nil,
-    enPassantIsPossible: Bool = false,
-    clock: Clock = Clock()
-  ) {
-    self.pieceSet = .init(pieces: pieces)
-    self.sideToMove = sideToMove
-    self.legalCastlings = legalCastlings
-    self.enPassant = enPassant
-    self.enPassantIsPossible = enPassantIsPossible
-    self.clock = clock
-  }
-
   /// Toggle the current side to move.
   @available(*, deprecated, message: "This function no longer has any effect. `sideToMove` is toggled automatically as needed.")
   public mutating func toggleSideToMove() {

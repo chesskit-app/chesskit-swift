@@ -8,6 +8,30 @@ import Testing
 
 struct PositionTests {
 
+  @Test func initializer() {
+    let whitePawn = Piece(.pawn, color: .white, square: .e5)
+    let blackPawn = Piece(.pawn, color: .black, square: .d5)
+
+    let position1 = Position(
+      pieces: [whitePawn, blackPawn],
+      sideToMove: .white,
+      legalCastlings: .init(),
+      enPassant: .init(pawn: blackPawn),
+      clock: .init()
+    )
+
+    #expect(position1.enPassantIsPossible)
+
+    let position2 = Position(
+      pieces: [whitePawn, blackPawn],
+      sideToMove: .white,
+      legalCastlings: .init(),
+      clock: .init()
+    )
+
+    #expect(!position2.enPassantIsPossible)
+  }
+
   @Test func sideToMove() {
     var position = Position.standard
     #expect(position.sideToMove == .white)
@@ -37,49 +61,6 @@ extension PositionTests {
     let initialSideToMove = position.sideToMove
     position.toggleSideToMove()
     #expect(initialSideToMove == position.sideToMove)
-  }
-
-  @available(*, deprecated)
-  @Test func legacyPositionInitializer() {
-    let whitePawn = Piece(.pawn, color: .white, square: .e5)
-    let blackPawn = Piece(.pawn, color: .black, square: .d5)
-
-    let legacyPosition1 = Position(
-      pieces: [whitePawn, blackPawn],
-      sideToMove: .white,
-      legalCastlings: .init(),
-      enPassant: .init(pawn: blackPawn),
-      enPassantIsPossible: true,
-      clock: .init()
-    )
-
-    let position1 = Position(
-      pieces: [whitePawn, blackPawn],
-      sideToMove: .white,
-      legalCastlings: .init(),
-      enPassant: .init(pawn: blackPawn),
-      clock: .init()
-    )
-
-    #expect(legacyPosition1 == position1)
-
-    let legacyPosition2 = Position(
-      pieces: [whitePawn, blackPawn],
-      sideToMove: .white,
-      legalCastlings: .init(),
-      enPassant: nil,
-      enPassantIsPossible: false,
-      clock: .init()
-    )
-
-    let position2 = Position(
-      pieces: [whitePawn, blackPawn],
-      sideToMove: .white,
-      legalCastlings: .init(),
-      clock: .init()
-    )
-
-    #expect(legacyPosition2 == position2)
   }
 
 }
