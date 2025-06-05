@@ -40,14 +40,13 @@ public struct Position: Sendable {
     sideToMove: Piece.Color = .white,
     legalCastlings: LegalCastlings = LegalCastlings(),
     enPassant: EnPassant? = nil,
-    enPassantIsPossible: Bool = false,
     clock: Clock = Clock()
   ) {
     self.pieceSet = .init(pieces: pieces)
     self.sideToMove = sideToMove
     self.legalCastlings = legalCastlings
     self.enPassant = enPassant
-    self.enPassantIsPossible = enPassantIsPossible
+    self.enPassantIsPossible = enPassant != nil
     self.clock = clock
   }
 
@@ -65,12 +64,6 @@ public struct Position: Sendable {
   /// Toggle the current side to move.
   private mutating func _toggleSideToMove() {
     sideToMove.toggle()
-  }
-
-  /// Toggle the current side to move.
-  @available(*, deprecated, message: "This function no longer has any effect. `sideToMove` is toggled automatically as needed.")
-  public mutating func toggleSideToMove() {
-
   }
 
   /// Provides the chess piece located at the given square.
@@ -245,6 +238,17 @@ extension Position: Hashable {
     hasher.combine(sideToMove)
     hasher.combine(legalCastlings)
     hasher.combine(enPassantIsPossible)
+  }
+
+}
+
+// MARK: - Deprecated
+extension Position {
+
+  /// Toggle the current side to move.
+  @available(*, deprecated, message: "This function no longer has any effect. `sideToMove` is toggled automatically as needed.")
+  public mutating func toggleSideToMove() {
+
   }
 
 }

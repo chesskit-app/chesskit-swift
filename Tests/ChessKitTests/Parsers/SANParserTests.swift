@@ -18,6 +18,12 @@ struct SANParserTests {
     #expect(longCastle?.result == .castle(.bQ))
   }
 
+  @Test func enPassant() {
+    let p = Position(fen: "rnbqkbnr/pp2pppp/8/2pP4/8/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 1")!
+    let enPassant = SANParser.parse(move: "dxc6", in: p)
+    #expect(enPassant?.result == .capture(.init(.pawn, color: .black, square: .c5)))
+  }
+
   @Test func promotion() {
     let p = Position(fen: "8/P7/8/8/8/8/8/8 w - - 0 1")!
     let promotion = SANParser.parse(move: "a8=Q", in: p)
@@ -81,9 +87,10 @@ struct SANParserTests {
   }
 
   @Test func invalidSAN() {
-    #expect(SANParser.parse(move: "e44", in: .standard) == nil)
-    #expect(SANParser.parse(move: "aNf3", in: .standard) == nil)
     #expect(SANParser.parse(move: "bad move", in: .standard) == nil)
+    #expect(SANParser.parse(move: "exf3", in: .standard) == nil)
+    #expect(SANParser.parse(move: "aNf3", in: .standard) == nil)
+    #expect(SANParser.parse(move: "e44", in: .standard) == nil)
   }
 
 }

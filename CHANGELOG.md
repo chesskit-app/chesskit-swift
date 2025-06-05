@@ -1,3 +1,8 @@
+# [unreleased]
+
+### Bug Fixes
+* Fix `SANParser` not parsing en passant captures properly (by Rob Raese).
+
 # ChessKit 0.14.0
 Released Tuesday, June 3, 2025.
 
