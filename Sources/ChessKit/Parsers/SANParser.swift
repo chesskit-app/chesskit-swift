@@ -71,22 +71,20 @@ public enum SANParser {
       let start = pawn.square
       pawn.square = end
 
-      var move: Move
+      var move: Move?
 
       if isCapture(san: san) {
         if let capturedPiece = position.piece(at: end) {
           move = Move(result: .capture(capturedPiece), piece: pawn, start: start, end: capturedPiece.square, checkState: checkState)
         } else if let ep = position.enPassant, ep.captureSquare == end {
           move = Move(result: .capture(ep.pawn), piece: pawn, start: start, end: end, checkState: checkState)
-        } else {
-          move = Move(result: .move, piece: pawn, start: start, end: end, checkState: checkState)
         }
       } else {
         move = Move(result: .move, piece: pawn, start: start, end: end, checkState: checkState)
       }
 
       if let promotionPieceKind = promotionPiece(for: san) {
-        move.promotedPiece = Piece(promotionPieceKind, color: color, square: end)
+        move?.promotedPiece = Piece(promotionPieceKind, color: color, square: end)
       }
 
       return move

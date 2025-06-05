@@ -87,9 +87,10 @@ struct SANParserTests {
   }
 
   @Test func invalidSAN() {
-    #expect(SANParser.parse(move: "e44", in: .standard) == nil)
-    #expect(SANParser.parse(move: "aNf3", in: .standard) == nil)
     #expect(SANParser.parse(move: "bad move", in: .standard) == nil)
+    #expect(SANParser.parse(move: "exf3", in: .standard) == nil)
+    #expect(SANParser.parse(move: "aNf3", in: .standard) == nil)
+    #expect(SANParser.parse(move: "e44", in: .standard) == nil)
   }
 
 }
