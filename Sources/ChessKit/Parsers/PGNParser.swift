@@ -35,8 +35,6 @@ public enum PGNParser {
     game pgn: String,
     startingWith position: Position = .standard
   ) -> Game {
-    // ignoring tag pairs for now, movetext only
-
     let processedPGN =
       pgn
       .replacingOccurrences(of: "\n", with: " ")
@@ -58,12 +56,9 @@ public enum PGNParser {
         let matches = try? NSRegularExpression(pattern: Pattern.tagPair)
           .matches(in: tag, range: tagRange)
 
-        if let matches,
-          matches.count >= 1,
-          matches[0].numberOfRanges >= 3
-        {
-          let key = matches[0].range(at: 1)
-          let value = matches[0].range(at: 2)
+        if let match = matches?.first, match.numberOfRanges >= 3 {
+          let key = match.range(at: 1)
+          let value = match.range(at: 2)
 
           return (
             NSString(string: tag).substring(with: key)
@@ -279,16 +274,15 @@ public enum PGNParser {
 
     for element in game.moves.pgnRepresentation {
       switch element {
-      case .whiteNumber(let number):
+      case let .whiteNumber(number):
         pgn += "\(number). "
-      case .blackNumber(let number):
+      case let .blackNumber(number):
         pgn += "\(number)... "
       case let .move(move, _):
         pgn += movePGN(for: move)
       case .variationStart:
-        pgn += "("
+        pgn += "( "
       case .variationEnd:
-        pgn = pgn.trimmingCharacters(in: .whitespaces)
         pgn += ") "
       }
     }
@@ -296,21 +290,7 @@ public enum PGNParser {
     return pgn.trimmingCharacters(in: .whitespaces)
   }
 
-  private static func movePGN(for move: Move) -> String {
-    var result = ""
-
-    result += "\(move.san) "
-
-    if move.assessment != .null {
-      result += "\(move.assessment.rawValue) "
-    }
-
-    if !move.comment.isEmpty {
-      result += "{\(move.comment)} "
-    }
-
-    return result
-  }
+  // MARK: - Private
 
   private static func parsed(tags: [String: String]) -> Game.Tags {
     var gameTags = Game.Tags()
@@ -337,6 +317,22 @@ public enum PGNParser {
     }
 
     return gameTags
+  }
+
+  private static func movePGN(for move: Move) -> String {
+    var result = ""
+
+    result += "\(move.san) "
+
+    if move.assessment != .null {
+      result += "\(move.assessment.rawValue) "
+    }
+
+    if !move.comment.isEmpty {
+      result += "{\(move.comment)} "
+    }
+
+    return result
   }
 
 }
