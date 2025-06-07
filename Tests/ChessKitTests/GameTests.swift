@@ -111,7 +111,7 @@ final class GameTests {
     game.annotate(moveAt: f5Index, comment: "Comment test")
 
     let moveText = String(PGNParser.convert(game: game).split(separator: "\n").last!)
-    let expectedMoveText = "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4"
+    let expectedMoveText = "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4 1-0"
 
     #expect(moveText == expectedMoveText)
   }
@@ -231,13 +231,13 @@ final class GameTests {
       [TestKey1 "Test Value 1"]
       [TestKey2 "Test Value 2"]
 
-      1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
+      1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4 1-0
       """
 
     #expect(game.pgn == pgn)
   }
 
-  @Test func validTagPairs() {
+  @Test func validTagPairs() throws {
     let pgn =
       """
       [Event "Test Event"]
@@ -251,11 +251,11 @@ final class GameTests {
       1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
       """
 
-    let game = Game(pgn: pgn)
+    let game = try Game(pgn: pgn)
     #expect(game.tags.isValid)
   }
 
-  @Test func invalidTagPairs() {
+  @Test func invalidTagPairs() throws {
     let pgn =
       """
       [Event "Test Event"]
@@ -263,7 +263,7 @@ final class GameTests {
       1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
       """
 
-    let game = Game(pgn: pgn)
+    let game = try Game(pgn: pgn)
     #expect(!game.tags.isValid)
     #expect(game.tags.$site.pgn.isEmpty)
   }

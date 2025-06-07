@@ -50,8 +50,8 @@ public struct Game: Hashable, Sendable {
   ///
   /// - parameter pgn: A string containing a PGN representation of
   /// a game.
-  public init(pgn: String) {
-    let parsed = PGNParser.parse(game: pgn)
+  public init(pgn: String) throws {
+    let parsed = try PGNParser.parse(game: pgn)
 
     moves = parsed.moves
     startingIndex = .minimum

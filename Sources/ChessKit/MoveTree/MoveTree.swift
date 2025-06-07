@@ -56,7 +56,7 @@ public struct MoveTree: Hashable, Sendable {
       self.root = newNode
 
       dictionary = [index: newNode]
-        
+
       if index.variation == Index.mainVariation {
         lastMainVariationIndex = index
       }

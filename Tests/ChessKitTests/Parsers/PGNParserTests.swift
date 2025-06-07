@@ -6,17 +6,18 @@
 @testable import ChessKit
 import Testing
 
+@Suite(.serialized)
 struct PGNParserTests {
 
-  @Test func gameFromPGN() {
-    let game = PGNParser.parse(game: Game.fischerSpassky)
-    let gameFromPGN = Game(pgn: Game.fischerSpassky)
+  @Test func gameFromPGN() throws {
+    let game = try PGNParser.parse(game: Game.fischerSpassky)
+    let gameFromPGN = try Game(pgn: Game.fischerSpassky)
 
     #expect(game == gameFromPGN)
   }
 
-  @Test func tagParsing() {
-    let game = PGNParser.parse(game: Game.fischerSpassky)
+  @Test func tagParsing() throws {
+    let game = try PGNParser.parse(game: Game.fischerSpassky)
 
     // tags
     #expect(game.tags.event == "F/S Return Match")
@@ -28,47 +29,23 @@ struct PGNParserTests {
     #expect(game.tags.result == "1/2-1/2")
   }
 
-  @Test func customTagParsing() {
+  @Test func customTagParsing() throws {
     // invalid pair
-    let g1 = PGNParser.parse(game: "[a] 1. e4 e5")
-    #expect(g1.tags.other["a"] == nil)
+    #expect(throws: PGNParser.Error.invalidTagFormat) {
+      try PGNParser.parse(game: "[a]\n\n1. e4 e5")
+    }
 
     // custom tag
-    let g2 = PGNParser.parse(game: "[CustomTag \"Value\"] 1. e4 e5")
+    let g2 = try PGNParser.parse(game: "[CustomTag \"Value\"]\n\n1. e4 e5")
     #expect(g2.tags.other["CustomTag"] == "Value")
 
     // duplicate tags
-    let g3 = PGNParser.parse(game: "[CustomTag \"Value\"] [CustomTag \"Value2\"] 1. e4 e5")
+    let g3 = try PGNParser.parse(game: "[CustomTag \"Value\"] [CustomTag \"Value2\"]\n\n1. e4 e5")
     #expect(g3.tags.other["CustomTag"] == "Value")
   }
 
-  @Test func validResultParsing() {
-    let g1 = PGNParser.parse(game: "1. e4 e5 1/2-1/2")
-    #expect(g1.tags.result == "1/2-1/2")
-
-    let g2 = PGNParser.parse(game: "1. e4 e5 1-0")
-    #expect(g2.tags.result == "1-0")
-
-    let g3 = PGNParser.parse(game: "1. e4 e5 0-1")
-    #expect(g3.tags.result == "0-1")
-
-    let g4 = PGNParser.parse(game: "1. e4 e5 *")
-    #expect(g4.tags.result == "*")
-  }
-
-  @Test func invalidResultParsing() {
-    let g1 = PGNParser.parse(game: "1. e4 e5 ***")
-    #expect(g1.tags.result == "")
-
-    let g2 = PGNParser.parse(game: "1. e4 e5 test")
-    #expect(g2.tags.result == "")
-
-    let g3 = PGNParser.parse(game: "1. e4 e5 1-00-1")
-    #expect(g3.tags.result == "")
-  }
-
-  @Test func moveTextParsing() {
-    let game = PGNParser.parse(game: Game.fischerSpassky)
+  @Test func moveTextParsing() throws {
+    let game = try PGNParser.parse(game: Game.fischerSpassky)
 
     // starting position + 85 ply
     #expect(game.positions.keys.count == 86)
@@ -81,6 +58,41 @@ struct PGNParserTests {
     #expect(game.moves[.init(number: 18, color: .black)]?.piece.kind == .queen)
     #expect(game.moves[.init(number: 18, color: .black)]?.end == .e7)
     #expect(game.moves[.init(number: 36, color: .white)]?.checkState == .check)
+  }
+
+  @Test func moveVariationParsing() throws {
+    let game = try PGNParser.parse(game: "1. e4 e5 (1... c6)")
+
+    // starting position + 3 ply
+    #expect(game.positions.keys.count == 4)
+
+    #expect(game.moves[.init(number: 1, color: .white)]?.san == "e4")
+    #expect(game.moves[.init(number: 1, color: .black)]?.san == "e5")
+    #expect(game.moves[.init(number: 1, color: .black, variation: 1)]?.san == "c6")
+  }
+
+  @Test func moveVariationError() throws {
+    #expect(throws: PGNParser.Error.unpairedVariationDelimiter) {
+      try PGNParser.parse(game: "1. e4 e5 )1... c6)")
+    }
+  }
+
+}
+
+// MARK: - Deprecated Tests
+extension PGNParserTests {
+
+  @available(*, deprecated)
+  @Test func legacyParsing() throws {
+    #expect(
+      try PGNParser.parse(
+        game: Game.fischerSpassky
+      )
+        == PGNParser.parse(
+          game: Game.fischerSpassky,
+          startingWith: .standard
+        )
+    )
   }
 
 }

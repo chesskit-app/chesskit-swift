@@ -94,6 +94,14 @@ struct MoveTests {
     #expect(Move.Assessment.forced.notation == "□")
     #expect(Move.Assessment.singular.notation == "")
     #expect(Move.Assessment.worst.notation == "")
+
+    #expect(Move.Assessment(notation: "!") == .good)
+    #expect(Move.Assessment(notation: "?") == .mistake)
+    #expect(Move.Assessment(notation: "!!") == .brilliant)
+    #expect(Move.Assessment(notation: "??") == .blunder)
+    #expect(Move.Assessment(notation: "!?") == .interesting)
+    #expect(Move.Assessment(notation: "?!") == .dubious)
+    #expect(Move.Assessment(notation: "□") == .forced)
   }
 
 }

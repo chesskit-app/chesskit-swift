@@ -132,6 +132,19 @@ extension Move {
       case .worst: ""
       }
     }
+
+    init?(notation: String) {
+      switch notation {
+      case "!": self = .good
+      case "?": self = .mistake
+      case "!!": self = .brilliant
+      case "??": self = .blunder
+      case "!?": self = .interesting
+      case "?!": self = .dubious
+      case "□": self = .forced
+      default: return nil
+      }
+    }
   }
 
 }

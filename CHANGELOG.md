@@ -1,5 +1,13 @@
 # [unreleased]
 
+### Improvements
+* Rewrote `PGNParser` to be more efficient and reliable.
+  * Now parses PGN text more flexibly, accounting nested variations.
+  * `PGNParser.parse(game:)` has replaced the now deprecated `PGNParser.parse(game:startingWith:)` (position is now inferred from the PGN tags).
+  * `parse(game:)` is now a throwing method with a robust bank of possible errors for better error handling and understanding of why the PGN could not be parsed.
+  * `Game(pgn:)` is now also a throwing initializer, passing on the error from `PGNParser`.
+* Add `Move.Assessment(notation:)` initializer.
+
 ### Bug Fixes
 * Fix `SANParser` not parsing en passant captures properly (by Rob Raese).
 
