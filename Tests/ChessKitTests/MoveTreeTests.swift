@@ -27,7 +27,7 @@ struct MoveTreeTests {
     #expect(moveTree[.minimum.next] == e4)
   }
 
-  @Test func ndeHashValue() {
+  @Test func nodeHashValue() {
     var moveTree = MoveTree()
     let e4 = Move(san: "e4", position: .standard)
     moveTree[.minimum.next] = e4

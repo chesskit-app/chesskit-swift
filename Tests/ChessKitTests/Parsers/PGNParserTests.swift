@@ -54,6 +54,7 @@ struct PGNParserTests {
     #expect(game.moves[.init(number: 1, color: .black)]?.assessment == .brilliant)
     #expect(game.moves[.init(number: 3, color: .black)]?.comment == "This opening is called the Ruy Lopez.")
     #expect(game.moves[.init(number: 4, color: .white)]?.comment == "test comment")
+    #expect(game.positions[.init(number: 7, color: .black)]?.assessment == .blackHasDecisiveCounterplay)
     #expect(game.moves[.init(number: 10, color: .white)]?.end == .d4)
     #expect(game.moves[.init(number: 18, color: .black)]?.piece.kind == .queen)
     #expect(game.moves[.init(number: 18, color: .black)]?.end == .e7)
@@ -84,14 +85,12 @@ extension PGNParserTests {
 
   @available(*, deprecated)
   @Test func legacyParsing() throws {
+    // remove position assessment as it was not supported
+    // in legacy parser
+    let pgn = Game.fischerSpassky.replacingOccurrences(of: "$135 ", with: "")
+
     #expect(
-      try PGNParser.parse(
-        game: Game.fischerSpassky
-      )
-        == PGNParser.parse(
-          game: Game.fischerSpassky,
-          startingWith: .standard
-        )
+      try PGNParser.parse(game: pgn) == PGNParser.parse(game: pgn, startingWith: .standard)
     )
   }
 

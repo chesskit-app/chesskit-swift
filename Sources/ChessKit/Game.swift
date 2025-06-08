@@ -189,6 +189,19 @@ public struct Game: Hashable, Sendable {
     moves.annotate(moveAt: index, assessment: assessment, comment: comment)
   }
 
+  /// Annotates the position at the provided `index`.
+  ///
+  /// - parameter index: The index of the position within the ``MoveTree``.
+  /// - parameter assessment: The position assessment annotation.
+  ///
+  public mutating func annotate(
+    positionAt index: MoveTree.Index,
+    assessment: Position.Assessment
+  ) {
+    moves.annotate(positionAt: index, assessment: assessment)
+    positions[index]?.assessment = assessment
+  }
+
   /// The PGN represenation of the game.
   public var pgn: String {
     PGNParser.convert(game: self)

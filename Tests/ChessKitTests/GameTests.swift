@@ -116,6 +116,16 @@ final class GameTests {
     #expect(moveText == expectedMoveText)
   }
 
+  @Test func positionAnnotation() {
+    game.annotate(positionAt: nc3Index, assessment: .whiteHasCrushingAdvantage)
+    game.annotate(positionAt: bc4Index, assessment: .whiteHasModerateTimeAdvantage)
+
+    let moveText = String(PGNParser.convert(game: game).split(separator: "\n").last!)
+    let expectedMoveText = "1. e4 e5 2. Nf3 (2. Nc3 $20 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4 $32 1-0"
+
+    #expect(moveText == expectedMoveText)
+  }
+
   @Test func moveHistory() {
     let f5History = game.moves.history(for: f5Index)
     let expectedF5History = [

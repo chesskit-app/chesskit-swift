@@ -28,8 +28,7 @@ public extension PGNParser {
   /// - parameter pgn: The PGN string of a chess game.
   /// - parameter position: The starting position of the chess game.
   ///     Defaults to the standard position.
-  /// - returns: A Swift representation of the chess game,
-  ///     or `nil` if the PGN is invalid.
+  /// - returns: A Swift representation of the chess game.
   ///
   @available(*, deprecated, renamed: "parse(game:)")
   static func parse(
@@ -260,8 +259,6 @@ public extension PGNParser {
 
     return gameTags
   }
-
-  // MARK: - Regex
 
   /// Contains useful regex strings for PGN parsing.
   private struct Pattern {

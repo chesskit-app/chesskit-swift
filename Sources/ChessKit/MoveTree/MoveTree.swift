@@ -258,7 +258,7 @@ public struct MoveTree: Hashable, Sendable {
   /// Annotates the move at the provided index.
   ///
   /// - parameter index: The index of the move to annotate.
-  /// - parameter assessment: The move to annotate the move with.
+  /// - parameter assessment: The assessment to annotate the move with.
   /// - parameter comment: The comment to annotate the move with.
   ///
   /// - returns: The move updated with the given annotations.
@@ -276,6 +276,23 @@ public struct MoveTree: Hashable, Sendable {
     return dictionary[index]?.move
   }
 
+  /// Annotates the position at the provided index.
+  ///
+  /// - parameter index: The index of the position to annotate.
+  /// - parameter assessment: The assessment to annotate the position with.
+  ///
+  /// This value is stored in the move tree to generate an accurate
+  /// PGN representation with `MoveTree.pgnRepresentation`.
+  ///
+  public mutating func annotate(
+    positionAt index: Index,
+    assessment: Position.Assessment
+  ) {
+    Self.nodeLock.withLock {
+      dictionary[index]?.positionAssessment = assessment
+    }
+  }
+
   // MARK: - PGN
 
   /// An element for representing the ``MoveTree`` in
@@ -287,6 +304,8 @@ public struct MoveTree: Hashable, Sendable {
     case blackNumber(Int)
     /// e.g. `e4`
     case move(Move, Index)
+    /// e.g. `$10`
+    case positionAssessment(Position.Assessment)
     /// e.g. `(`
     case variationStart
     /// e.g. `)`
@@ -305,6 +324,9 @@ public struct MoveTree: Hashable, Sendable {
     }
 
     result.append(.move(node.move, node.index))
+    if node.positionAssessment != .null {
+      result.append(.positionAssessment(node.positionAssessment))
+    }
 
     var currentNode = node.next
     var previousIndex = node.index
@@ -321,6 +343,12 @@ public struct MoveTree: Hashable, Sendable {
 
       if let move = currentNode?.move {
         result.append(.move(move, currentIndex))
+      }
+
+      if let positionAssessment = currentNode?.positionAssessment,
+        positionAssessment != .null
+      {
+        result.append(.positionAssessment(positionAssessment))
       }
 
       // recursively generate PGN for all child nodes
@@ -361,8 +389,10 @@ extension MoveTree {
 
     /// The move for this node.
     var move: Move
+    /// The position assessment for this node.
+    var positionAssessment = Position.Assessment.null
     /// The index for this node.
-    fileprivate(set) var index: Index = .minimum
+    fileprivate(set) var index = Index.minimum
     /// The previous node.
     fileprivate(set) var previous: Node?
     /// The next node.

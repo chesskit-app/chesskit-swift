@@ -34,13 +34,17 @@ public struct Position: Sendable {
   /// Keeps track of the number of moves in a game for the current position.
   public private(set) var clock: Clock
 
+  /// The position assessment annotation.
+  public var assessment: Assessment
+
   /// Initialize a position with a given array of pieces and characteristics.
   init(
     pieces: [Piece],
     sideToMove: Piece.Color = .white,
     legalCastlings: LegalCastlings = LegalCastlings(),
     enPassant: EnPassant? = nil,
-    clock: Clock = Clock()
+    clock: Clock = Clock(),
+    assessment: Assessment = .null
   ) {
     self.pieceSet = .init(pieces: pieces)
     self.sideToMove = sideToMove
@@ -48,6 +52,7 @@ public struct Position: Sendable {
     self.enPassant = enPassant
     self.enPassantIsPossible = enPassant != nil
     self.clock = clock
+    self.assessment = assessment
   }
 
   /// Initialize a move with a provided FEN string.
@@ -199,6 +204,148 @@ public struct Position: Sendable {
   /// The FEN represenation of the position.
   public var fen: String {
     FENParser.convert(position: self)
+  }
+
+}
+
+extension Position {
+
+  /// Single position assessments.
+  ///
+  /// The raw String value corresponds to what is displayed
+  /// in a PGN string.
+  public enum Assessment: String, Sendable {
+    case null = ""
+    case drawishPosition = "$10"
+    case equalChancesQuietPosition = "$11"
+    case equalChancesActivePosition = "$12"
+    case unclearPosition = "$13"
+    case whiteHasSlightAdvantage = "$14"
+    case blackHasSlightAdvantage = "$15"
+    case whiteHasModerateAdvantage = "$16"
+    case blackHasModerateAdvantage = "$17"
+    case whiteHasDecisiveAdvantage = "$18"
+    case blackHasDecisiveAdvantage = "$19"
+    case whiteHasCrushingAdvantage = "$20"
+    case blackHasCrushingAdvantage = "$21"
+    case whiteInZugzwang = "$22"
+    case blackInZugzwang = "$23"
+    case whiteHasSlightSpaceAdvantage = "$24"
+    case blackHasSlightSpaceAdvantage = "$25"
+    case whiteHasModerateSpaceAdvantage = "$26"
+    case blackHasModerateSpaceAdvantage = "$27"
+    case whiteHasDecisiveSpaceAdvantage = "$28"
+    case blackHasDecisiveSpaceAdvantage = "$29"
+    case whiteHasSlightTimeAdvantage = "$30"
+    case blackHasSlightTimeAdvantage = "$31"
+    case whiteHasModerateTimeAdvantage = "$32"
+    case blackHasModerateTimeAdvantage = "$33"
+    case whiteHasDecisiveTimeAdvantage = "$34"
+    case blackHasDecisiveTimeAdvantage = "$35"
+    case whiteHasInitiative = "$36"
+    case blackHasInitiative = "$37"
+    case whiteHasLastingInitiative = "$38"
+    case blackHasLastingInitiative = "$39"
+    case whiteHasAttack = "$40"
+    case blackHasAttack = "$41"
+    case whiteInsufficientCompensation = "$42"
+    case blackInsufficientCompensation = "$43"
+    case whiteSufficientCompensation = "$44"
+    case blackSufficientCompensation = "$45"
+    case whiteMoreThanAdequateCompensation = "$46"
+    case blackMoreThanAdequateCompensation = "$47"
+    case whiteHasSlightCenterControlAdvantage = "$48"
+    case blackHasSlightCenterControlAdvantage = "$49"
+    case whiteHasModerateCenterControlAdvantage = "$50"
+    case blackHasModerateCenterControlAdvantage = "$51"
+    case whiteHasDecisiveCenterControlAdvantage = "$52"
+    case blackHasDecisiveCenterControlAdvantage = "$53"
+    case whiteHasSlightKingsideControlAdvantage = "$54"
+    case blackHasSlightKingsideControlAdvantage = "$55"
+    case whiteHasModerateKingsideControlAdvantage = "$56"
+    case blackHasModerateKingsideControlAdvantage = "$57"
+    case whiteHasDecisiveKingsideControlAdvantage = "$58"
+    case blackHasDecisiveKingsideControlAdvantage = "$59"
+    case whiteHasSlightQueensideControlAdvantage = "$60"
+    case blackHasSlightQueensideControlAdvantage = "$61"
+    case whiteHasModerateQueensideControlAdvantage = "$62"
+    case blackHasModerateQueensideControlAdvantage = "$63"
+    case whiteHasDecisiveQueensideControlAdvantage = "$64"
+    case blackHasDecisiveQueensideControlAdvantage = "$65"
+    case whiteVulnerableFirstRank = "$66"
+    case blackVulnerableFirstRank = "$67"
+    case whiteWellProtectedFirstRank = "$68"
+    case blackWellProtectedFirstRank = "$69"
+    case whitePoorlyProtectedKing = "$70"
+    case blackPoorlyProtectedKing = "$71"
+    case whiteWellProtectedKing = "$72"
+    case blackWellProtectedKing = "$73"
+    case whitePoorlyPlacedKing = "$74"
+    case blackPoorlyPlacedKing = "$75"
+    case whiteWellPlacedKing = "$76"
+    case blackWellPlacedKing = "$77"
+    case whiteVeryWeakPawnStructure = "$78"
+    case blackVeryWeakPawnStructure = "$79"
+    case whiteModeratelyWeakPawnStructure = "$80"
+    case blackModeratelyWeakPawnStructure = "$81"
+    case whiteModeratelyStrongPawnStructure = "$82"
+    case blackModeratelyStrongPawnStructure = "$83"
+    case whiteVeryStrongPawnStructure = "$84"
+    case blackVeryStrongPawnStructure = "$85"
+    case whitePoorKnightPlacement = "$86"
+    case blackPoorKnightPlacement = "$87"
+    case whiteGoodKnightPlacement = "$88"
+    case blackGoodKnightPlacement = "$89"
+    case whitePoorBishopPlacement = "$90"
+    case blackPoorBishopPlacement = "$91"
+    case whiteGoodBishopPlacement = "$92"
+    case blackGoodBishopPlacement = "$93"
+    case whitePoorRookPlacement = "$94"
+    case blackPoorRookPlacement = "$95"
+    case whiteGoodRookPlacement = "$96"
+    case blackGoodRookPlacement = "$97"
+    case whitePoorQueenPlacement = "$98"
+    case blackPoorQueenPlacement = "$99"
+    case whiteGoodQueenPlacement = "$100"
+    case blackGoodQueenPlacement = "$101"
+    case whitePoorPieceCoordination = "$102"
+    case blackPoorPieceCoordination = "$103"
+    case whiteGoodPieceCoordination = "$104"
+    case blackGoodPieceCoordination = "$105"
+    case whitePlayedOpeningVeryPoorly = "$106"
+    case blackPlayedOpeningVeryPoorly = "$107"
+    case whitePlayedOpeningPoorly = "$108"
+    case blackPlayedOpeningPoorly = "$109"
+    case whitePlayedOpeningWell = "$110"
+    case blackPlayedOpeningWell = "$111"
+    case whitePlayedOpeningVeryWell = "$112"
+    case blackPlayedOpeningVeryWell = "$113"
+    case whitePlayedMiddlegameVeryPoorly = "$114"
+    case blackPlayedMiddlegameVeryPoorly = "$115"
+    case whitePlayedMiddlegamePoorly = "$116"
+    case blackPlayedMiddlegamePoorly = "$117"
+    case whitePlayedMiddlegameWell = "$118"
+    case blackPlayedMiddlegameWell = "$119"
+    case whitePlayedMiddlegameVeryWell = "$120"
+    case blackPlayedMiddlegameVeryWell = "$121"
+    case whitePlayedEndingVeryPoorly = "$122"
+    case blackPlayedEndingVeryPoorly = "$123"
+    case whitePlayedEndingPoorly = "$124"
+    case blackPlayedEndingPoorly = "$125"
+    case whitePlayedEndingWell = "$126"
+    case blackPlayedEndingWell = "$127"
+    case whitePlayedEndingVeryWell = "$128"
+    case blackPlayedEndingVeryWell = "$129"
+    case whiteHasSlightCounterplay = "$130"
+    case blackHasSlightCounterplay = "$131"
+    case whiteHasModerateCounterplay = "$132"
+    case blackHasModerateCounterplay = "$133"
+    case whiteHasDecisiveCounterplay = "$134"
+    case blackHasDecisiveCounterplay = "$135"
+    case whiteModerateTimeControlPressure = "$136"
+    case blackModerateTimeControlPressure = "$137"
+    case whiteSevereTimeControlPressure = "$138"
+    case blackSevereTimeControlPressure = "$139"
   }
 
 }

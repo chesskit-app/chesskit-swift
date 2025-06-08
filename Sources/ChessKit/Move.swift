@@ -3,6 +3,7 @@
 //  ChessKit
 //
 
+/// Represents a move on a chess board.
 public struct Move: Hashable, Sendable {
 
   /// The result of the move.
@@ -133,7 +134,7 @@ extension Move {
       }
     }
 
-    init?(notation: String) {
+    public init?(notation: String) {
       switch notation {
       case "!": self = .good
       case "?": self = .mistake
