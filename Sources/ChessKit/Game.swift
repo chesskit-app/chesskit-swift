@@ -209,6 +209,15 @@ public struct Game: Hashable, Sendable {
 
 }
 
+// MARK: - CustomStringConvertible
+extension Game: CustomStringConvertible {
+
+  public var description: String {
+    pgn
+  }
+
+}
+
 // MARK: - Tags
 
 extension Game {

@@ -150,3 +150,10 @@ extension Move {
   }
 
 }
+
+// MARK: - CustomStringConvertible
+extension Move: CustomStringConvertible {
+  public var description: String {
+    san
+  }
+}
