@@ -33,40 +33,23 @@ public enum PGNParser {
       // lines beginning with % are ignored
       .filter { $0.prefix(1) != "%" }
 
-    let splitLines = lines.split(separator: "").map(Array.init)
+    let sections = lines.split(separator: "").map(Array.init)
 
-    var tagPairLines = [String]()
-    var moveTextLines = [String]()
+    guard sections.count <= 2 else { throw .tooManyLineBreaks }
+    guard let firstSection = sections.first else { return Game() }
 
-    if splitLines.count == 2 {
-      tagPairLines = splitLines[0]
-      moveTextLines = splitLines[1]
-    } else if splitLines.count == 1 {
-      moveTextLines = splitLines[0]
-    } else if splitLines.isEmpty {
-      return .init(startingWith: .standard)
-    } else {
-      throw .tooManyLineBreaks
-    }
+    let tagPairLines = sections.count == 2 ? firstSection : []
+    let moveTextLines = sections.count == 2 ? sections[1] : firstSection
 
     // parse tags
 
     let tags = try PGNTagParser.gameTags(from: tagPairLines.joined())
 
-    var startingPosition: Position
-    if tags.setUp == "1", let position = FENParser.parse(fen: tags.fen) {
-      startingPosition = position
-    } else if tags.setUp == "0" || (tags.setUp.isEmpty && tags.fen.isEmpty) {
-      startingPosition = .standard
-    } else {
-      throw .invalidSetUpOrFEN
-    }
-
     // parse movetext
 
     var game = try MoveTextParser.game(
       from: moveTextLines.joined(separator: " "),
-      startingPosition: startingPosition
+      startingPosition: try startingPosition(from: tags)
     )
 
     // return game with tags + movetext
@@ -88,26 +71,10 @@ public enum PGNParser {
 
     // tags
 
-    [
-      game.tags.$event,
-      game.tags.$site,
-      game.tags.$date,
-      game.tags.$round,
-      game.tags.$white,
-      game.tags.$black,
-      game.tags.$result,
-      game.tags.$annotator,
-      game.tags.$plyCount,
-      game.tags.$timeControl,
-      game.tags.$time,
-      game.tags.$termination,
-      game.tags.$mode,
-      game.tags.$fen,
-      game.tags.$setUp
-    ]
-    .map(\.pgn)
-    .filter { !$0.isEmpty }
-    .forEach { pgn += $0 + "\n" }
+    game.tags.all
+      .map(\.pgn)
+      .filter { !$0.isEmpty }
+      .forEach { pgn += $0 + "\n" }
 
     game.tags.other.sorted(by: <).forEach { key, value in
       pgn += "[\(key) \"\(value)\"]\n"
@@ -144,6 +111,21 @@ public enum PGNParser {
 
   // MARK: - Private
 
+  /// Generates starting position from `"SetUp"` and `"FEN"` tags.
+  private static func startingPosition(
+    from tags: Game.Tags
+  ) throws(PGNParser.Error) -> Position {
+    if tags.setUp == "1", let position = FENParser.parse(fen: tags.fen) {
+      position
+    } else if tags.setUp == "0" || (tags.setUp.isEmpty && tags.fen.isEmpty) {
+      .standard
+    } else {
+      throw .invalidSetUpOrFEN
+    }
+  }
+
+  /// Generates PGN string for the given `move` including assessments
+  /// and comments.
   private static func movePGN(for move: Move) -> String {
     var result = ""
 
@@ -164,6 +146,10 @@ public enum PGNParser {
 
 // MARK: - Error
 extension PGNParser {
+  /// Possible errors returned by `PGNParser`.
+  ///
+  /// These errors are thrown when issues are encountered
+  /// while scanning and parsing the provided PGN text.
   public enum Error: Swift.Error, Equatable {
     /// There are too many line breaks in the provided PGN.
     /// PGN should contain a single blank line between the
@@ -179,7 +165,7 @@ extension PGNParser {
     /// - seealso: ``FENParser``
     case invalidSetUpOrFEN
 
-    // tags
+    // MARK: Tags
     /// Tags must be surrounded by brackets with an unquoted
     /// string (key) followed by a quoted string (value) inside.
     ///
@@ -190,13 +176,13 @@ extension PGNParser {
     /// will be thrown.
     case mismatchedTagBrackets
     /// Tag string (value) could not be parsed.
-    case stringNotFound
+    case tagStringNotFound
     /// Tag symbol (key) could not be parsed.
-    case symbolNotFound
+    case tagSymbolNotFound
     /// Tag symbols must be either letters, numbers, or underscores (`_`).
-    case unexpectedCharacter(String)
+    case unexpectedTagCharacter(String)
 
-    // move text
+    // MARK: Move Text
     /// The move or position assessment annotation is invalid.
     case invalidAnnotation(String)
     /// The move SAN is invalid for the implied position given

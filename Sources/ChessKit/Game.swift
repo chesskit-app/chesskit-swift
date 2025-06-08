@@ -213,7 +213,7 @@ public struct Game: Hashable, Sendable {
 
 extension Game {
 
-  /// Denotes a PGN tag pair.
+  /// Represents a PGN tag pair.
   @propertyWrapper
   public struct Tag: Hashable, Sendable {
 
@@ -242,6 +242,15 @@ extension Game {
 
   /// Contains the PGN tag pairs for a game.
   public struct Tags: Hashable, Sendable {
+
+    /// Returns all named tags.
+    ///
+    /// Does not include custom tags included in ``other``.
+    public var all: [Game.Tag] {
+      Mirror(reflecting: self).children.compactMap {
+        $0.value as? Game.Tag
+      }
+    }
 
     /// Whether or not all the standard mandatory tags for
     /// PGN archival are set.

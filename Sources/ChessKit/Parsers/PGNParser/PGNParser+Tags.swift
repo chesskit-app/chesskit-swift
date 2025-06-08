@@ -75,7 +75,7 @@ extension PGNParser {
             if c.isLetter || c.isNumber || c == "_" {
               symbol += String(c)
             } else {
-              throw .unexpectedCharacter(String(c))
+              throw .unexpectedTagCharacter(String(c))
             }
           }
         }
@@ -104,11 +104,11 @@ extension PGNParser {
         }
 
         guard case let .symbol(symbol) = token.1 else {
-          throw .symbolNotFound
+          throw .tagSymbolNotFound
         }
 
         guard case let .string(string) = token.2 else {
-          throw .stringNotFound
+          throw .tagStringNotFound
         }
 
         parsedTags.append((symbol, string))

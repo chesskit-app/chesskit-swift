@@ -14,6 +14,7 @@
   * `Game(pgn:)` is now also a throwing initializer, passing on the error from `PGNParser`.
   * Now parses `Position.Assessment` (see above).
 * Add `Move.Assessment(notation:)` initializer.
+* Add `all` property to `Game.Tags` to return array of all named tags.
 
 ### Bug Fixes
 * Fix `SANParser` not parsing en passant captures properly (by Rob Raese).

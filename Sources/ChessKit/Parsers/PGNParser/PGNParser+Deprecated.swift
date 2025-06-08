@@ -7,7 +7,7 @@ import Foundation
 
 /// Parses and converts the Portable Game Notation (PGN)
 /// of a chess game.
-public extension PGNParser {
+extension PGNParser {
 
   /// Contains the contents of a single parsed move pair.
   private struct ParsedMove {
@@ -31,7 +31,7 @@ public extension PGNParser {
   /// - returns: A Swift representation of the chess game.
   ///
   @available(*, deprecated, renamed: "parse(game:)")
-  static func parse(
+  public static func parse(
     game pgn: String,
     startingWith position: Position = .standard
   ) -> Game {

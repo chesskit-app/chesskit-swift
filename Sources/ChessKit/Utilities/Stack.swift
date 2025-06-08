@@ -7,16 +7,15 @@ struct Stack<T> {
   private var top: Node<T>?
 
   mutating func push(_ value: T) {
-    let currentTop = top
+    let temp = top
     top = Node(value)
-    top?.next = currentTop
+    top?.next = temp
   }
 
   @discardableResult
   mutating func pop() -> T? {
-    let currentTop = top
-    top = top?.next
-    return currentTop?.value
+    defer { top = top?.next }
+    return top?.value
   }
 }
 

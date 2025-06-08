@@ -139,7 +139,7 @@ struct PGNParserTests {
   }
 
   @Test func unexpectedCharacterError() throws {
-    #expect(throws: PGNParser.Error.unexpectedCharacter("%")) {
+    #expect(throws: PGNParser.Error.unexpectedTagCharacter("%")) {
       try PGNParser.parse(game: "[Tag% \"Value\"]\n\n1. e4 e5")
     }
   }
@@ -149,11 +149,11 @@ struct PGNParserTests {
       try PGNParser.parse(game: "][Tag \"Value\"\n\n1.e4 e5")
     }
 
-    #expect(throws: PGNParser.Error.symbolNotFound) {
+    #expect(throws: PGNParser.Error.tagSymbolNotFound) {
       try PGNParser.parse(game: "[\"Tag\" \"Value\"]\n\n1.e4 e5")
     }
 
-    #expect(throws: PGNParser.Error.stringNotFound) {
+    #expect(throws: PGNParser.Error.tagStringNotFound) {
       try PGNParser.parse(game: "[Tag Value ]\n\n1.e4 e5")
     }
   }
