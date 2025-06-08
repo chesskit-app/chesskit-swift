@@ -4,7 +4,6 @@
 //
 
 // MARK: - Collection
-
 extension MoveTree: Collection {
 
   public var startIndex: Index { minimumIndex }
@@ -25,7 +24,6 @@ extension MoveTree: Collection {
 }
 
 // MARK: - BidirectionalCollection
-
 extension MoveTree: BidirectionalCollection {
 
   /// Returns the previous index in the move tree based on `i`.

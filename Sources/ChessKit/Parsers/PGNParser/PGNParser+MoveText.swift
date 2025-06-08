@@ -6,9 +6,10 @@
 import Foundation
 
 extension PGNParser {
+  /// Parses PGN movetext.
   enum MoveTextParser {
 
-    // MARK: - Internal
+    // MARK: Internal
 
     static func game(
       from moveText: String,
@@ -21,7 +22,7 @@ extension PGNParser {
       return try MoveTextParser.parse(tokens: moveTextTokens, startingWith: startingPosition)
     }
 
-    // MARK: - Private
+    // MARK: Private
 
     private static func tokenize(moveText: String) throws(PGNParser.Error) -> [Token] {
       let inlineMoveText = moveText.components(separatedBy: .newlines).joined(separator: "")

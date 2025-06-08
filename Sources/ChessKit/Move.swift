@@ -100,6 +100,7 @@ public struct Move: Hashable, Sendable {
 
 }
 
+// MARK: - Assessment
 extension Move {
 
   /// Single move assessments.

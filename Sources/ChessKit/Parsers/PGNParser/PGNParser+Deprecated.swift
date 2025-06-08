@@ -21,7 +21,7 @@ extension PGNParser {
     let result: String?
   }
 
-  // MARK: - Public
+  // MARK: Public
 
   /// Parses a PGN string and returns a game.
   ///
@@ -231,7 +231,7 @@ extension PGNParser {
     return game
   }
 
-  // MARK: - Private
+  // MARK: Private
 
   private static func parsed(tags: [String: String]) -> Game.Tags {
     var gameTags = Game.Tags()

@@ -208,6 +208,7 @@ public struct Position: Sendable {
 
 }
 
+// MARK: - Assessment
 extension Position {
 
   /// Single position assessments.
@@ -350,7 +351,7 @@ extension Position {
 
 }
 
-// MARK: - Sample positions
+// MARK: - Sample Positions
 extension Position {
   /// A random chess position that can be used for testing.
   public static let test = Position(pieces: [

@@ -7,6 +7,8 @@
 /// of a chess move.
 public enum SANParser {
 
+  // MARK: Public
+
   /// Parses a SAN string and returns a move.
   ///
   /// - parameter san: The SAN string of a move.
@@ -183,7 +185,7 @@ public enum SANParser {
     }
   }
 
-  // MARK: - Private
+  // MARK: Private
 
   /// Returns whether the provided SAN is valid.
   ///

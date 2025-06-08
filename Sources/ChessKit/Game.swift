@@ -12,7 +12,7 @@ import Foundation
 /// making moves and publishes the played moves in an observable way.
 public struct Game: Hashable, Sendable {
 
-  // MARK: - Properties
+  // MARK: Properties
 
   /// The move tree representing all moves made in the game.
   public private(set) var moves: MoveTree
@@ -28,7 +28,7 @@ public struct Game: Hashable, Sendable {
     positions[startingIndex]
   }
 
-  // MARK: - Initializer
+  // MARK: Initializer
 
   /// Initialize a game with a starting position.
   ///
@@ -59,7 +59,7 @@ public struct Game: Hashable, Sendable {
     tags = parsed.tags
   }
 
-  // MARK: - Moves
+  // MARK: Moves
 
   /// Perform the provided move in the game.
   ///
@@ -219,7 +219,6 @@ extension Game: CustomStringConvertible {
 }
 
 // MARK: - Tags
-
 extension Game {
 
   /// Represents a PGN tag pair.

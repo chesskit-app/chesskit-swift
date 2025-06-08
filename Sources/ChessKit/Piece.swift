@@ -123,6 +123,7 @@ public struct Piece: Hashable, Sendable {
 
 }
 
+// MARK: - CustomStringConvertible
 extension Piece: CustomStringConvertible {
   public var description: String {
     "\(String(describing: color)) \(String(describing: kind)) on \(square.notation)"

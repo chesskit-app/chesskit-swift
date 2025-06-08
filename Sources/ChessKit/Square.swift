@@ -64,7 +64,7 @@ public enum Square: Int, CaseIterable, Sendable {
     }
   }
 
-  // MARK: - Squares
+  // MARK: Squares
 
   case a1, b1, c1, d1, e1, f1, g1, h1
   case a2, b2, c2, d2, e2, f2, g2, h2
@@ -75,7 +75,7 @@ public enum Square: Int, CaseIterable, Sendable {
   case a7, b7, c7, d7, e7, f7, g7, h7
   case a8, b8, c8, d8, e8, f8, g8, h8
 
-  // MARK: - Initializer
+  // MARK: Initializer
 
   /// Initializes a board square from the given notation string.
   ///
@@ -162,7 +162,7 @@ public enum Square: Int, CaseIterable, Sendable {
     }
   }
 
-  // MARK: - Components
+  // MARK: Components
 
   /// The file (column) of the given square, from `a` through `h`.
   public var file: File {
@@ -197,7 +197,7 @@ public enum Square: Int, CaseIterable, Sendable {
     file.rawValue + "\(rank.value)"
   }
 
-  // MARK: - Color
+  // MARK: Color
 
   /// Represents the possible colors of each board square.
   public enum Color: CaseIterable {
@@ -213,7 +213,7 @@ public enum Square: Int, CaseIterable, Sendable {
     }
   }
 
-  // MARK: - Directional
+  // MARK: Directional
 
   /// The `Square` to the left of the current one.
   ///

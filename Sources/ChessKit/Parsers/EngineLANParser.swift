@@ -19,6 +19,8 @@
 /// for more information.
 public enum EngineLANParser {
 
+  // MARK: Public
+
   /// Parses a LAN string and returns a move.
   ///
   /// - parameter lan: The (engine) LAN string of a move.
@@ -93,7 +95,7 @@ public enum EngineLANParser {
     move.start.notation + move.end.notation + (move.promotedPiece?.fen.lowercased() ?? "")
   }
 
-  // MARK: - Private
+  // MARK: Private
 
   /// Returns whether the provided engine LAN is valid.
   ///

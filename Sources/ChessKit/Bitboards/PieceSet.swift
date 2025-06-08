@@ -176,6 +176,7 @@ struct PieceSet: Hashable, Sendable {
   }
 }
 
+// MARK: - CustomStringConvertible
 extension PieceSet: CustomStringConvertible {
 
   var description: String {

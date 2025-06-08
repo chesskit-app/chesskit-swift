@@ -9,7 +9,7 @@ import Foundation
 /// of a chess game.
 public enum PGNParser {
 
-  // MARK: - Public
+  // MARK: Public
 
   /// Parses a PGN string and returns a game.
   ///
@@ -109,7 +109,7 @@ public enum PGNParser {
     return pgn.trimmingCharacters(in: .whitespaces)
   }
 
-  // MARK: - Private
+  // MARK: Private
 
   /// Generates starting position from `"SetUp"` and `"FEN"` tags.
   private static func startingPosition(

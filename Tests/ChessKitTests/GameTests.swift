@@ -10,7 +10,7 @@ final class GameTests {
 
   private var game = Game()
 
-  // MARK: - Indices used in tests
+  // MARK: Test Indices
 
   private let nf3Index = MoveTree.Index(number: 2, color: .white, variation: 0)
   private let bc4Index = MoveTree.Index(number: 3, color: .white, variation: 0)
@@ -20,7 +20,7 @@ final class GameTests {
   private let nc6Index2 = MoveTree.Index(number: 2, color: .black, variation: 0)
   private let f5Index = MoveTree.Index(number: 2, color: .black, variation: 3)
 
-  // MARK: - Setup
+  // MARK: Setup
 
   init() {
     game.tags = Self.mockTags
@@ -47,7 +47,7 @@ final class GameTests {
     game = Game()
   }
 
-  // MARK: - Test cases
+  // MARK: Test Cases
 
   @Test func startingPosition() {
     let game1 = Game(startingWith: .standard)

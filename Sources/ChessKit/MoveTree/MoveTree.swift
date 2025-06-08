@@ -370,6 +370,7 @@ extension MoveTree: Equatable {
 
 }
 
+// MARK: - Node
 extension MoveTree {
 
   /// Object that represents a node in the move tree.

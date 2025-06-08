@@ -4,9 +4,10 @@
 //
 
 extension PGNParser {
+  /// Parses PGN tag pairs.
   enum PGNTagParser {
 
-    // MARK: - Interal
+    // MARK: Interal
 
     static func gameTags(from tagString: String) throws(PGNParser.Error) -> Game.Tags {
       var gameTags = Game.Tags()
@@ -35,7 +36,7 @@ extension PGNParser {
       return gameTags
     }
 
-    // MARK: - Private
+    // MARK: Private
 
     private static func tokenize(tags: String) throws(PGNParser.Error) -> [Token] {
       let inlineTags = tags.components(separatedBy: .newlines).joined(separator: "")

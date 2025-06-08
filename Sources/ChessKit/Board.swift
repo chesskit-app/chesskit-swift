@@ -25,7 +25,7 @@ public protocol BoardDelegate: AnyObject, Sendable {
 /// legal moves and game rules.
 public struct Board: Sendable {
 
-  // MARK: - Properties
+  // MARK: Properties
 
   /// The delegate for this board object.
   ///
@@ -47,7 +47,7 @@ public struct Board: Sendable {
     position.pieceSet
   }
 
-  // MARK: - Initializer
+  // MARK: Initializer
 
   /// Initializes a board with the given `position`.
   ///
@@ -61,7 +61,7 @@ public struct Board: Sendable {
     self.positionHashCounts = [:]
   }
 
-  // MARK: - Public
+  // MARK: Public
 
   /// Moves the piece at a given square to a new square.
   ///
@@ -218,7 +218,7 @@ public struct Board: Sendable {
     return process(move: updatedMove)
   }
 
-  // MARK: - Move Processing
+  // MARK: Move Processing
 
   /// Determines end game state and
   /// handles pawn promotion for provided `move`.
@@ -319,7 +319,7 @@ public struct Board: Sendable {
     }
   }
 
-  // MARK: - Move Validation
+  // MARK: Move Validation
 
   /// Determines the legal moves for the given `piece` in `set`.
   private func legalMoves(for piece: Piece, in set: PieceSet) -> Bitboard {
@@ -427,7 +427,7 @@ public struct Board: Sendable {
     return attacks & ~us != 0
   }
 
-  // MARK: - Piece Attacks
+  // MARK: Piece Attacks
 
   /// Non-capturing pawn moves.
   ///
@@ -591,7 +591,6 @@ public struct Board: Sendable {
 }
 
 // MARK: - End Result
-
 extension Board {
   /// Represents an end result of a standard chess game.
   public enum EndResult: Hashable, Sendable {
@@ -611,6 +610,7 @@ extension Board {
   }
 }
 
+// MARK: - CustomStringConvertible
 extension Board: CustomStringConvertible {
 
   public var description: String {
