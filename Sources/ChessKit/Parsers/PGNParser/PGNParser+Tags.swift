@@ -6,22 +6,36 @@
 extension PGNParser {
   enum PGNTagParser {
 
-    /// Represents a tag pair token.
-    ///
-    /// The format of a tag pair is:
-    /// `<open bracket> <symbol> "<string>" <close bracket>`
-    /// with 0 or more whitespaces between tokens.
-    enum Token: Equatable {
-      case openBracket
-      case symbol(String)
-      case string(String)
-      case closeBracket
+    // MARK: - Interal
+
+    static func gameTags(from tagString: String) throws(PGNParser.Error) -> Game.Tags {
+      var gameTags = Game.Tags()
+
+      try parse(tags: tagString).forEach { key, value in
+        switch key.lowercased() {
+        case "event": gameTags.event = value
+        case "site": gameTags.site = value
+        case "date": gameTags.date = value
+        case "round": gameTags.round = value
+        case "white": gameTags.white = value
+        case "black": gameTags.black = value
+        case "result": gameTags.result = value
+        case "annotator": gameTags.annotator = value
+        case "plycount": gameTags.plyCount = value
+        case "timecontrol": gameTags.timeControl = value
+        case "time": gameTags.time = value
+        case "termination": gameTags.termination = value
+        case "mode": gameTags.mode = value
+        case "fen": gameTags.fen = value
+        case "setup": gameTags.setUp = value
+        default: gameTags.other[key] = value
+        }
+      }
+
+      return gameTags
     }
 
-    private struct TokenizationState {
-      var bracketOpened = false
-      var quoteOpened = false
-    }
+    // MARK: - Private
 
     private static func tokenize(tags: String) throws(PGNParser.Error) -> [Token] {
       let inlineTags = tags.components(separatedBy: .newlines).joined(separator: "")
@@ -103,33 +117,26 @@ extension PGNParser {
       return Dictionary<String, String>(parsedTags) { first, _ in first }
     }
 
-    static func gameTags(from tagString: String) throws(PGNParser.Error) -> Game.Tags {
-      var gameTags = Game.Tags()
+  }
+}
 
-      try parse(tags: tagString).forEach { key, value in
-        switch key.lowercased() {
-        case "event": gameTags.event = value
-        case "site": gameTags.site = value
-        case "date": gameTags.date = value
-        case "round": gameTags.round = value
-        case "white": gameTags.white = value
-        case "black": gameTags.black = value
-        case "result": gameTags.result = value
-        case "annotator": gameTags.annotator = value
-        case "plycount": gameTags.plyCount = value
-        case "timecontrol": gameTags.timeControl = value
-        case "time": gameTags.time = value
-        case "termination": gameTags.termination = value
-        case "mode": gameTags.mode = value
-        case "fen": gameTags.fen = value
-        case "setup": gameTags.setUp = value
-        default: gameTags.other[key] = value
-        }
-      }
+// MARK: - Tokens
+private extension PGNParser.PGNTagParser {
+  /// Represents a tag pair token.
+  ///
+  /// The format of a tag pair is:
+  /// `<open bracket> <symbol> "<string>" <close bracket>`
+  /// with 0 or more whitespaces between tokens.
+  enum Token: Equatable {
+    case openBracket
+    case symbol(String)
+    case string(String)
+    case closeBracket
+  }
 
-      return gameTags
-    }
-
+  struct TokenizationState {
+    var bracketOpened = false
+    var quoteOpened = false
   }
 }
 

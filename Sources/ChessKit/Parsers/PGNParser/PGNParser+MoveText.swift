@@ -8,103 +8,22 @@ import Foundation
 extension PGNParser {
   enum MoveTextParser {
 
-    public enum Token: Equatable {
-      case number(String)
-      case san(String)
-      case annotation(String)
-      case comment(String)
-      case variationStart
-      case variationEnd
-      case result(String)
+    // MARK: - Internal
+
+    static func game(
+      from moveText: String,
+      startingPosition: Position
+    ) throws(PGNParser.Error) -> Game {
+      let moveTextTokens = try MoveTextParser.tokenize(
+        moveText: moveText
+      )
+
+      return try MoveTextParser.parse(tokens: moveTextTokens, startingWith: startingPosition)
     }
 
-    private enum TokenType {
-      case none
-      case number
-      case san
-      case annotation
-      case variationStart
-      case variationEnd
-      case result
-      case comment
+    // MARK: - Private
 
-      static func isNumber(_ character: Character) -> Bool {
-        character.isWholeNumber || character == "."
-      }
-
-      static func isSAN(_ character: Character) -> Bool {
-        character.isLetter || character.isWholeNumber || ["x", "+", "#", "=", "O", "o", "0", "-"].contains(character)
-      }
-
-      static func isAnnotation(_ character: Character) -> Bool {
-        character.isWholeNumber || ["$", "?", "!", "□"].contains(character)
-      }
-
-      static func isVariationStart(_ character: Character) -> Bool {
-        character == "("
-      }
-
-      static func isVariationEnd(_ character: Character) -> Bool {
-        character == ")"
-      }
-
-      static func isResult(_ character: Character) -> Bool {
-        ["1", "2", "/", "-", "0", "*"].contains(character)
-      }
-
-      static func isComment(_ character: Character) -> Bool {
-        !character.isWhitespace
-      }
-
-      func isValid(character: Character) -> Bool {
-        switch self {
-        case .none: false
-        case .number: Self.isNumber(character)
-        case .san: Self.isSAN(character)
-        case .annotation: Self.isAnnotation(character)
-        case .variationStart: Self.isVariationStart(character)
-        case .variationEnd: Self.isVariationEnd(character)
-        case .result: Self.isResult(character)
-        case .comment: Self.isComment(character)
-        }
-      }
-
-      static func match(character: Character) -> Self {
-        if isNumber(character) {
-          .number
-        } else if isSAN(character) {
-          .san
-        } else if isAnnotation(character) {
-          .annotation
-        } else if isVariationStart(character) {
-          .variationStart
-        } else if isVariationEnd(character) {
-          .variationEnd
-        } else if isResult(character) {
-          .result
-        } else if isComment(character) {
-          .comment
-        } else {
-          .none
-        }
-      }
-
-      func convert(_ text: String) -> MoveTextParser.Token? {
-        switch self {
-        case .none: nil
-        case .number: .number(text.trimmingCharacters(in: .whitespaces))
-        case .san: .san(text.trimmingCharacters(in: .whitespaces))
-        case .annotation: .annotation(text.trimmingCharacters(in: .whitespaces))
-        case .comment: .comment(text.trimmingCharacters(in: .whitespaces))
-        case .variationStart: .variationStart
-        case .variationEnd: .variationEnd
-        case .result: .result(text.trimmingCharacters(in: .whitespaces))
-        }
-      }
-
-    }
-
-    static func tokenize(moveText: String) throws(PGNParser.Error) -> [Token] {
+    private static func tokenize(moveText: String) throws(PGNParser.Error) -> [Token] {
       let inlineMoveText = moveText.components(separatedBy: .newlines).joined(separator: "")
       var iterator = inlineMoveText.makeIterator()
 
@@ -144,7 +63,7 @@ extension PGNParser {
       return tokens
     }
 
-    static func parse(
+    private static func parse(
       tokens: [Token],
       startingWith position: Position
     ) throws(PGNParser.Error) -> Game {
@@ -247,5 +166,103 @@ extension PGNParser {
       }
     }
 
+  }
+}
+
+// MARK: - Tokens
+private extension PGNParser.MoveTextParser {
+  private enum Token: Equatable {
+    case number(String)
+    case san(String)
+    case annotation(String)
+    case comment(String)
+    case variationStart
+    case variationEnd
+    case result(String)
+  }
+
+  private enum TokenType {
+    case none
+    case number
+    case san
+    case annotation
+    case variationStart
+    case variationEnd
+    case result
+    case comment
+
+    static func isNumber(_ character: Character) -> Bool {
+      character.isWholeNumber || character == "."
+    }
+
+    static func isSAN(_ character: Character) -> Bool {
+      character.isLetter || character.isWholeNumber || ["x", "+", "#", "=", "O", "o", "0", "-"].contains(character)
+    }
+
+    static func isAnnotation(_ character: Character) -> Bool {
+      character.isWholeNumber || ["$", "?", "!", "□"].contains(character)
+    }
+
+    static func isVariationStart(_ character: Character) -> Bool {
+      character == "("
+    }
+
+    static func isVariationEnd(_ character: Character) -> Bool {
+      character == ")"
+    }
+
+    static func isResult(_ character: Character) -> Bool {
+      ["1", "2", "/", "-", "0", "*"].contains(character)
+    }
+
+    static func isComment(_ character: Character) -> Bool {
+      !character.isWhitespace
+    }
+
+    func isValid(character: Character) -> Bool {
+      switch self {
+      case .none: false
+      case .number: Self.isNumber(character)
+      case .san: Self.isSAN(character)
+      case .annotation: Self.isAnnotation(character)
+      case .variationStart: Self.isVariationStart(character)
+      case .variationEnd: Self.isVariationEnd(character)
+      case .result: Self.isResult(character)
+      case .comment: Self.isComment(character)
+      }
+    }
+
+    static func match(character: Character) -> Self {
+      if isNumber(character) {
+        .number
+      } else if isSAN(character) {
+        .san
+      } else if isAnnotation(character) {
+        .annotation
+      } else if isVariationStart(character) {
+        .variationStart
+      } else if isVariationEnd(character) {
+        .variationEnd
+      } else if isResult(character) {
+        .result
+      } else if isComment(character) {
+        .comment
+      } else {
+        .none
+      }
+    }
+
+    func convert(_ text: String) -> Token? {
+      switch self {
+      case .none: nil
+      case .number: .number(text.trimmingCharacters(in: .whitespaces))
+      case .san: .san(text.trimmingCharacters(in: .whitespaces))
+      case .annotation: .annotation(text.trimmingCharacters(in: .whitespaces))
+      case .comment: .comment(text.trimmingCharacters(in: .whitespaces))
+      case .variationStart: .variationStart
+      case .variationEnd: .variationEnd
+      case .result: .result(text.trimmingCharacters(in: .whitespaces))
+      }
+    }
   }
 }

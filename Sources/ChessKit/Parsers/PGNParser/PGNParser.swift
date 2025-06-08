@@ -64,13 +64,14 @@ public enum PGNParser {
 
     // parse movetext
 
-    let moveTextTokens = try MoveTextParser.tokenize(
-      moveText: moveTextLines.joined(separator: " ")
+    var game = try MoveTextParser.game(
+      from: moveTextLines.joined(separator: " "),
+      startingPosition: startingPosition
     )
 
-    var game = try MoveTextParser.parse(tokens: moveTextTokens, startingWith: startingPosition)
-    game.tags = tags
+    // return game with tags + movetext
 
+    game.tags = tags
     return game
   }
 
