@@ -94,7 +94,7 @@ extension PGNParser {
       }
 
       guard
-        let m = try? NSRegularExpression(pattern: Pattern.singleMove)
+        let m = try? NSRegularExpression(pattern: Pattern.annotatedMove)
           .matches(in: move, range: range)
           .map({ NSString(string: move).substring(with: $0.range) }),
         m.count >= 1 && m.count <= 2
@@ -103,7 +103,7 @@ extension PGNParser {
       }
 
       let whiteMove =
-        try? NSRegularExpression(pattern: SANParser.Pattern.full)
+        try? NSRegularExpression(pattern: PGNParser.Pattern.fullMove)
         .matches(in: m[0], range: NSRange(0..<m[0].utf16.count))
         .compactMap {
           NSString(string: m[0]).substring(with: $0.range)
@@ -134,7 +134,7 @@ extension PGNParser {
 
       if m.count == 2 {
         blackMove =
-          try? NSRegularExpression(pattern: SANParser.Pattern.full)
+          try? NSRegularExpression(pattern: PGNParser.Pattern.fullMove)
           .matches(in: m[1], range: NSRange(0..<m[1].utf16.count))
           .compactMap {
             NSString(string: m[1]).substring(with: $0.range)
@@ -267,9 +267,10 @@ extension PGNParser {
     static let tagPair = #"\[([^"]+?)\s"([^"]+)"\]"#
 
     // move text
-    static let moveText = #"\d{1,}\.{1,3}\s?(([Oo0]-[Oo0](-[Oo0])?|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](\=[QRBN])?[+#]?)([\?!]{1,2})?(\s?\$\d)?(\s?\{.+?\})?(\s(1-0|0-1|1\/2-1\/2|\*)\s*$)?\s?){1,2}"#
+    static let moveText = "\\d{1,}\\.{1,3}\\s?(\(fullMove)([\\?!]{1,2})?(\\s?\\$\\d)?(\\s?\\{.+?\\})?(\\s(1-0|0-1|1\\/2-1\\/2|\\*)\\s*$)?\\s?){1,2}"
     static let moveNumber = #"^\d{1,}"#
-    static let singleMove = "\(SANParser.Pattern.full)(\\s?\(annotation))?(\\s?\(comment))?"
+    static let fullMove = #"([Oo0]-[Oo0](-[Oo0])?|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](\=[QRBN])?[+#]?)"#
+    static let annotatedMove = "\(PGNParser.Pattern.fullMove)(\\s?\(annotation))?(\\s?\(comment))?"
     static let result = #"(\s(1-0|0-1|1\/2-1\/2|\*)\s?){1}$"#
 
     // move pair components

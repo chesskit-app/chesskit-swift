@@ -134,15 +134,25 @@ final class GameTests {
       .init(number: 2, color: .white, variation: 0),
       f5Index
     ]
-
     #expect(f5History == expectedF5History)
+
+    let emptyHistory = game.moves.history(for: .minimum)
+    #expect(emptyHistory == [.init(number: 1, color: .white)])
   }
 
   @Test func moveFuture() {
     let f5Future = game.moves.future(for: f5Index)
     let expectedF5Future = [MoveTree.Index(number: 3, color: .white, variation: 3)]
-
     #expect(f5Future == expectedF5Future)
+
+    let fullFuture = game.moves.future(for: .minimum)
+    let expectedFullFuture = [
+      MoveTree.Index(number: 1, color: .black, variation: 0),
+      MoveTree.Index(number: 2, color: .white, variation: 0),
+      MoveTree.Index(number: 2, color: .black, variation: 0),
+      MoveTree.Index(number: 3, color: .white, variation: 0)
+    ]
+    #expect(fullFuture == expectedFullFuture)
   }
 
   @Test func moveFullVariation() {
@@ -154,6 +164,14 @@ final class GameTests {
 
   @Test func moveTreeEmptyPath() {
     #expect(game.moves.path(from: nc3Index, to: nc3Index).isEmpty)
+  }
+
+  @Test func moveTreeInvalidPath() {
+    #expect(
+      game.moves
+        .path(from: nc3Index, to: .init(number: 100, color: .white))
+        .isEmpty
+    )
   }
 
   @Test func moveTreeSimplePath() {

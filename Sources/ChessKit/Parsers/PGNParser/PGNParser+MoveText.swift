@@ -114,7 +114,7 @@ extension PGNParser {
           }
         case let .annotation(annotation):
           if let rawValue = firstMatch(
-            in: annotation, for: #"^\$\d{2,3}$"#
+            in: annotation, for: .numericPosition
           ), let positionAssessment = Position.Assessment(rawValue: rawValue) {
             game.annotate(
               positionAt: currentMoveIndex,
@@ -125,9 +125,9 @@ extension PGNParser {
 
           var moveAssessment: Move.Assessment?
 
-          if let notation = firstMatch(in: annotation, for: #"^[!?□]{1,2}$"#) {
+          if let notation = firstMatch(in: annotation, for: .traditional) {
             moveAssessment = .init(notation: notation)
-          } else if let rawValue = firstMatch(in: annotation, for: #"^\$\d$"#) {
+          } else if let rawValue = firstMatch(in: annotation, for: .numericMove) {
             moveAssessment = .init(rawValue: rawValue)
           } else {
             throw .invalidAnnotation(annotation)
@@ -155,8 +155,8 @@ extension PGNParser {
       return game
     }
 
-    private static func firstMatch(in string: String, for pattern: String) -> String? {
-      let matches = try? NSRegularExpression(pattern: pattern)
+    private static func firstMatch(in string: String, for pattern: Pattern) -> String? {
+      let matches = try? NSRegularExpression(pattern: pattern.rawValue)
         .matches(in: string, range: NSRange(0..<string.utf16.count))
 
       if let match = matches?.first {
@@ -164,6 +164,15 @@ extension PGNParser {
       } else {
         return nil
       }
+    }
+
+    private enum Pattern: String {
+      /// Numeric Annotation Glyphs for moves, e.g. `$1`, `$2`, etc.
+      case numericMove = #"^\$\d$"#
+      /// Numeric Annotation Glyphs for positions, e.g. `$10`, `$11`, etc.
+      case numericPosition = #"^\$\d{2,3}$"#
+      /// Traditional suffix annotations, e.g. `!!`, `?!`, `□`, etc.
+      case traditional = #"^[!?□]{1,2}$"#
     }
 
   }

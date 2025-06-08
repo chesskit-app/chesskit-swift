@@ -7,8 +7,7 @@ extension SANParser {
 
   /// Contains useful regex strings for SAN parsing.
   struct Pattern {
-    static let full = #"(([Oo0]-[Oo0](-[Oo0])?|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](\=[QRBN])?[+#]?))"#
-    static let strictFull = "^\(full)$"
+    static let full = #"^([Oo0]-[Oo0](-[Oo0])?|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](\=[QRBN])?[+#]?)$"#
 
     // piece kinds
     static let pawnFile = #"^[a-h]"#

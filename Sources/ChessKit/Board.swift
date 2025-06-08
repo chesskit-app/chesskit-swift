@@ -284,29 +284,34 @@ public struct Board: Sendable {
   /// to a given square, this method determines whether to
   /// disambiguate them by starting file, rank, or square.
   private func disambiguate(move: Move, in set: PieceSet) -> Move {
-    let movePiece = move.piece
-
     let disambiguationCandidates =
-      set.get(movePiece.color)  // same color as move piece
-      & set.get(movePiece.kind)  // same kind as move piece
+      set.get(move.piece.color)  // same color as move piece
+      & set.get(move.piece.kind)  // same kind as move piece
       & ~(set.pawns | set.kings)  // not pawns & kings
       & ~move.start.bb  // not piece making move
 
-    let ambiguousPieces = disambiguationCandidates.squares.filter { square in
-      guard let piece = set.get(square) else { return false }
-      return legalMoves(for: piece, in: set) & move.end.bb != 0
-    }
+    let ambiguousPieces = disambiguationCandidates.squares
+      .compactMap { set.get($0) }
+      .filter { legalMoves(for: $0, in: set) & move.end.bb != 0 }
 
     if ambiguousPieces.isEmpty {
       return move
     } else {
+      let fileConflict = ambiguousPieces.contains {
+        $0.square.file == move.start.file
+      }
+      let rankConflict = ambiguousPieces.contains {
+        $0.square.rank == move.start.rank
+      }
+
       var newMove = move
 
-      if ambiguousPieces.allSatisfy({ $0.file != move.start.file }) {
+      switch (fileConflict, rankConflict) {
+      case (false, _):
         newMove.disambiguation = .byFile(move.start.file)
-      } else if ambiguousPieces.allSatisfy({ $0.rank != move.start.rank }) {
+      case (true, false):
         newMove.disambiguation = .byRank(move.start.rank)
-      } else {
+      case (true, true):
         newMove.disambiguation = .bySquare(move.start)
       }
 

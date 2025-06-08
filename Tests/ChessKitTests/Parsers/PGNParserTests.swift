@@ -8,7 +8,7 @@ import Testing
 
 struct PGNParserTests {
 
-  @Test func emptyPGN() throws {
+  @Test func gameFromEmptyPGN() throws {
     #expect(try PGNParser.parse(game: "") == .init(startingWith: .standard))
   }
 
@@ -17,6 +17,16 @@ struct PGNParserTests {
     let gameFromPGN = try Game(pgn: Game.fischerSpassky)
 
     #expect(game == gameFromPGN)
+  }
+
+  @Test func pgnFromGame() {
+    var game = Game()
+    game.make(moves: ["e4", "e5", "Nf3", "Nc6", "Bc4"], from: .minimum)
+    #expect(PGNParser.convert(game: game) == "1. e4 e5 2. Nf3 Nc6 3. Bc4")
+  }
+
+  @Test func pgnFromEmptyGame() {
+    #expect(PGNParser.convert(game: Game()) == "")
   }
 
   // MARK: Tags

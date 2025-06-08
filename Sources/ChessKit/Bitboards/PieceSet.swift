@@ -89,21 +89,35 @@ struct PieceSet: Hashable, Sendable {
   }
 
   func get(_ square: Square) -> Piece? {
-    if k & square.bb != 0 { return .init(.king, color: .black, square: square) }
-    if q & square.bb != 0 { return .init(.queen, color: .black, square: square) }
-    if r & square.bb != 0 { return .init(.rook, color: .black, square: square) }
-    if b & square.bb != 0 { return .init(.bishop, color: .black, square: square) }
-    if n & square.bb != 0 { return .init(.knight, color: .black, square: square) }
-    if p & square.bb != 0 { return .init(.pawn, color: .black, square: square) }
+    if k & square.bb != 0 {
+      .init(.king, color: .black, square: square)
+    } else if q & square.bb != 0 {
+      .init(.queen, color: .black, square: square)
+    } else if r & square.bb != 0 {
+      .init(.rook, color: .black, square: square)
+    } else if b & square.bb != 0 {
+      .init(.bishop, color: .black, square: square)
+    } else if n & square.bb != 0 {
+      .init(.knight, color: .black, square: square)
+    } else if p & square.bb != 0 {
+      .init(.pawn, color: .black, square: square)
+    }
 
-    if K & square.bb != 0 { return .init(.king, color: .white, square: square) }
-    if Q & square.bb != 0 { return .init(.queen, color: .white, square: square) }
-    if R & square.bb != 0 { return .init(.rook, color: .white, square: square) }
-    if B & square.bb != 0 { return .init(.bishop, color: .white, square: square) }
-    if N & square.bb != 0 { return .init(.knight, color: .white, square: square) }
-    if P & square.bb != 0 { return .init(.pawn, color: .white, square: square) }
-
-    return nil
+    else if K & square.bb != 0 {
+      .init(.king, color: .white, square: square)
+    } else if Q & square.bb != 0 {
+      .init(.queen, color: .white, square: square)
+    } else if R & square.bb != 0 {
+      .init(.rook, color: .white, square: square)
+    } else if B & square.bb != 0 {
+      .init(.bishop, color: .white, square: square)
+    } else if N & square.bb != 0 {
+      .init(.knight, color: .white, square: square)
+    } else if P & square.bb != 0 {
+      .init(.pawn, color: .white, square: square)
+    } else {
+      nil
+    }
   }
 
   mutating func add(_ piece: Piece) {

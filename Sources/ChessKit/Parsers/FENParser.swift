@@ -28,15 +28,15 @@ public enum FENParser {
   ///     or `nil` if the FEN is invalid.
   ///
   public static func parse(fen: String) -> Position? {
-    let separatedFen = fen.components(separatedBy: .whitespaces)
+    let sections = fen.components(separatedBy: .whitespaces)
 
-    guard separatedFen.count == FENParser.componentCount else {
+    guard sections.count == FENParser.componentCount else {
       return nil
     }
 
     // piece placement
 
-    let piecePlacementByRank = separatedFen[0]
+    let piecePlacementByRank = sections[0]
       .components(separatedBy: "/")
       .enumerated()
 
@@ -62,12 +62,12 @@ public enum FENParser {
 
     // side to move
 
-    let sideToMove = Piece.Color(rawValue: separatedFen[1]) ?? .white
+    let sideToMove = Piece.Color(rawValue: sections[1]) ?? .white
 
     // castling ability
 
     var legalCastlings: [Castling] = []
-    let castlingAbility = separatedFen[2].map(String.init)
+    let castlingAbility = sections[2].map(String.init)
 
     if castlingAbility.contains("k") { legalCastlings.append(.bK) }
     if castlingAbility.contains("K") { legalCastlings.append(.wK) }
@@ -78,7 +78,7 @@ public enum FENParser {
 
     var enPassant: EnPassant?
 
-    let ep = separatedFen[3]
+    let ep = sections[3]
 
     if ep != "-" && ep.count == 2 {
       let epFile = Square.File(rawValue: ep.map(String.init)[0])
@@ -95,7 +95,7 @@ public enum FENParser {
 
     var clock = Clock()
 
-    if let halfmove = Int(separatedFen[4]), let fullmove = Int(separatedFen[5]) {
+    if let halfmove = Int(sections[4]), let fullmove = Int(sections[5]) {
       clock = Clock(halfmoves: halfmove, fullmoves: fullmove)
     }
 

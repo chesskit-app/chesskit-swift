@@ -214,14 +214,7 @@ public struct MoveTree: Hashable, Sendable {
     } else {
       // lowest common ancestor
       guard
-        let lca = zip(startHistory, endHistory)
-          .filter({ $0 == $1 })
-          .last?.0
-      else {
-        return []
-      }
-
-      guard
+        let lca = zip(startHistory, endHistory).filter({ $0 == $1 }).last?.0,
         let startLCAIndex = startHistory.firstIndex(where: { $0 == lca }),
         let endLCAIndex = endHistory.firstIndex(where: { $0 == lca })
       else {
@@ -328,11 +321,11 @@ public struct MoveTree: Hashable, Sendable {
       result.append(.positionAssessment(node.positionAssessment))
     }
 
-    var currentNode = node.next
+    var iterator = node.next?.makeIterator()
     var previousIndex = node.index
 
-    while currentNode != nil {
-      guard let currentIndex = currentNode?.index else { break }
+    while let currentNode = iterator?.next() {
+      let currentIndex = currentNode.index
 
       switch (previousIndex.number, currentIndex.number) {
       case let (x, y) where x < y:
@@ -341,25 +334,20 @@ public struct MoveTree: Hashable, Sendable {
         break
       }
 
-      if let move = currentNode?.move {
-        result.append(.move(move, currentIndex))
-      }
+      result.append(.move(currentNode.move, currentIndex))
 
-      if let positionAssessment = currentNode?.positionAssessment,
-        positionAssessment != .null
-      {
-        result.append(.positionAssessment(positionAssessment))
+      if currentNode.positionAssessment != .null {
+        result.append(.positionAssessment(currentNode.positionAssessment))
       }
 
       // recursively generate PGN for all child nodes
-      for child in currentNode?.previous?.children ?? [] {
+      currentNode.previous?.children.forEach { child in
         result.append(.variationStart)
         result.append(contentsOf: pgn(for: child))
         result.append(.variationEnd)
       }
 
       previousIndex = currentIndex
-      currentNode = currentNode?.next
     }
 
     return result
@@ -385,7 +373,7 @@ extension MoveTree: Equatable {
 extension MoveTree {
 
   /// Object that represents a node in the move tree.
-  class Node: Hashable, @unchecked Sendable {
+  class Node: Hashable, @unchecked Sendable, Sequence {
 
     /// The move for this node.
     var move: Move
@@ -418,6 +406,24 @@ extension MoveTree {
       hasher.combine(children)
     }
 
+    // MARK: Sequence
+    func makeIterator() -> NodeIterator {
+      .init(start: self)
+    }
+
+  }
+
+  struct NodeIterator: IteratorProtocol {
+    private var current: Node?
+
+    init(start: Node?) {
+      current = start
+    }
+
+    mutating func next() -> Node? {
+      defer { current = current?.next }
+      return current
+    }
   }
 
 }
