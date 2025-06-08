@@ -180,7 +180,6 @@ extension PGNParser {
       var variationStack = Stack<MoveTree.Index>()
 
       while let token = iterator.next() {
-        print("\(token) ; \(currentMoveIndex)")
         currentToken = token
 
         switch currentToken {
@@ -207,7 +206,7 @@ extension PGNParser {
 
           var moveAssessment: Move.Assessment?
 
-          if let notation = firstMatch(in: annotation, for: #"^[!?□]+$"#) {
+          if let notation = firstMatch(in: annotation, for: #"^[!?□]{1,2}$"#) {
             moveAssessment = .init(notation: notation)
           } else if let rawValue = firstMatch(in: annotation, for: #"^\$\d$"#) {
             moveAssessment = .init(rawValue: rawValue)

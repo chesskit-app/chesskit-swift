@@ -15,6 +15,15 @@ extension Game {
     [White "Fischer, Robert J."]
     [Black "Spassky, Boris V."]
     [Result "1/2-1/2"]
+    [Annotator "Mr. Annotator"]
+    [PlyCount "85"]
+    [TimeControl "?"]
+    [Time "??:??:??"]
+    [Termination "normal"]
+    [Mode "OTB"]
+    [FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"]
+    [SetUp "1"]
+    [CustomTag "test"]
 
     1. e4 $4 e5 $3 2. Nf3 Nc6 3. Bb5 a6 {This opening is called the Ruy Lopez.}
     4. Ba4 {test comment} Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 $135 8. c3 O-O 9. h3 Nb8 10. d4 Nbd7

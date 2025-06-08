@@ -116,13 +116,13 @@ extension PGNParser {
         case "black": gameTags.black = value
         case "result": gameTags.result = value
         case "annotator": gameTags.annotator = value
-        case "plyCount": gameTags.plyCount = value
-        case "timeControl": gameTags.timeControl = value
+        case "plycount": gameTags.plyCount = value
+        case "timecontrol": gameTags.timeControl = value
         case "time": gameTags.time = value
         case "termination": gameTags.termination = value
         case "mode": gameTags.mode = value
         case "fen": gameTags.fen = value
-        case "setUp": gameTags.setUp = value
+        case "setup": gameTags.setUp = value
         default: gameTags.other[key] = value
         }
       }

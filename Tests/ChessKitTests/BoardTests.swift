@@ -6,6 +6,7 @@
 @testable import ChessKit
 import Testing
 
+@Suite(.serialized)
 struct BoardTests {
 
   @Test func enPassant() {
