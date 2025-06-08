@@ -95,6 +95,7 @@ struct MoveTests {
     #expect(Move.Assessment.singular.notation == "")
     #expect(Move.Assessment.worst.notation == "")
 
+    #expect(Move.Assessment(notation: "") == .null)
     #expect(Move.Assessment(notation: "!") == .good)
     #expect(Move.Assessment(notation: "?") == .mistake)
     #expect(Move.Assessment(notation: "!!") == .brilliant)

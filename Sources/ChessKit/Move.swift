@@ -136,6 +136,7 @@ extension Move {
 
     public init?(notation: String) {
       switch notation {
+      case "": self = .null
       case "!": self = .good
       case "?": self = .mistake
       case "!!": self = .brilliant
