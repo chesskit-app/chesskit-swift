@@ -3,6 +3,7 @@
 //  ChessKit
 //
 
+/// Represents a square on the chess board.
 public enum Square: Int, CaseIterable, Sendable {
   /// The file on the chess board, from a to h.
   public enum File: String, CaseIterable, Sendable {

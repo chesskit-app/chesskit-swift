@@ -6,7 +6,6 @@
 @testable import ChessKit
 import Testing
 
-@Suite(.serialized)
 struct PGNParserTests {
 
   @Test func emptyPGN() throws {

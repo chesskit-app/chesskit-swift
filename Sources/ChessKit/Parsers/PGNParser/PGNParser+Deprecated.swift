@@ -215,8 +215,8 @@ extension PGNParser {
 
       if let blackMove = move.blackMove {
         black = SANParser.parse(move: blackMove.san, in: updatedPosition)
-        black?.assessment = move.blackMove?.annotation ?? .null
-        black?.comment = move.blackMove?.comment ?? ""
+        black?.assessment = blackMove.annotation
+        black?.comment = blackMove.comment
       }
 
       if let black {

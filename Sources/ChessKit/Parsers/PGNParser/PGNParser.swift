@@ -15,7 +15,7 @@ public enum PGNParser {
   ///
   /// - parameter pgn: The PGN string of a chess game.
   /// - returns: A Swift representation of the chess game.
-  /// - throws: A ``PGNParser.Error`` indicating the first error
+  /// - throws: ``Error`` indicating the first error
   /// encountered while parsing `pgn`.
   ///
   /// The parsing implementation is based on the [PGN Standard](https://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm)'s
