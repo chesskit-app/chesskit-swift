@@ -3,6 +3,7 @@
 //  ChessKit
 //
 
+/// Represents a move on a chess board.
 public struct Move: Hashable, Sendable {
 
   /// The result of the move.
@@ -99,6 +100,7 @@ public struct Move: Hashable, Sendable {
 
 }
 
+// MARK: - Assessment
 extension Move {
 
   /// Single move assessments.
@@ -132,6 +134,27 @@ extension Move {
       case .worst: ""
       }
     }
+
+    public init?(notation: String) {
+      switch notation {
+      case "": self = .null
+      case "!": self = .good
+      case "?": self = .mistake
+      case "!!": self = .brilliant
+      case "??": self = .blunder
+      case "!?": self = .interesting
+      case "?!": self = .dubious
+      case "□": self = .forced
+      default: return nil
+      }
+    }
   }
 
+}
+
+// MARK: - CustomStringConvertible
+extension Move: CustomStringConvertible {
+  public var description: String {
+    san
+  }
 }

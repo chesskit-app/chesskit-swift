@@ -56,7 +56,7 @@ public struct MoveTree: Hashable, Sendable {
       self.root = newNode
 
       dictionary = [index: newNode]
-        
+
       if index.variation == Index.mainVariation {
         lastMainVariationIndex = index
       }
@@ -214,14 +214,7 @@ public struct MoveTree: Hashable, Sendable {
     } else {
       // lowest common ancestor
       guard
-        let lca = zip(startHistory, endHistory)
-          .filter({ $0 == $1 })
-          .last?.0
-      else {
-        return []
-      }
-
-      guard
+        let lca = zip(startHistory, endHistory).filter({ $0 == $1 }).last?.0,
         let startLCAIndex = startHistory.firstIndex(where: { $0 == lca }),
         let endLCAIndex = endHistory.firstIndex(where: { $0 == lca })
       else {
@@ -258,7 +251,7 @@ public struct MoveTree: Hashable, Sendable {
   /// Annotates the move at the provided index.
   ///
   /// - parameter index: The index of the move to annotate.
-  /// - parameter assessment: The move to annotate the move with.
+  /// - parameter assessment: The assessment to annotate the move with.
   /// - parameter comment: The comment to annotate the move with.
   ///
   /// - returns: The move updated with the given annotations.
@@ -276,6 +269,23 @@ public struct MoveTree: Hashable, Sendable {
     return dictionary[index]?.move
   }
 
+  /// Annotates the position at the provided index.
+  ///
+  /// - parameter index: The index of the position to annotate.
+  /// - parameter assessment: The assessment to annotate the position with.
+  ///
+  /// This value is stored in the move tree to generate an accurate
+  /// PGN representation with `MoveTree.pgnRepresentation`.
+  ///
+  public mutating func annotate(
+    positionAt index: Index,
+    assessment: Position.Assessment
+  ) {
+    Self.nodeLock.withLock {
+      dictionary[index]?.positionAssessment = assessment
+    }
+  }
+
   // MARK: - PGN
 
   /// An element for representing the ``MoveTree`` in
@@ -287,6 +297,8 @@ public struct MoveTree: Hashable, Sendable {
     case blackNumber(Int)
     /// e.g. `e4`
     case move(Move, Index)
+    /// e.g. `$10`
+    case positionAssessment(Position.Assessment)
     /// e.g. `(`
     case variationStart
     /// e.g. `)`
@@ -305,12 +317,15 @@ public struct MoveTree: Hashable, Sendable {
     }
 
     result.append(.move(node.move, node.index))
+    if node.positionAssessment != .null {
+      result.append(.positionAssessment(node.positionAssessment))
+    }
 
-    var currentNode = node.next
+    var iterator = node.next?.makeIterator()
     var previousIndex = node.index
 
-    while currentNode != nil {
-      guard let currentIndex = currentNode?.index else { break }
+    while let currentNode = iterator?.next() {
+      let currentIndex = currentNode.index
 
       switch (previousIndex.number, currentIndex.number) {
       case let (x, y) where x < y:
@@ -319,19 +334,20 @@ public struct MoveTree: Hashable, Sendable {
         break
       }
 
-      if let move = currentNode?.move {
-        result.append(.move(move, currentIndex))
+      result.append(.move(currentNode.move, currentIndex))
+
+      if currentNode.positionAssessment != .null {
+        result.append(.positionAssessment(currentNode.positionAssessment))
       }
 
       // recursively generate PGN for all child nodes
-      for child in currentNode?.previous?.children ?? [] {
+      currentNode.previous?.children.forEach { child in
         result.append(.variationStart)
         result.append(contentsOf: pgn(for: child))
         result.append(.variationEnd)
       }
 
       previousIndex = currentIndex
-      currentNode = currentNode?.next
     }
 
     return result
@@ -354,15 +370,18 @@ extension MoveTree: Equatable {
 
 }
 
+// MARK: - Node
 extension MoveTree {
 
   /// Object that represents a node in the move tree.
-  class Node: Hashable, @unchecked Sendable {
+  class Node: Hashable, @unchecked Sendable, Sequence {
 
     /// The move for this node.
     var move: Move
+    /// The position assessment for this node.
+    var positionAssessment = Position.Assessment.null
     /// The index for this node.
-    fileprivate(set) var index: Index = .minimum
+    fileprivate(set) var index = Index.minimum
     /// The previous node.
     fileprivate(set) var previous: Node?
     /// The next node.
@@ -388,6 +407,24 @@ extension MoveTree {
       hasher.combine(children)
     }
 
+    // MARK: Sequence
+    func makeIterator() -> NodeIterator {
+      .init(start: self)
+    }
+
+  }
+
+  struct NodeIterator: IteratorProtocol {
+    private var current: Node?
+
+    init(start: Node?) {
+      current = start
+    }
+
+    mutating func next() -> Node? {
+      defer { current = current?.next }
+      return current
+    }
   }
 
 }

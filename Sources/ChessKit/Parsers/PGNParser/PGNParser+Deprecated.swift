@@ -1,5 +1,5 @@
 //
-//  PGNParser.swift
+//  PGNParser+Deprecated.swift
 //  ChessKit
 //
 
@@ -7,7 +7,7 @@ import Foundation
 
 /// Parses and converts the Portable Game Notation (PGN)
 /// of a chess game.
-public enum PGNParser {
+extension PGNParser {
 
   /// Contains the contents of a single parsed move pair.
   private struct ParsedMove {
@@ -21,22 +21,20 @@ public enum PGNParser {
     let result: String?
   }
 
-  // MARK: - Public
+  // MARK: Public
 
   /// Parses a PGN string and returns a game.
   ///
   /// - parameter pgn: The PGN string of a chess game.
   /// - parameter position: The starting position of the chess game.
   ///     Defaults to the standard position.
-  /// - returns: A Swift representation of the chess game,
-  ///     or `nil` if the PGN is invalid.
+  /// - returns: A Swift representation of the chess game.
   ///
+  @available(*, deprecated, renamed: "parse(game:)")
   public static func parse(
     game pgn: String,
     startingWith position: Position = .standard
   ) -> Game {
-    // ignoring tag pairs for now, movetext only
-
     let processedPGN =
       pgn
       .replacingOccurrences(of: "\n", with: " ")
@@ -58,12 +56,9 @@ public enum PGNParser {
         let matches = try? NSRegularExpression(pattern: Pattern.tagPair)
           .matches(in: tag, range: tagRange)
 
-        if let matches,
-          matches.count >= 1,
-          matches[0].numberOfRanges >= 3
-        {
-          let key = matches[0].range(at: 1)
-          let value = matches[0].range(at: 2)
+        if let match = matches?.first, match.numberOfRanges >= 3 {
+          let key = match.range(at: 1)
+          let value = match.range(at: 2)
 
           return (
             NSString(string: tag).substring(with: key)
@@ -99,7 +94,7 @@ public enum PGNParser {
       }
 
       guard
-        let m = try? NSRegularExpression(pattern: Pattern.singleMove)
+        let m = try? NSRegularExpression(pattern: Pattern.annotatedMove)
           .matches(in: move, range: range)
           .map({ NSString(string: move).substring(with: $0.range) }),
         m.count >= 1 && m.count <= 2
@@ -108,7 +103,7 @@ public enum PGNParser {
       }
 
       let whiteMove =
-        try? NSRegularExpression(pattern: SANParser.Pattern.full)
+        try? NSRegularExpression(pattern: PGNParser.Pattern.fullMove)
         .matches(in: m[0], range: NSRange(0..<m[0].utf16.count))
         .compactMap {
           NSString(string: m[0]).substring(with: $0.range)
@@ -139,7 +134,7 @@ public enum PGNParser {
 
       if m.count == 2 {
         blackMove =
-          try? NSRegularExpression(pattern: SANParser.Pattern.full)
+          try? NSRegularExpression(pattern: PGNParser.Pattern.fullMove)
           .matches(in: m[1], range: NSRange(0..<m[1].utf16.count))
           .compactMap {
             NSString(string: m[1]).substring(with: $0.range)
@@ -220,8 +215,8 @@ public enum PGNParser {
 
       if let blackMove = move.blackMove {
         black = SANParser.parse(move: blackMove.san, in: updatedPosition)
-        black?.assessment = move.blackMove?.annotation ?? .null
-        black?.comment = move.blackMove?.comment ?? ""
+        black?.assessment = blackMove.annotation
+        black?.comment = blackMove.comment
       }
 
       if let black {
@@ -236,81 +231,7 @@ public enum PGNParser {
     return game
   }
 
-  /// Converts a ``Game`` object into a PGN string.
-  ///
-  /// - parameter game: The chess game to convert.
-  /// - returns: A string containing the PGN of `game`.
-  ///
-  public static func convert(game: Game) -> String {
-    var pgn = ""
-
-    // tags
-
-    [
-      game.tags.$event,
-      game.tags.$site,
-      game.tags.$date,
-      game.tags.$round,
-      game.tags.$white,
-      game.tags.$black,
-      game.tags.$result,
-      game.tags.$annotator,
-      game.tags.$plyCount,
-      game.tags.$timeControl,
-      game.tags.$time,
-      game.tags.$termination,
-      game.tags.$mode,
-      game.tags.$fen,
-      game.tags.$setUp
-    ]
-    .map(\.pgn)
-    .filter { !$0.isEmpty }
-    .forEach { pgn += $0 + "\n" }
-
-    game.tags.other.sorted(by: <).forEach { key, value in
-      pgn += "[\(key) \"\(value)\"]\n"
-    }
-
-    if !pgn.isEmpty {
-      pgn += "\n"  // extra line between tags and movetext
-    }
-
-    // movetext
-
-    for element in game.moves.pgnRepresentation {
-      switch element {
-      case .whiteNumber(let number):
-        pgn += "\(number). "
-      case .blackNumber(let number):
-        pgn += "\(number)... "
-      case let .move(move, _):
-        pgn += movePGN(for: move)
-      case .variationStart:
-        pgn += "("
-      case .variationEnd:
-        pgn = pgn.trimmingCharacters(in: .whitespaces)
-        pgn += ") "
-      }
-    }
-
-    return pgn.trimmingCharacters(in: .whitespaces)
-  }
-
-  private static func movePGN(for move: Move) -> String {
-    var result = ""
-
-    result += "\(move.san) "
-
-    if move.assessment != .null {
-      result += "\(move.assessment.rawValue) "
-    }
-
-    if !move.comment.isEmpty {
-      result += "{\(move.comment)} "
-    }
-
-    return result
-  }
+  // MARK: Private
 
   private static func parsed(tags: [String: String]) -> Game.Tags {
     var gameTags = Game.Tags()
@@ -325,18 +246,36 @@ public enum PGNParser {
       case "black": gameTags.black = value
       case "result": gameTags.result = value
       case "annotator": gameTags.annotator = value
-      case "plyCount": gameTags.plyCount = value
-      case "timeControl": gameTags.timeControl = value
+      case "plycount": gameTags.plyCount = value
+      case "timecontrol": gameTags.timeControl = value
       case "time": gameTags.time = value
       case "termination": gameTags.termination = value
       case "mode": gameTags.mode = value
       case "fen": gameTags.fen = value
-      case "setUp": gameTags.setUp = value
+      case "setup": gameTags.setUp = value
       default: gameTags.other[key] = value
       }
     }
 
     return gameTags
+  }
+
+  /// Contains useful regex strings for PGN parsing.
+  private struct Pattern {
+    // tag pair components
+    static let tags = #"\[[^\]]+\]"#
+    static let tagPair = #"\[([^"]+?)\s"([^"]+)"\]"#
+
+    // move text
+    static let moveText = "\\d{1,}\\.{1,3}\\s?(\(fullMove)([\\?!]{1,2})?(\\s?\\$\\d)?(\\s?\\{.+?\\})?(\\s(1-0|0-1|1\\/2-1\\/2|\\*)\\s*$)?\\s?){1,2}"
+    static let moveNumber = #"^\d{1,}"#
+    static let fullMove = #"([Oo0]-[Oo0](-[Oo0])?|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](\=[QRBN])?[+#]?)"#
+    static let annotatedMove = "\(PGNParser.Pattern.fullMove)(\\s?\(annotation))?(\\s?\(comment))?"
+    static let result = #"(\s(1-0|0-1|1\/2-1\/2|\*)\s?){1}$"#
+
+    // move pair components
+    static let annotation = #"\$\d"#
+    static let comment = #"\{.+?\}"#
   }
 
 }

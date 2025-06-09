@@ -7,6 +7,8 @@
 /// of a chess move.
 public enum SANParser {
 
+  // MARK: Public
+
   /// Parses a SAN string and returns a move.
   ///
   /// - parameter san: The SAN string of a move.
@@ -16,6 +18,7 @@ public enum SANParser {
   ///
   /// - note: Make sure the provided `position` has the correct `sideToMove`
   /// set or the parsing may fail due to invalid moves.
+  ///
   public static func parse(
     move san: String,
     in position: Position
@@ -182,7 +185,7 @@ public enum SANParser {
     }
   }
 
-  // MARK: - Private
+  // MARK: Private
 
   /// Returns whether the provided SAN is valid.
   ///
@@ -190,7 +193,7 @@ public enum SANParser {
   /// - returns: Whether the SAN is valid.
   ///
   private static func isValid(san: String) -> Bool {
-    san.range(of: SANParser.Pattern.strictFull, options: .regularExpression) != nil
+    san.range(of: SANParser.Pattern.full, options: .regularExpression) != nil
   }
 
   /// Returns the target square for a SAN move.

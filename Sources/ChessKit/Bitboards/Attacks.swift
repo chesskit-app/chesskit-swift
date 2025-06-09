@@ -3,6 +3,8 @@
 //  ChessKit
 //
 
+import Foundation
+
 /// Stores pre-generated pseudo-legal attack bitboards
 /// for non-pawn piece types.
 struct Attacks: Sendable {
@@ -20,25 +22,31 @@ struct Attacks: Sendable {
   /// corresponds to `Square.bb`.
   private(set) nonisolated(unsafe) static var knights = [Bitboard: Bitboard]()
 
+  /// Lock to restrict modification of cached attacks
+  /// to ensure `Sendable` conformance.
+  private static let lock = NSLock()
+
   /// Generates and caches attack bitboards for all piece kinds.
   static func create() {
     Piece.Kind.allCases.forEach(create)
   }
 
   private static func create(for kind: Piece.Kind) {
-    switch kind {
-    case .king:
-      createKingAttacks()
-    case .queen:
-      break  // uses (rooks | bishops)
-    case .rook:
-      createMagics(for: .rook)
-    case .bishop:
-      createMagics(for: .bishop)
-    case .knight:
-      createKnightAttacks()
-    case .pawn:
-      break
+    lock.withLock {
+      switch kind {
+      case .king:
+        createKingAttacks()
+      case .queen:
+        break  // uses (rooks | bishops)
+      case .rook:
+        createMagics(for: .rook)
+      case .bishop:
+        createMagics(for: .bishop)
+      case .knight:
+        createKnightAttacks()
+      case .pawn:
+        break
+      }
     }
   }
 

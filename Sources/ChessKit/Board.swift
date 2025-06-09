@@ -7,9 +7,17 @@
 /// events related to changes in position on the board such
 /// as pawn promotions and end results.
 public protocol BoardDelegate: AnyObject, Sendable {
+  /// Called when a pawn reaches the promotion square.
   func willPromote(with move: Move)
+  /// Called after a pawn has promoted to a new `Piece.Kind`.
+  ///
+  /// `move` will have its `promotedPiece` set when this is called.
   func didPromote(with move: Move)
+  /// Called when the king with `color` is placed in check.
   func didCheckKing(ofColor color: Piece.Color)
+  /// Called when the board has reached an end state.
+  ///
+  /// For example, checkmate, stalemate, etc.
   func didEnd(with result: Board.EndResult)
 }
 
@@ -17,7 +25,7 @@ public protocol BoardDelegate: AnyObject, Sendable {
 /// legal moves and game rules.
 public struct Board: Sendable {
 
-  // MARK: - Properties
+  // MARK: Properties
 
   /// The delegate for this board object.
   ///
@@ -39,7 +47,7 @@ public struct Board: Sendable {
     position.pieceSet
   }
 
-  // MARK: - Initializer
+  // MARK: Initializer
 
   /// Initializes a board with the given `position`.
   ///
@@ -53,7 +61,7 @@ public struct Board: Sendable {
     self.positionHashCounts = [:]
   }
 
-  // MARK: - Public
+  // MARK: Public
 
   /// Moves the piece at a given square to a new square.
   ///
@@ -210,7 +218,7 @@ public struct Board: Sendable {
     return process(move: updatedMove)
   }
 
-  // MARK: - Move Processing
+  // MARK: Move Processing
 
   /// Determines end game state and
   /// handles pawn promotion for provided `move`.
@@ -276,29 +284,34 @@ public struct Board: Sendable {
   /// to a given square, this method determines whether to
   /// disambiguate them by starting file, rank, or square.
   private func disambiguate(move: Move, in set: PieceSet) -> Move {
-    let movePiece = move.piece
-
     let disambiguationCandidates =
-      set.get(movePiece.color)  // same color as move piece
-      & set.get(movePiece.kind)  // same kind as move piece
+      set.get(move.piece.color)  // same color as move piece
+      & set.get(move.piece.kind)  // same kind as move piece
       & ~(set.pawns | set.kings)  // not pawns & kings
       & ~move.start.bb  // not piece making move
 
-    let ambiguousPieces = disambiguationCandidates.squares.filter { square in
-      guard let piece = set.get(square) else { return false }
-      return legalMoves(for: piece, in: set) & move.end.bb != 0
-    }
+    let ambiguousPieces = disambiguationCandidates.squares
+      .compactMap { set.get($0) }
+      .filter { legalMoves(for: $0, in: set) & move.end.bb != 0 }
 
     if ambiguousPieces.isEmpty {
       return move
     } else {
+      let fileConflict = ambiguousPieces.contains {
+        $0.square.file == move.start.file
+      }
+      let rankConflict = ambiguousPieces.contains {
+        $0.square.rank == move.start.rank
+      }
+
       var newMove = move
 
-      if ambiguousPieces.allSatisfy({ $0.file != move.start.file }) {
+      switch (fileConflict, rankConflict) {
+      case (false, _):
         newMove.disambiguation = .byFile(move.start.file)
-      } else if ambiguousPieces.allSatisfy({ $0.rank != move.start.rank }) {
+      case (true, false):
         newMove.disambiguation = .byRank(move.start.rank)
-      } else {
+      case (true, true):
         newMove.disambiguation = .bySquare(move.start)
       }
 
@@ -306,7 +319,7 @@ public struct Board: Sendable {
     }
   }
 
-  // MARK: - Move Validation
+  // MARK: Move Validation
 
   /// Determines the legal moves for the given `piece` in `set`.
   private func legalMoves(for piece: Piece, in set: PieceSet) -> Bitboard {
@@ -414,7 +427,7 @@ public struct Board: Sendable {
     return attacks & ~us != 0
   }
 
-  // MARK: - Piece Attacks
+  // MARK: Piece Attacks
 
   /// Non-capturing pawn moves.
   ///
@@ -578,7 +591,6 @@ public struct Board: Sendable {
 }
 
 // MARK: - End Result
-
 extension Board {
   /// Represents an end result of a standard chess game.
   public enum EndResult: Hashable, Sendable {
@@ -598,6 +610,7 @@ extension Board {
   }
 }
 
+// MARK: - CustomStringConvertible
 extension Board: CustomStringConvertible {
 
   public var description: String {

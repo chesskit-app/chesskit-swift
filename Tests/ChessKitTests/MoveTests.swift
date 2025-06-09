@@ -21,10 +21,12 @@ struct MoveTests {
 
   @Test func moveNotation() {
     let pawnD3 = Move(result: .move, piece: Piece(.pawn, color: .white, square: .d3), start: .d2, end: .d3)
+    #expect(String(describing: pawnD3) == "d3")
     #expect(pawnD3.san == "d3")
     #expect(pawnD3.lan == "d2d3")
 
     let bishopF4 = Move(result: .move, piece: Piece(.bishop, color: .white, square: .f4), start: .c1, end: .f4)
+    #expect(String(describing: bishopF4) == "Bf4")
     #expect(bishopF4.san == "Bf4")
     #expect(bishopF4.lan == "c1f4")
   }
@@ -94,6 +96,15 @@ struct MoveTests {
     #expect(Move.Assessment.forced.notation == "□")
     #expect(Move.Assessment.singular.notation == "")
     #expect(Move.Assessment.worst.notation == "")
+
+    #expect(Move.Assessment(notation: "") == .null)
+    #expect(Move.Assessment(notation: "!") == .good)
+    #expect(Move.Assessment(notation: "?") == .mistake)
+    #expect(Move.Assessment(notation: "!!") == .brilliant)
+    #expect(Move.Assessment(notation: "??") == .blunder)
+    #expect(Move.Assessment(notation: "!?") == .interesting)
+    #expect(Move.Assessment(notation: "?!") == .dubious)
+    #expect(Move.Assessment(notation: "□") == .forced)
   }
 
 }

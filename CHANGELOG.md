@@ -1,7 +1,25 @@
 # [unreleased]
 
+### New Features
+* `Position` now includes an `assessment` property for positional assessments.
+  * Possible values for `assessment` are part of the new `Position.Assessment` enum.
+  * These are based on the standardized [Numerical Annotation Glyphs](https://en.wikipedia.org/wiki/Portable_Game_Notation#Numeric_Annotation_Glyphs) (also used for `Move.Assessment`).
+  * `Game` and `MoveTree` have methods to update positional assessments.
+
+### Improvements
+* Rewrote `PGNParser` to be more efficient and reliable.
+  * Now parses PGN text more flexibly, accounting nested variations.
+  * `PGNParser.parse(game:)` has replaced the now deprecated `PGNParser.parse(game:startingWith:)` (position is now inferred from the PGN tags).
+  * `parse(game:)` is now a throwing method with a robust bank of possible errors for better error handling and understanding of why the PGN could not be parsed.
+  * `Game(pgn:)` is now also a throwing initializer, passing on the error from `PGNParser`.
+  * Now parses `Position.Assessment` (see above).
+* Add `Move.Assessment(notation:)` initializer.
+* Add `all` property to `Game.Tags` to return array of all named tags.
+* Add `CustomStringConvertible` conformance to `Game` and `Move`.
+
 ### Bug Fixes
 * Fix `SANParser` not parsing en passant captures properly (by Rob Raese).
+* Fix parsing of `"PlyCount"`, `"TimeControl"`, and `"SetUp"` PGN tags.
 
 # ChessKit 0.14.0
 Released Tuesday, June 3, 2025.

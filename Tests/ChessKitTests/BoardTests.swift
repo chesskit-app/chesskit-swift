@@ -80,7 +80,7 @@ struct BoardTests {
 
     await confirmation("Board returns fifty move draw result") { confirm in
       let delegate = MockBoardDelegate(didEnd: { result in
-        if case .draw(let drawType) = result {
+        if case let .draw(drawType) = result {
           if drawType == .fiftyMoves {
             confirm()
           }
@@ -97,7 +97,7 @@ struct BoardTests {
 
     try await confirmation("Board returns insufficient material draw result") { confirm in
       let delegate = MockBoardDelegate(didEnd: { result in
-        if case .draw(let drawType) = result {
+        if case let .draw(drawType) = result {
           if drawType == .insufficientMaterial {
             confirm()
           }
@@ -172,7 +172,7 @@ struct BoardTests {
 
     await confirmation("Board returns draw by repetition result") { confirm in
       let delegate = MockBoardDelegate(didEnd: { result in
-        if case .draw(let drawType) = result {
+        if case let .draw(drawType) = result {
           if drawType == .repetition {
             confirm()
           }

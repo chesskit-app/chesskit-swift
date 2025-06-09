@@ -10,7 +10,7 @@ final class GameTests {
 
   private var game = Game()
 
-  // MARK: - Indices used in tests
+  // MARK: Test Indices
 
   private let nf3Index = MoveTree.Index(number: 2, color: .white, variation: 0)
   private let bc4Index = MoveTree.Index(number: 3, color: .white, variation: 0)
@@ -20,7 +20,7 @@ final class GameTests {
   private let nc6Index2 = MoveTree.Index(number: 2, color: .black, variation: 0)
   private let f5Index = MoveTree.Index(number: 2, color: .black, variation: 3)
 
-  // MARK: - Setup
+  // MARK: Setup
 
   init() {
     game.tags = Self.mockTags
@@ -47,7 +47,7 @@ final class GameTests {
     game = Game()
   }
 
-  // MARK: - Test cases
+  // MARK: Test Cases
 
   @Test func startingPosition() {
     let game1 = Game(startingWith: .standard)
@@ -111,7 +111,17 @@ final class GameTests {
     game.annotate(moveAt: f5Index, comment: "Comment test")
 
     let moveText = String(PGNParser.convert(game: game).split(separator: "\n").last!)
-    let expectedMoveText = "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4"
+    let expectedMoveText = "1. e4 e5 2. Nf3 (2. Nc3 $3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 {Comment test} 3. exf5) 3. Bc4 1-0"
+
+    #expect(moveText == expectedMoveText)
+  }
+
+  @Test func positionAnnotation() {
+    game.annotate(positionAt: nc3Index, assessment: .whiteHasCrushingAdvantage)
+    game.annotate(positionAt: bc4Index, assessment: .whiteHasModerateTimeAdvantage)
+
+    let moveText = String(PGNParser.convert(game: game).split(separator: "\n").last!)
+    let expectedMoveText = "1. e4 e5 2. Nf3 (2. Nc3 $20 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4 $32 1-0"
 
     #expect(moveText == expectedMoveText)
   }
@@ -124,15 +134,25 @@ final class GameTests {
       .init(number: 2, color: .white, variation: 0),
       f5Index
     ]
-
     #expect(f5History == expectedF5History)
+
+    let emptyHistory = game.moves.history(for: .minimum)
+    #expect(emptyHistory == [.init(number: 1, color: .white)])
   }
 
   @Test func moveFuture() {
     let f5Future = game.moves.future(for: f5Index)
     let expectedF5Future = [MoveTree.Index(number: 3, color: .white, variation: 3)]
-
     #expect(f5Future == expectedF5Future)
+
+    let fullFuture = game.moves.future(for: .minimum)
+    let expectedFullFuture = [
+      MoveTree.Index(number: 1, color: .black, variation: 0),
+      MoveTree.Index(number: 2, color: .white, variation: 0),
+      MoveTree.Index(number: 2, color: .black, variation: 0),
+      MoveTree.Index(number: 3, color: .white, variation: 0)
+    ]
+    #expect(fullFuture == expectedFullFuture)
   }
 
   @Test func moveFullVariation() {
@@ -144,6 +164,14 @@ final class GameTests {
 
   @Test func moveTreeEmptyPath() {
     #expect(game.moves.path(from: nc3Index, to: nc3Index).isEmpty)
+  }
+
+  @Test func moveTreeInvalidPath() {
+    #expect(
+      game.moves
+        .path(from: nc3Index, to: .init(number: 100, color: .white))
+        .isEmpty
+    )
   }
 
   @Test func moveTreeSimplePath() {
@@ -231,13 +259,13 @@ final class GameTests {
       [TestKey1 "Test Value 1"]
       [TestKey2 "Test Value 2"]
 
-      1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
+      1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4 1-0
       """
 
     #expect(game.pgn == pgn)
   }
 
-  @Test func validTagPairs() {
+  @Test func validTagPairs() throws {
     let pgn =
       """
       [Event "Test Event"]
@@ -251,11 +279,11 @@ final class GameTests {
       1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
       """
 
-    let game = Game(pgn: pgn)
+    let game = try Game(pgn: pgn)
     #expect(game.tags.isValid)
   }
 
-  @Test func invalidTagPairs() {
+  @Test func invalidTagPairs() throws {
     let pgn =
       """
       [Event "Test Event"]
@@ -263,7 +291,7 @@ final class GameTests {
       1. e4 e5 2. Nf3 (2. Nc3 Nf6 (2... Nc6 3. f4) 3. Bc4) Nc6 (2... f5 3. exf5) 3. Bc4
       """
 
-    let game = Game(pgn: pgn)
+    let game = try Game(pgn: pgn)
     #expect(!game.tags.isValid)
     #expect(game.tags.$site.pgn.isEmpty)
   }

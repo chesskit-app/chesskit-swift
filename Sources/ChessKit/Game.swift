@@ -12,7 +12,7 @@ import Foundation
 /// making moves and publishes the played moves in an observable way.
 public struct Game: Hashable, Sendable {
 
-  // MARK: - Properties
+  // MARK: Properties
 
   /// The move tree representing all moves made in the game.
   public private(set) var moves: MoveTree
@@ -28,7 +28,7 @@ public struct Game: Hashable, Sendable {
     positions[startingIndex]
   }
 
-  // MARK: - Initializer
+  // MARK: Initializer
 
   /// Initialize a game with a starting position.
   ///
@@ -50,8 +50,8 @@ public struct Game: Hashable, Sendable {
   ///
   /// - parameter pgn: A string containing a PGN representation of
   /// a game.
-  public init(pgn: String) {
-    let parsed = PGNParser.parse(game: pgn)
+  public init(pgn: String) throws {
+    let parsed = try PGNParser.parse(game: pgn)
 
     moves = parsed.moves
     startingIndex = .minimum
@@ -59,7 +59,7 @@ public struct Game: Hashable, Sendable {
     tags = parsed.tags
   }
 
-  // MARK: - Moves
+  // MARK: Moves
 
   /// Perform the provided move in the game.
   ///
@@ -189,6 +189,19 @@ public struct Game: Hashable, Sendable {
     moves.annotate(moveAt: index, assessment: assessment, comment: comment)
   }
 
+  /// Annotates the position at the provided `index`.
+  ///
+  /// - parameter index: The index of the position within the ``MoveTree``.
+  /// - parameter assessment: The position assessment annotation.
+  ///
+  public mutating func annotate(
+    positionAt index: MoveTree.Index,
+    assessment: Position.Assessment
+  ) {
+    moves.annotate(positionAt: index, assessment: assessment)
+    positions[index]?.assessment = assessment
+  }
+
   /// The PGN represenation of the game.
   public var pgn: String {
     PGNParser.convert(game: self)
@@ -196,11 +209,19 @@ public struct Game: Hashable, Sendable {
 
 }
 
-// MARK: - Tags
+// MARK: - CustomStringConvertible
+extension Game: CustomStringConvertible {
 
+  public var description: String {
+    pgn
+  }
+
+}
+
+// MARK: - Tags
 extension Game {
 
-  /// Denotes a PGN tag pair.
+  /// Represents a PGN tag pair.
   @propertyWrapper
   public struct Tag: Hashable, Sendable {
 
@@ -229,6 +250,15 @@ extension Game {
 
   /// Contains the PGN tag pairs for a game.
   public struct Tags: Hashable, Sendable {
+
+    /// Returns all named tags.
+    ///
+    /// Does not include custom tags included in ``other``.
+    public var all: [Game.Tag] {
+      Mirror(reflecting: self).children.compactMap {
+        $0.value as? Game.Tag
+      }
+    }
 
     /// Whether or not all the standard mandatory tags for
     /// PGN archival are set.

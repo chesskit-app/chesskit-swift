@@ -8,3 +8,4 @@ Packages/
 # Xcode
 /*.xcodeproj
 xcuserdata/
+/*.playground/*

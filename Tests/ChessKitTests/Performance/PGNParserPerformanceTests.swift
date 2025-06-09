@@ -8,7 +8,7 @@ import XCTest
 
 final class PGNParserPerformanceTests: XCTestCase {
 
-  func testBoardPerformance() {
+  func testPGNParserPerformance() throws {
     // Clock Monotonic Time: 0.011 s
     // CPU Cycles: 32097.649 kC
     // CPU Instructions Retired: 107155.368 kI
@@ -26,7 +26,7 @@ final class PGNParserPerformanceTests: XCTestCase {
   }
 
   private func parsePGN() {
-    let parsedGame = PGNParser.parse(game: Game.fischerSpassky)
+    let parsedGame = try? PGNParser.parse(game: Game.fischerSpassky)
     XCTAssertNotNil(parsedGame)
   }
 
