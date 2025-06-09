@@ -203,11 +203,14 @@ public enum SANParser {
   ///     if the SAN is invalid.
   ///
   private static func targetSquare(for san: String) -> Square? {
-    if let range = san.range(of: Pattern.targetSquare, options: .regularExpression) {
-      Square(String(san[range]))
-    } else {
-      nil
-    }
+    guard
+      let range = san.range(
+        of: Pattern.targetSquare,
+        options: .regularExpression
+      )
+    else { return nil }
+
+    return Square(String(san[range]))
   }
 
   /// Checks if a SAN string contains a capture.

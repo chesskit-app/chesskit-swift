@@ -145,10 +145,7 @@ public struct Board: Sendable {
       return process(move: move)
     } else {
       let previousSet = set
-
-      guard let updatedPiece = position.move(piece, to: end) else {
-        return nil
-      }
+      guard let updatedPiece = position.move(piece, to: end) else { return nil }
 
       let move = disambiguate(
         move: Move(

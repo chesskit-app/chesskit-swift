@@ -225,20 +225,17 @@ private extension PGNParser.MoveTextParser {
       ["1", "2", "/", "-", "0", "*"].contains(character)
     }
 
-    static func isComment(_ character: Character) -> Bool {
-      !character.isWhitespace
-    }
-
     func isValid(character: Character) -> Bool {
       switch self {
-      case .none: false
+      // .comment is omitted from these checks because
+      // it is handled separately by checking for { } delimiters
+      case .none, .comment: false
       case .number: Self.isNumber(character)
       case .san: Self.isSAN(character)
       case .annotation: Self.isAnnotation(character)
       case .variationStart: Self.isVariationStart(character)
       case .variationEnd: Self.isVariationEnd(character)
       case .result: Self.isResult(character)
-      case .comment: Self.isComment(character)
       }
     }
 
@@ -255,9 +252,9 @@ private extension PGNParser.MoveTextParser {
         .variationEnd
       } else if isResult(character) {
         .result
-      } else if isComment(character) {
-        .comment
       } else {
+        // .comment is omitted from these checks because
+        // it is handled separately by checking for { } delimiters
         .none
       }
     }
