@@ -56,19 +56,16 @@ extension PGNParser {
         let matches = try? NSRegularExpression(pattern: Pattern.tagPair)
           .matches(in: tag, range: tagRange)
 
-        if let match = matches?.first, match.numberOfRanges >= 3 {
-          let key = match.range(at: 1)
-          let value = match.range(at: 2)
+        guard let match = matches?.first, match.numberOfRanges >= 3 else { return nil }
+        let key = match.range(at: 1)
+        let value = match.range(at: 2)
 
-          return (
-            NSString(string: tag).substring(with: key)
-              .trimmingCharacters(in: .whitespacesAndNewlines),
-            NSString(string: tag).substring(with: value)
-              .trimmingCharacters(in: .whitespacesAndNewlines)
-          )
-        } else {
-          return nil
-        }
+        return (
+          NSString(string: tag).substring(with: key)
+            .trimmingCharacters(in: .whitespacesAndNewlines),
+          NSString(string: tag).substring(with: value)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        )
       }
 
     let parsedTags = parsed(tags: Dictionary<String, String>(tags ?? []) { a, _ in a })
@@ -89,18 +86,14 @@ extension PGNParser {
 
       guard let moveNumberRange = move.range(of: Pattern.moveNumber, options: .regularExpression),
         let moveNumber = Int(move[moveNumberRange])
-      else {
-        return nil
-      }
+      else { return nil }
 
       guard
         let m = try? NSRegularExpression(pattern: Pattern.annotatedMove)
           .matches(in: move, range: range)
           .map({ NSString(string: move).substring(with: $0.range) }),
         m.count >= 1 && m.count <= 2
-      else {
-        return nil
-      }
+      else { return nil }
 
       let whiteMove =
         try? NSRegularExpression(pattern: PGNParser.Pattern.fullMove)
@@ -193,9 +186,7 @@ extension PGNParser {
 
     parsedMoves.forEach { move in
       let whiteIndex = MoveTree.Index(number: move.number, color: .white).previous
-      guard let currentPosition = game.positions[whiteIndex] else {
-        return
-      }
+      guard let currentPosition = game.positions[whiteIndex] else { return }
 
       var white = SANParser.parse(move: move.whiteMove.san, in: currentPosition)
       white?.assessment = move.whiteMove.annotation
@@ -207,9 +198,7 @@ extension PGNParser {
 
       // update position resulting from white move
       let blackIndex = MoveTree.Index(number: move.number, color: .black).previous
-      guard let updatedPosition = game.positions[blackIndex] else {
-        return
-      }
+      guard let updatedPosition = game.positions[blackIndex] else { return }
 
       var black: Move?
 

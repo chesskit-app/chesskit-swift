@@ -143,19 +143,20 @@ struct Attacks: Sendable {
     )
   }
 
+  // MARK: Sliding Attacks
+
   /// Generates array containing a `Magic` object for each
   /// square on the chess board.
   ///
   /// Uses a similar techique as Stockfish (see [`Stockfish/init_magics`](https://github.com/official-stockfish/Stockfish/blob/0716b845fdef8a20102b07eaec074b8da8162523/src/bitboard.cpp#L139)) except with hardcoded magics rather than
   /// seeded random generation.
-  private static func createMagics(for kind: Piece.Kind) {
+  private static func createMagics(for kind: SlidingPieceKind) {
     guard let magicNumbers = magicNumbers[kind] else { return }
 
     // ensure magics are only initialized once
     switch kind {
     case .bishop: guard bishops.isEmpty else { return }
     case .rook: guard rooks.isEmpty else { return }
-    default: break
     }
 
     let magics = Square.allCases.map { sq in
@@ -195,8 +196,13 @@ struct Attacks: Sendable {
     switch kind {
     case .rook: rooks = magics
     case .bishop: bishops = magics
-    default: break
     }
+  }
+
+  /// Piece kinds for which sliding attack magic bitboards can be generated.
+  private enum SlidingPieceKind {
+    case bishop
+    case rook
   }
 
   /// Returns the possible moves for a sliding piece (bishop or rook)
@@ -206,7 +212,7 @@ struct Attacks: Sendable {
   /// is included in the returned bitboard. It is up to the caller to handle
   /// captures or non-capturable pieces (i.e. same color pieces).
   private static func slidingAttacks(
-    for kind: Piece.Kind,
+    for kind: SlidingPieceKind,
     from square: Square,
     occupancy: Bitboard
   ) -> Bitboard {
@@ -229,8 +235,6 @@ struct Attacks: Sendable {
           { $0.southEast() },
           { $0.southWest() }
         ]
-      default:
-        []
       }
 
     directions.forEach { d in
@@ -248,7 +252,7 @@ struct Attacks: Sendable {
   /// Magic numbers for calculating bishop and rook magic bitboards.
   ///
   /// Derived by [Pradyumna Kannan](http://pradu.us/old/Nov27_2008/Buzz/research/magic/Bitboards.pdf).
-  private static let magicNumbers: [Piece.Kind: [Bitboard]] = [
+  private static let magicNumbers: [SlidingPieceKind: [Bitboard]] = [
     .bishop: [
       0x0002020202020200, 0x0002020202020000, 0x0004010202000000, 0x0004040080000000,
       0x0001104000000000, 0x0000821040000000, 0x0000410410400000, 0x0000104104104000,

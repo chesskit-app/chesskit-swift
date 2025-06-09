@@ -94,53 +94,50 @@ public enum SANParser {
     }
 
     // pieces
-    if let range = san.range(of: Pattern.pieceKind, options: .regularExpression) {
-      if let pieceKind = Piece.Kind(rawValue: String(san[range])),
-        let end = targetSquare(for: san)
-      {
-        var move: Move?
-        let disambiguation = self.disambiguation(for: san)
+    guard let range = san.range(of: Pattern.pieceKind, options: .regularExpression),
+      let pieceKind = Piece.Kind(rawValue: String(san[range])),
+      let end = targetSquare(for: san)
+    else { return nil }
 
-        let board = Board(position: position)
-        let possiblePiece = position.pieces
-          .filter { $0.kind == pieceKind && $0.color == color }
-          .filter {
-            board.canMove(pieceAt: $0.square, to: end)
-          }
-          .filter {
-            switch disambiguation {
-            case let .byFile(file):
-              $0.square.file == file
-            case let .byRank(rank):
-              $0.square.rank == rank
-            case let .bySquare(square):
-              $0.square == square
-            case .none:
-              true
-            }
-          }
-          .first
+    var move: Move?
+    let disambiguation = self.disambiguation(for: san)
 
-        guard var piece = possiblePiece else {
-          return nil
-        }
-
-        let start = piece.square
-        piece.square = end
-
-        if isCapture(san: san), let capturedPiece = position.piece(at: end) {
-          move = Move(result: .capture(capturedPiece), piece: piece, start: start, end: end, checkState: checkState)
-        } else {
-          move = Move(result: .move, piece: piece, start: start, end: end, checkState: checkState)
-        }
-
-        move?.disambiguation = disambiguation
-
-        return move
+    let board = Board(position: position)
+    let possiblePiece = position.pieces
+      .filter { $0.kind == pieceKind && $0.color == color }
+      .filter {
+        board.canMove(pieceAt: $0.square, to: end)
       }
+      .filter {
+        switch disambiguation {
+        case let .byFile(file):
+          $0.square.file == file
+        case let .byRank(rank):
+          $0.square.rank == rank
+        case let .bySquare(square):
+          $0.square == square
+        case .none:
+          true
+        }
+      }
+      .first
+
+    guard var piece = possiblePiece else {
+      return nil
     }
 
-    return nil
+    let start = piece.square
+    piece.square = end
+
+    if isCapture(san: san), let capturedPiece = position.piece(at: end) {
+      move = Move(result: .capture(capturedPiece), piece: piece, start: start, end: end, checkState: checkState)
+    } else {
+      move = Move(result: .move, piece: piece, start: start, end: end, checkState: checkState)
+    }
+
+    move?.disambiguation = disambiguation
+
+    return move
   }
 
   /// Converts a ``Move`` object into a SAN string.
@@ -203,11 +200,14 @@ public enum SANParser {
   ///     if the SAN is invalid.
   ///
   private static func targetSquare(for san: String) -> Square? {
-    if let range = san.range(of: Pattern.targetSquare, options: .regularExpression) {
-      Square(String(san[range]))
-    } else {
-      nil
-    }
+    guard
+      let range = san.range(
+        of: Pattern.targetSquare,
+        options: .regularExpression
+      )
+    else { return nil }
+
+    return Square(String(san[range]))
   }
 
   /// Checks if a SAN string contains a capture.
