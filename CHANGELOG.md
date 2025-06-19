@@ -1,6 +1,8 @@
 # [unreleased]
 
 ### New Features
+* Command line interface, view and test ChessKit features using `swift run chesskit-cli`
+  * See provided usage when running `chesskit-cli` for available commands.
 * `Position` now includes an `assessment` property for positional assessments.
   * Possible values for `assessment` are part of the new `Position.Assessment` enum.
   * These are based on the standardized [Numerical Annotation Glyphs](https://en.wikipedia.org/wiki/Portable_Game_Notation#Numeric_Annotation_Glyphs) (also used for `Move.Assessment`).
