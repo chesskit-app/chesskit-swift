@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.15.0
+Released Thursday, June 19, 2025.
 
 ### New Features
 * Command line interface, view and test ChessKit features using `swift run chesskit-cli`
