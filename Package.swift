@@ -15,8 +15,18 @@ let package = Package(
   products: [
     .library(name: "ChessKit", targets: ["ChessKit"])
   ],
+  dependencies: [
+    .package(url: "http://github.com/dduan/Dye", from: "0.0.1")
+  ],
   targets: [
     .target(name: "ChessKit"),
-    .testTarget(name: "ChessKitTests", dependencies: ["ChessKit"])
+    .testTarget(name: "ChessKitTests", dependencies: ["ChessKit"]),
+    .executableTarget(
+      name: "chesskit-cli",
+      dependencies: [
+        "ChessKit",
+        .product(name: "Dye", package: "dye")
+      ]
+    )
   ]
 )

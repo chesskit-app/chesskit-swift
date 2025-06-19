@@ -4,6 +4,7 @@
 .swiftpm
 .build
 Packages/
+Package.resolved
 
 # Xcode
 /*.xcodeproj
