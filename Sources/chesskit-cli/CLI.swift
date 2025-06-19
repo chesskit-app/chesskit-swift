@@ -54,7 +54,7 @@ class CLI {
     case nil:
       write("Unrecognized command ", as: .error)
       write("\(input)\n")
-    case .exit:
+    case .quit:
       write("Goodbye\n", as: .success)
     case .board:
       write("\(board)\n")

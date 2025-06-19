@@ -20,13 +20,13 @@ let package = Package(
   ],
   targets: [
     .target(name: "ChessKit"),
+    .testTarget(name: "ChessKitTests", dependencies: ["ChessKit"]),
     .executableTarget(
       name: "chesskit-cli",
       dependencies: [
         "ChessKit",
         .product(name: "Dye", package: "dye")
       ]
-    ),
-    .testTarget(name: "ChessKitTests", dependencies: ["ChessKit"])
+    )
   ]
 )

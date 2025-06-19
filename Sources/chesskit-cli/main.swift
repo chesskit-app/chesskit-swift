@@ -6,11 +6,13 @@
 var cli = CLI()
 cli.startUp()
 
-runLoop: while true {
+while true {
   print(">> ", terminator: "")
-  guard let input = readLine(), !input.isEmpty else { continue }
+  guard let input = readLine(), !input.isEmpty else {
+    continue
+  }
 
-  if cli.process(input: input) == .exit {
-    break runLoop
+  if cli.process(input: input) == .quit {
+    break
   }
 }

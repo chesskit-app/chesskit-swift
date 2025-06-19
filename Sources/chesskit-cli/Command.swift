@@ -4,7 +4,7 @@
 //
 
 enum Command: Equatable {
-  case exit
+  case quit
   case board
   case clear
   case help
@@ -19,8 +19,8 @@ enum Command: Equatable {
     let args = input.count > 1 ? Array(input.dropFirst()) : [String]()
 
     switch command {
-    case "exit", "quit", "q":
-      return .exit
+    case "quit", "q", "exit":
+      return .quit
     case "board", "b":
       return .board
     case "clear", "c":
