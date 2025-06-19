@@ -129,6 +129,14 @@ let move = Move(san: "e4", in: .standard)
 let sanString = move.san
 ```
 
+## Command Line
+
+The ChessKit command line interface (`chesskit-cli`) can be used to explore and test ChessKit features.
+
+The interface can be accessed by running `swift run chesskit-cli` from the project directory. The available commands will be displayed on screen and can be used to manipulate the board.
+
+<img width="500" src="https://chesskit.app/resources/chesskit-cli.gif" />
+
 ## License
 
 `ChessKit` is distributed under the [MIT License](https://github.com/chesskit-app/chesskit-swift/blob/master/LICENSE).
