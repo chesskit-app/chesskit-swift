@@ -135,7 +135,7 @@ The ChessKit command line interface (`chesskit-cli`) can be used to explore and 
 
 The interface can be accessed by running `swift run chesskit-cli` from the project directory. The available commands will be displayed on screen and can be used to manipulate the board.
 
-<img width="500" src="https://chesskit.app/resources/chesskit-cli.gif" />
+![chesskit-cli](https://github.com/user-attachments/assets/a38ba327-4d7c-42a1-a6e7-179c1aed04c1)
 
 ## License
 
