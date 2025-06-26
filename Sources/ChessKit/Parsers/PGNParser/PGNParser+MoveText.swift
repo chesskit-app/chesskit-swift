@@ -25,7 +25,27 @@ extension PGNParser {
     // MARK: Private
 
     private static func tokenize(moveText: String) throws(PGNParser.Error) -> [Token] {
-      let inlineMoveText = moveText.components(separatedBy: .newlines).joined(separator: "")
+      var inlineMoveText = moveText.components(separatedBy: .newlines).joined(separator: "")
+        
+      var resultToken: Token? = nil
+      var moves = inlineMoveText.components(separatedBy: .whitespaces)
+      
+      if let resultMove = moves.popLast() {
+        var isValidResult = true
+        for c in resultMove {
+          isValidResult = TokenType.result.isValid(character: c)
+          if !isValidResult {
+            break
+          }
+        }
+          
+        if isValidResult,
+          let token = TokenType.result.convert(resultMove) {
+          resultToken = token
+          inlineMoveText = moves.joined(separator: " ")
+        }
+      }
+        
       var iterator = inlineMoveText.makeIterator()
 
       var tokens = [Token]()
@@ -59,6 +79,10 @@ extension PGNParser {
 
       if !currentToken.isEmpty, let token = currentTokenType.convert(currentToken) {
         tokens.append(token)
+      }
+        
+      if let resultToken {
+        tokens.append(resultToken)
       }
 
       return tokens
