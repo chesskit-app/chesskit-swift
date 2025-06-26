@@ -246,7 +246,7 @@ private extension PGNParser.MoveTextParser {
     }
 
     static func isResult(_ character: Character) -> Bool {
-      ["1", "2", "/", "-", "0", "*"].contains(character)
+      ["1", "2", "/", "-", "0", "*", "½"].contains(character)
     }
 
     func isValid(character: Character) -> Bool {
