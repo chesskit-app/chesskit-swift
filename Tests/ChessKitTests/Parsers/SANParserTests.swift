@@ -52,6 +52,7 @@ struct SANParserTests {
   @Test func disambiguation() {
     let pw = Position(fen: "3r3r/8/8/R7/4Q2Q/8/8/R6Q w - - 0 1")!
     let pb = Position(fen: "3r3r/8/8/R7/4Q2Q/8/8/R6Q b - - 0 1")!
+    let pbCheck = Position(fen: "r4rk1/pp3pbp/1qp3p1/2B5/2BP2b1/Q1n2N2/P4PPP/3RK2R b K - 1 16")!
 
     let rookFileMove = SANParser.parse(move: "R1a3", in: pw)
     #expect(rookFileMove?.result == .move)
@@ -70,6 +71,15 @@ struct SANParserTests {
     #expect(rookRankMove?.end == .f8)
     #expect(rookRankMove?.promotedPiece == nil)
     #expect(rookRankMove?.checkState == Move.CheckState.none)
+      
+    let rookCheckMove = SANParser.parse(move: "Rfe8+", in: pbCheck)
+    #expect(rookCheckMove?.result == .move)
+    #expect(rookCheckMove?.piece.kind == .rook)
+    #expect(rookCheckMove?.disambiguation == .byFile(.f))
+    #expect(rookCheckMove?.start == .f8)
+    #expect(rookCheckMove?.end == .e8)
+    #expect(rookCheckMove?.promotedPiece == nil)
+    #expect(rookCheckMove?.checkState == Move.CheckState.check)
 
     let queenMove = SANParser.parse(move: "Qh4e1", in: pw)
     #expect(queenMove?.result == .move)
