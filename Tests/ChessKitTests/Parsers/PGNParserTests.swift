@@ -47,6 +47,11 @@ struct PGNParserTests {
     #expect(game.tags.termination == "normal")
     #expect(game.tags.mode == "OTB")
   }
+    
+  @Test func tagResultWinParsing() throws {
+    let game = try PGNParser.parse(game: Game.byrneFischer)
+    #expect(game.tags.result == "0-1")
+  }
 
   @Test func tagParsingIrregularWhitespace() throws {
     let game = try PGNParser.parse(

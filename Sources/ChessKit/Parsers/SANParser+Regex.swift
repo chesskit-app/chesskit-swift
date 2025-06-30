@@ -18,7 +18,7 @@ extension SANParser {
     static let longCastle = #"^[Oo0]-[Oo0]-[Oo0]\+?#?$"#
 
     // disambiguation
-    static let disambiguation = #"[a-h]?[1-8]?(?=([a-h][1-8])$)"#
+    static let disambiguation = #"[a-h]?[1-8]?(?=([a-h][1-8][#+]?)$)"#
     static let rank = #"^[1-8]$"#
     static let file = #"^[a-h]$"#
     static let square = #"^[a-h][1-8]$"#
