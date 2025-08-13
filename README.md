@@ -107,6 +107,25 @@ let board = Board()
 print(board.legalMoves(forPieceAt: .e2))    // [.e3, .e4]
 ```
 
+* Check board state after making a move
+``` swift
+let board = Board(position: .init("8/5K1k/8/4Q3/8/8/8/8 w - - 0 1")!)
+print(board.state) // .active (default)
+
+// 8 · · · · · · · ·
+// 7 · · · · · ♔ · ♚
+// 6 · · · · · · · ·
+// 5 · · · · ♕ · · ·
+// 4 · · · · · · · ·
+// 3 · · · · · · · ·
+// 2 · · · · · · · ·
+// 1 · · · · · · · ·
+//   a b c d e f g h
+
+board.move(pieceAt: "e5", to: "g7")
+print(board.state) // .checkmate(color: .black)
+```
+
 * Parse [FEN](https://en.wikipedia.org/wiki/Forsyth–Edwards_Notation) into a `Position` object, [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) (into `Game`), or [SAN](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)) (into `Move`).
 ``` swift
 // parse FEN using Position initializer

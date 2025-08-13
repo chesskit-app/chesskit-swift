@@ -664,7 +664,7 @@ extension Board {
   public enum State: Hashable, Sendable {
     /// The board's position represents an active position.
     ///
-    /// This value indicates there is nothing of note about this position.
+    /// This default state indicates there is nothing of note about this position.
     case active
     /// The board's position represents an active piece promotion
     /// with the given move.
@@ -674,8 +674,14 @@ extension Board {
     /// the promotion.
     case promotion(move: Move)
     /// The board's position represents a check on the given `color`.
+    ///
+    /// To get the color of the piece that executed the check
+    /// use ``Piece/Color/opposite``.
     case check(color: Piece.Color)
     /// The board's position represents a checkmate on the given `color`.
+    ///
+    /// To get the color of the piece that executed the checkmate
+    /// use ``Piece/Color/opposite``.
     case checkmate(color: Piece.Color)
     /// The board's position represents a draw with a given `reason`.
     case draw(reason: DrawReason)
