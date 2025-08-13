@@ -110,8 +110,6 @@ print(board.legalMoves(forPieceAt: .e2))    // [.e3, .e4]
 * Check board state after making a move
 ``` swift
 let board = Board(position: .init("8/5K1k/8/4Q3/8/8/8/8 w - - 0 1")!)
-print(board.state) // .active (default)
-
 // 8 · · · · · · · ·
 // 7 · · · · · ♔ · ♚
 // 6 · · · · · · · ·
@@ -122,6 +120,7 @@ print(board.state) // .active (default)
 // 1 · · · · · · · ·
 //   a b c d e f g h
 
+print(board.state) // .active (default)
 board.move(pieceAt: "e5", to: "g7")
 print(board.state) // .checkmate(color: .black)
 ```
