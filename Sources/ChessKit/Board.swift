@@ -68,7 +68,7 @@ public struct Board: Sendable {
   /// - note: `Board` internally keeps track of identical position
   /// counts to monitor for threefold repetition draws. Setting
   /// the same position multiple times may trigger this draw state if
-  /// `resetPositionCounts` is not set to `true`. The recommended to
+  /// `resetPositionCounts` is not set to `true`. The recommended way to
   /// update the position is by making sequential moves
   /// using ``Board/move(pieceAt:to:)``.
   public mutating func update(
