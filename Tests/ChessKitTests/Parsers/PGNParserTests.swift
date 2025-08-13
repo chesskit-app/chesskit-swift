@@ -9,7 +9,7 @@ import Testing
 struct PGNParserTests {
 
   @Test func gameFromEmptyPGN() throws {
-    #expect(try PGNParser.parse(game: "") == .init(startingWith: .standard))
+    #expect(try PGNParser.parse(game: "") == Game(startingWith: .standard))
   }
 
   @Test func gameFromPGN() throws {

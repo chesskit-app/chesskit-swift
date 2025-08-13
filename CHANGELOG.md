@@ -1,3 +1,11 @@
+# [unreleased]
+
+### New Features
+* Add `Board.state` property to track board state changes.
+  * `BoardDelegate` and `Board.delegate` have been deprecated and will be removed in the future.
+* Add `Board.update(position:)` to update `position` in `Board`.
+  * Updates `state` along with `position`.
+
 # ChessKit 0.15.0
 Released Thursday, June 19, 2025.
 

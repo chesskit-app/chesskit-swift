@@ -8,6 +8,25 @@ import Testing
 
 struct BoardTests {
 
+  @Test func updatePosition() {
+    var board = Board()
+    #expect(board.position == .standard)
+    #expect(board.state == .active)
+
+    board.update(position: .complex)
+    #expect(board.position == .complex)
+    #expect(board.state == .active)
+
+    board.update(position: .test)
+    board.update(position: .test)
+    board.update(position: .test)
+    #expect(board.position == .test)
+    #expect(board.state == .draw(reason: .repetition))
+
+    board.update(position: .test, resetPositionCounts: true)
+    #expect(board.state == .active)
+  }
+
   @Test func enPassant() {
     var board = Board(position: .ep)
     let ep = board.position.enPassant!
@@ -35,79 +54,62 @@ struct BoardTests {
   }
 
   @Test(arguments: Piece.Color.allCases)
-  func promotion(color: Piece.Color) async throws {
+  func promotion(color: Piece.Color) {
     let pawnStart = color == .white ? Square.e7 : .e2
     let pawnEnd = color == .white ? Square.e8 : .e1
 
+    let king = Piece(.pawn, color: color.opposite, square: .a7)
     let pawn = Piece(.pawn, color: color, square: pawnStart)
     let queen = Piece(.queen, color: color, square: pawnEnd)
-    var board = Board(position: .init(pieces: [pawn]))
+    var board = Board(position: .init(pieces: [pawn, king], sideToMove: color))
 
-    try await confirmation("\(pawn) promotes to \(queen)", expectedCount: 2) { confirm in
-      nonisolated(unsafe) var willPromoteDidRun = false
+    let attemptedMove = board.move(pieceAt: pawnStart, to: pawnEnd)
 
-      let delegate = MockBoardDelegate(
-        willPromote: { move in
-          let pawn = Piece(.pawn, color: color, square: pawnEnd)
-          #expect(move.piece == pawn)
-          #expect(move.promotedPiece == nil)
-          willPromoteDidRun = true
-          confirm()
-        },
-        didPromote: { move in
-          if !willPromoteDidRun {
-            Issue.record("BoardDelegate.willPromote() did not run.")
-          }
-
-          #expect(move.promotedPiece == queen)
-          confirm()
-        }
-      )
-      board.delegate = delegate
-
-      let attemptedMove = board.move(pieceAt: pawnStart, to: pawnEnd)
-      let move = try #require(attemptedMove)
+    if case let .promotion(move: move) = board.state {
       let promotionMove = board.completePromotion(of: move, to: .queen)
-
       #expect(promotionMove.result == .move)
       #expect(promotionMove.promotedPiece == queen)
       #expect(promotionMove.end == pawnEnd)
+      #expect(board.state == .active)
+    } else {
+      Issue.record("Failed to trigger promotion for \(attemptedMove!)")
     }
   }
 
-  @Test func fiftyMoveRule() async {
+  @Test(arguments: Piece.Color.allCases)
+  func initializeWithPromotion(color: Piece.Color) {
+    let pawnSquare = color == .white ? Square.e8 : .e1
+
+    let king = Piece(.pawn, color: color.opposite, square: .a7)
+    let pawn = Piece(.pawn, color: color, square: pawnSquare)
+    let queen = Piece(.queen, color: color, square: pawnSquare)
+    var board = Board(position: .init(pieces: [pawn, king], sideToMove: color))
+
+    if case let .promotion(move: move) = board.state {
+      let promotionMove = board.completePromotion(of: move, to: .queen)
+      #expect(promotionMove.result == .move)
+      #expect(promotionMove.promotedPiece == queen)
+      #expect(promotionMove.end == pawnSquare)
+      #expect(board.state == .active)
+    } else {
+      Issue.record("Failed to identify promotion on \(pawnSquare)")
+    }
+  }
+
+  @Test func fiftyMoveRule() {
     var board = Board(position: .fiftyMove)
-
-    await confirmation("Board returns fifty move draw result") { confirm in
-      let delegate = MockBoardDelegate(didEnd: { result in
-        if case let .draw(drawType) = result {
-          if drawType == .fiftyMoves {
-            confirm()
-          }
-        }
-      })
-
-      board.delegate = delegate
-      board.move(pieceAt: .f7, to: .f8)
-    }
+    board.move(pieceAt: .f7, to: .f8)
+    #expect(board.state == .draw(reason: .fiftyMoves))
   }
 
-  @Test func insufficientMaterial() async throws {
+  @Test func insufficientMaterial() {
     var board = Board(position: .init(fen: "k7/b6P/8/8/8/8/8/K7 w - - 0 1")!)
-
-    try await confirmation("Board returns insufficient material draw result") { confirm in
-      let delegate = MockBoardDelegate(didEnd: { result in
-        if case let .draw(drawType) = result {
-          if drawType == .insufficientMaterial {
-            confirm()
-          }
-        }
-      })
-      board.delegate = delegate
-
-      let attemptedMove = board.move(pieceAt: .h7, to: .h8)
-      let move = try #require(attemptedMove)
+    let attemptedMove = board.move(pieceAt: .h7, to: .h8)
+    if case let .promotion(move: move) = board.state {
       board.completePromotion(of: move, to: .bishop)
+      #expect(board.state == .draw(reason: .insufficientMaterial))
+    } else {
+      Issue.record("Failed to trigger promotion for \(attemptedMove!)")
     }
   }
 
@@ -124,6 +126,7 @@ struct BoardTests {
 
       board.completePromotion(of: move, to: p)
       #expect(!board.position.hasInsufficientMaterial)
+      #expect(board.state == .check(color: .black))
     }
 
     for p in invalidPieces {
@@ -132,6 +135,7 @@ struct BoardTests {
 
       board.completePromotion(of: move, to: p)
       #expect(board.position.hasInsufficientMaterial)
+      #expect(board.state == .draw(reason: .insufficientMaterial))
     }
 
     // opposite color bishops vs same color bishops
@@ -142,18 +146,22 @@ struct BoardTests {
     let board3 = Board(position: .init(fen: fen3)!)
 
     #expect(!board2.position.hasInsufficientMaterial)
+    #expect(board2.state == .active)
     #expect(board3.position.hasInsufficientMaterial)
+    #expect(board3.state == .draw(reason: .insufficientMaterial))
 
     // before and after king takes Queen
     let fen4 = "k7/1Q6/8/8/8/8/8/K7 w - - 0 1"
     var board4 = Board(position: .init(fen: fen4)!)
 
     #expect(!board4.position.hasInsufficientMaterial)
+    #expect(board4.state == .check(color: .black))
     board4.move(pieceAt: .a8, to: .b7)
     #expect(board4.position.hasInsufficientMaterial)
+    #expect(board4.state == .draw(reason: .insufficientMaterial))
   }
 
-  @Test func threefoldRepetition() async {
+  @Test func threefoldRepetition() {
     var board = Board(position: .standard)
 
     board.move(pieceAt: .e2, to: .e4)
@@ -169,19 +177,9 @@ struct BoardTests {
     board.move(pieceAt: .g8, to: .f6)
 
     board.move(pieceAt: .f3, to: .g1)
+    board.move(pieceAt: .f6, to: .g8)  // 3rd time position occurs
 
-    await confirmation("Board returns draw by repetition result") { confirm in
-      let delegate = MockBoardDelegate(didEnd: { result in
-        if case let .draw(drawType) = result {
-          if drawType == .repetition {
-            confirm()
-          }
-        }
-      })
-
-      board.delegate = delegate
-      board.move(pieceAt: .f6, to: .g8)  // 3rd time position occurs
-    }
+    #expect(board.state == .draw(reason: .repetition))
   }
 
   @Test func legalMovesForNonexistentPiece() {
@@ -342,36 +340,18 @@ struct BoardTests {
     #expect(move == nil)
   }
 
-  @Test func checkMove() async {
+  @Test func checkMove() {
     var board = Board(position: .init(fen: "k7/7R/8/8/8/8/K7/8 w - - 0 1")!)
-
-    await confirmation("Board returns check result") { confirm in
-      let delegate = MockBoardDelegate(didCheckKing: { color in
-        if color == .black {
-          confirm()
-        }
-      })
-
-      board.delegate = delegate
-      let move = board.move(pieceAt: .h7, to: .h8)
-      #expect(move?.checkState == .check)
-    }
+    let move = board.move(pieceAt: .h7, to: .h8)
+    #expect(move?.checkState == .check)
+    #expect(board.state == .check(color: .black))
   }
 
-  @Test func checkmateMove() async {
+  @Test func checkmateMove() {
     var board = Board(position: .init(fen: "k7/7R/6R1/8/8/8/K7/8 w - - 0 1")!)
-
-    await confirmation("Board returns checkmate result") { confirm in
-      let delegate = MockBoardDelegate(didEnd: { result in
-        if case .win(.white) = result {
-          confirm()
-        }
-      })
-
-      board.delegate = delegate
-      let move = board.move(pieceAt: .g6, to: .g8)
-      #expect(move?.checkState == .checkmate)
-    }
+    let move = board.move(pieceAt: .g6, to: .g8)
+    #expect(move?.checkState == .checkmate)
+    #expect(board.state == .checkmate(color: .black))
   }
 
   @Test func sideToMove() {
@@ -496,6 +476,195 @@ extension BoardTests {
         1 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
           a b c d e f g h
         """)
+  }
+
+  @available(*, deprecated)
+  @Test(arguments: Piece.Color.allCases)
+  func legacyPromotion(color: Piece.Color) async throws {
+    let pawnStart = color == .white ? Square.e7 : .e2
+    let pawnEnd = color == .white ? Square.e8 : .e1
+
+    let pawn = Piece(.pawn, color: color, square: pawnStart)
+    let queen = Piece(.queen, color: color, square: pawnEnd)
+    var board = Board(position: .init(pieces: [pawn]))
+
+    try await confirmation("\(pawn) promotes to \(queen)", expectedCount: 2) { confirm in
+      nonisolated(unsafe) var willPromoteDidRun = false
+
+      let delegate = MockBoardDelegate(
+        willPromote: { move in
+          let pawn = Piece(.pawn, color: color, square: pawnEnd)
+          #expect(move.piece == pawn)
+          #expect(move.promotedPiece == nil)
+          willPromoteDidRun = true
+          confirm()
+        },
+        didPromote: { move in
+          if !willPromoteDidRun {
+            Issue.record("BoardDelegate.willPromote() did not run.")
+          }
+
+          #expect(move.promotedPiece == queen)
+          confirm()
+        }
+      )
+      board.delegate = delegate
+
+      let attemptedMove = board.move(pieceAt: pawnStart, to: pawnEnd)
+      let move = try #require(attemptedMove)
+      let promotionMove = board.completePromotion(of: move, to: .queen)
+
+      #expect(promotionMove.result == .move)
+      #expect(promotionMove.promotedPiece == queen)
+      #expect(promotionMove.end == pawnEnd)
+    }
+  }
+
+  @available(*, deprecated)
+  @Test func legacyFiftyMoveRule() async {
+    var board = Board(position: .fiftyMove)
+
+    await confirmation("Board returns fifty move draw result") { confirm in
+      let delegate = MockBoardDelegate(didEnd: { result in
+        if case let .draw(drawType) = result {
+          if drawType == .fiftyMoves {
+            confirm()
+          }
+        }
+      })
+
+      board.delegate = delegate
+      board.move(pieceAt: .f7, to: .f8)
+    }
+  }
+
+  @available(*, deprecated)
+  @Test func legacyInsufficientMaterial() async throws {
+    var board = Board(position: .init(fen: "k7/b6P/8/8/8/8/8/K7 w - - 0 1")!)
+
+    try await confirmation("Board returns insufficient material draw result") { confirm in
+      let delegate = MockBoardDelegate(didEnd: { result in
+        if case let .draw(drawType) = result {
+          if drawType == .insufficientMaterial {
+            confirm()
+          }
+        }
+      })
+      board.delegate = delegate
+
+      let attemptedMove = board.move(pieceAt: .h7, to: .h8)
+      let move = try #require(attemptedMove)
+      board.completePromotion(of: move, to: .bishop)
+    }
+  }
+
+  @available(*, deprecated)
+  @Test func legacyInsufficientMaterialScenarios() {
+    // different promotions
+    let fen = "k7/7P/8/8/8/8/8/K7 w - - 0 1"
+
+    let validPieces: [Piece.Kind] = [.rook, .queen]
+    let invalidPieces: [Piece.Kind] = [.bishop, .knight]
+
+    for p in validPieces {
+      var board = Board(position: .init(fen: fen)!)
+      let move = board.move(pieceAt: .h7, to: .h8)!
+
+      board.completePromotion(of: move, to: p)
+      #expect(!board.position.hasInsufficientMaterial)
+    }
+
+    for p in invalidPieces {
+      var board = Board(position: .init(fen: fen)!)
+      let move = board.move(pieceAt: .h7, to: .h8)!
+
+      board.completePromotion(of: move, to: p)
+      #expect(board.position.hasInsufficientMaterial)
+    }
+
+    // opposite color bishops vs same color bishops
+    let fen2 = "k5B1/b7/1b6/8/8/8/8/K7 w - - 0 1"
+    let fen3 = "k5B1/1b6/2b5/8/8/8/8/K7 w - - 0 1"
+
+    let board2 = Board(position: .init(fen: fen2)!)
+    let board3 = Board(position: .init(fen: fen3)!)
+
+    #expect(!board2.position.hasInsufficientMaterial)
+    #expect(board3.position.hasInsufficientMaterial)
+
+    // before and after king takes Queen
+    let fen4 = "k7/1Q6/8/8/8/8/8/K7 w - - 0 1"
+    var board4 = Board(position: .init(fen: fen4)!)
+
+    #expect(!board4.position.hasInsufficientMaterial)
+    board4.move(pieceAt: .a8, to: .b7)
+    #expect(board4.position.hasInsufficientMaterial)
+  }
+
+  @available(*, deprecated)
+  @Test func legacyThreefoldRepetition() async {
+    var board = Board(position: .standard)
+
+    board.move(pieceAt: .e2, to: .e4)
+    board.move(pieceAt: .e7, to: .e5)  // 1st time position occurs
+
+    board.move(pieceAt: .g1, to: .f3)
+    board.move(pieceAt: .g8, to: .f6)
+
+    board.move(pieceAt: .f3, to: .g1)
+    board.move(pieceAt: .f6, to: .g8)  // 2nd time position occurs
+
+    board.move(pieceAt: .g1, to: .f3)
+    board.move(pieceAt: .g8, to: .f6)
+
+    board.move(pieceAt: .f3, to: .g1)
+
+    await confirmation("Board returns draw by repetition result") { confirm in
+      let delegate = MockBoardDelegate(didEnd: { result in
+        if case let .draw(drawType) = result {
+          if drawType == .repetition {
+            confirm()
+          }
+        }
+      })
+
+      board.delegate = delegate
+      board.move(pieceAt: .f6, to: .g8)  // 3rd time position occurs
+    }
+  }
+
+  @available(*, deprecated)
+  @Test func legacyCheckMove() async {
+    var board = Board(position: .init(fen: "k7/7R/8/8/8/8/K7/8 w - - 0 1")!)
+
+    await confirmation("Board returns check result") { confirm in
+      let delegate = MockBoardDelegate(didCheckKing: { color in
+        if color == .black {
+          confirm()
+        }
+      })
+
+      board.delegate = delegate
+      let move = board.move(pieceAt: .h7, to: .h8)
+      #expect(move?.checkState == .check)
+    }
+  }
+
+  @available(*, deprecated)
+  @Test func legacyCheckmateMove() async {
+    var board = Board(position: .init(fen: "k7/7R/6R1/8/8/8/K7/8 w - - 0 1")!)
+
+    await confirmation("Board returns checkmate result") { confirm in
+      let delegate = MockBoardDelegate(didEnd: { result in
+        if case .win(.white) = result {
+          confirm()
+        }
+      })
+
+      board.delegate = delegate
+      let move = board.move(pieceAt: .g6, to: .g8)
+      #expect(move?.checkState == .checkmate)
+    }
   }
 
 }

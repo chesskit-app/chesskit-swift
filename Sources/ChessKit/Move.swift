@@ -39,6 +39,9 @@ public struct Move: Hashable, Sendable {
   /// The result of the move.
   public internal(set) var result: Result
   /// The piece that made the move.
+  ///
+  /// - warning: Do not refer to this piece's `square` directly,
+  /// use the move's `start` and `end` properties as needed.
   public internal(set) var piece: Piece
   /// The starting square of the move.
   public internal(set) var start: Square
