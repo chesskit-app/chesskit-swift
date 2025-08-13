@@ -5,6 +5,7 @@
 
 import ChessKit
 
+@available(*, deprecated)
 final class MockBoardDelegate: BoardDelegate {
   private let willPromote: (@Sendable (Move) -> Void)?
   private let didPromote: (@Sendable (Move) -> Void)?

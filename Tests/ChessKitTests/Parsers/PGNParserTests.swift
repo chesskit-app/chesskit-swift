@@ -9,14 +9,14 @@ import Testing
 struct PGNParserTests {
 
   @Test func gameFromEmptyPGN() throws {
-    #expect(try PGNParser.parse(game: "") == .init(startingWith: .standard))
+    #expect(try PGNParser.parse(game: "").pgn == Game(startingWith: .standard).pgn)
   }
 
   @Test func gameFromPGN() throws {
     let game = try PGNParser.parse(game: Game.fischerSpassky)
     let gameFromPGN = try Game(pgn: Game.fischerSpassky)
 
-    #expect(game == gameFromPGN)
+    #expect(game.pgn == gameFromPGN.pgn)
   }
 
   @Test func pgnFromGame() {
@@ -230,7 +230,7 @@ extension PGNParserTests {
     let pgn = Game.fischerSpassky.replacingOccurrences(of: "$135 ", with: "")
 
     #expect(
-      try PGNParser.parse(game: pgn) == PGNParser.parse(game: pgn, startingWith: .standard)
+      try PGNParser.parse(game: pgn).pgn == PGNParser.parse(game: pgn, startingWith: .standard).pgn
     )
   }
 

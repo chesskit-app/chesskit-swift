@@ -1,25 +1,7 @@
 //
-//  BBBoard.swift
+//  Board.swift
 //  ChessKit
 //
-
-/// Delegate protocol that allows the implementer to receive
-/// events related to changes in position on the board such
-/// as pawn promotions and end results.
-public protocol BoardDelegate: AnyObject, Sendable {
-  /// Called when a pawn reaches the promotion square.
-  func willPromote(with move: Move)
-  /// Called after a pawn has promoted to a new `Piece.Kind`.
-  ///
-  /// `move` will have its `promotedPiece` set when this is called.
-  func didPromote(with move: Move)
-  /// Called when the king with `color` is placed in check.
-  func didCheckKing(ofColor color: Piece.Color)
-  /// Called when the board has reached an end state.
-  ///
-  /// For example, checkmate, stalemate, etc.
-  func didEnd(with result: Board.EndResult)
-}
 
 /// Manages the state of the chess board and validates
 /// legal moves and game rules.
@@ -31,10 +13,17 @@ public struct Board: Sendable {
   ///
   /// Used to communicate certain events as
   /// the ``position`` changes.
+  @available(*, deprecated, message: "Monitor `state` property of `Board` instead.")
   public weak var delegate: BoardDelegate?
 
   /// The current position represented on the board.
-  public var position: Position
+  public private(set) var position: Position
+
+  /// The state of the board, based on ``Board/position``.
+  ///
+  /// This value communicates if the active position
+  /// represents a check, checkmate, draw, or piece promotion.
+  public private(set) var state: State
 
   /// A dictionary containing the occurrence counts for all the positions
   /// that have appeared on this board, keyed by the position's hash.
@@ -57,18 +46,50 @@ public struct Board: Sendable {
   ///
   public init(position: Position = .standard) {
     Attacks.create()
+
+    state = .active
+    positionHashCounts = [:]
     self.position = position
-    self.positionHashCounts = [:]
+
+    updateState()
   }
 
   // MARK: Public
+
+  /// Manually set the board's position.
+  ///
+  /// - parameter position: The new position to set the board to.
+  /// - parameter resetPositionCounts: Whether to reset identical
+  /// position counts for the purposes of identifying three-fold repetitions.
+  /// The default value is `false`.
+  ///
+  /// This also updates the board's ``Board/state``.
+  ///
+  /// - note: `Board` internally keeps track of identical position
+  /// counts to monitor for threefold repetition draws. Setting
+  /// the same position multiple times may trigger this draw state if
+  /// `resetPositionCounts` is not set to `true`. The recommended to
+  /// update the position is by making sequential moves
+  /// using ``Board/move(pieceAt:to:)``.
+  public mutating func update(
+    position: Position,
+    resetPositionCounts: Bool = false
+  ) {
+    if resetPositionCounts {
+      positionHashCounts = [:]
+    }
+
+    self.position = position
+    updateState()
+  }
 
   /// Moves the piece at a given square to a new square.
   ///
   /// - parameter start: The starting square of the piece.
   /// - parameter end: The ending square of the piece.
   ///
-  /// - returns: The ``Move`` object representing the move.
+  /// - returns: The ``Move`` object representing the move or `nil` if the
+  /// move is invalid.
   ///
   /// If `start` doesn't contain a piece or `end` is not a valid legal move
   /// for the piece at `start`, `nil` is returned.
@@ -77,12 +98,13 @@ public struct Board: Sendable {
   /// the move but not capture the details in any way. If the move is
   /// not legal, this method returns without performing any actions.
   ///
-  /// This method also handles all the side effects of a given move.
-  ///
-  /// For example:
+  /// This method also handles all the side effects of a given move, for example:
   /// - Moving the king in a castling move will also move the
   /// corresponding rook.
   /// - Moving to capture a piece removes the captured piece from the board.
+  ///
+  /// After this method returns, check the ``Board/state`` value to see if the
+  /// state of the board's ``Board/position`` has changed in a meaningful way.
   @discardableResult
   public mutating func move(pieceAt start: Square, to end: Square) -> Move? {
     guard canMove(pieceAt: start, to: end), let piece = set.get(start) else {
@@ -222,40 +244,89 @@ public struct Board: Sendable {
   private mutating func process(move: Move) -> Move {
     var processedMove = move
 
-    // checks & mate
     let checkState = self.checkState(for: move.piece.color)
     processedMove.checkState = checkState
+
+    updateState(after: move)
+    return processedMove
+  }
+
+  /// Updates the board's `state`.
+  ///
+  /// - parameter move: Set this if updating the state after
+  /// a move has been made so the appropriate piece color can
+  /// be used for check determination.
+  private mutating func updateState(after move: Move? = nil) {
+    let moveColor = move?.piece.color ?? position.sideToMove
+
+    // pawn promotion
+    if let move {
+      if move.piece.kind == .pawn {
+        if (move.end.rank == 8 && move.piece.color == .white) || (move.end.rank == 1 && move.piece.color == .black) {
+          if move.promotedPiece == nil {
+            state = .promotion(move: move)
+            delegate?.willPromote(with: move)
+            // prevent any more state changes until promotion is completed,
+            // as the board is in an "incomplete" state
+            return
+          } else {
+            delegate?.didPromote(with: move)
+          }
+        }
+      }
+    } else {
+      if position.sideToMove == .black,
+        let pawnSquare = (set.p & .rank1).squares.first
+      {
+        let move = Move(
+          result: .move,
+          piece: .init(.pawn, color: .black, square: pawnSquare),
+          start: pawnSquare.up,
+          end: pawnSquare
+        )
+        state = .promotion(move: move)
+        return
+      } else if position.sideToMove == .white,
+        let pawnSquare = (set.P & .rank8).squares.first
+      {
+        let move = Move(
+          result: .move,
+          piece: .init(.pawn, color: .white, square: pawnSquare),
+          start: pawnSquare.down,
+          end: pawnSquare
+        )
+        state = .promotion(move: move)
+        return
+      }
+    }
 
     // draw by repetition
     positionHashCounts[position.hashValue, default: 0] += 1
 
-    // board state notification
+    // board state update
+    let checkState = self.checkState(for: moveColor)
+
     if checkState == .checkmate {
-      delegate?.didEnd(with: .win(move.piece.color))
+      state = .checkmate(color: moveColor.opposite)
+      delegate?.didEnd(with: .win(moveColor))
     } else if checkState == .stalemate {
+      state = .draw(reason: .stalemate)
       delegate?.didEnd(with: .draw(.stalemate))
     } else if position.clock.halfmoves >= Clock.halfMoveMaximum {
+      state = .draw(reason: .fiftyMoves)
       delegate?.didEnd(with: .draw(.fiftyMoves))
     } else if position.hasInsufficientMaterial {
+      state = .draw(reason: .insufficientMaterial)
       delegate?.didEnd(with: .draw(.insufficientMaterial))
     } else if positionHashCounts[position.hashValue] == 3 {
+      state = .draw(reason: .repetition)
       delegate?.didEnd(with: .draw(.repetition))
     } else if checkState == .check {
-      delegate?.didCheckKing(ofColor: processedMove.piece.color.opposite)
+      state = .check(color: moveColor.opposite)
+      delegate?.didCheckKing(ofColor: moveColor.opposite)
+    } else {
+      state = .active
     }
-
-    // pawn promotion
-    if move.piece.kind == .pawn {
-      if (move.end.rank == 8 && move.piece.color == .white) || (move.end.rank == 1 && move.piece.color == .black) {
-        if move.promotedPiece == nil {
-          delegate?.willPromote(with: move)
-        } else {
-          delegate?.didPromote(with: move)
-        }
-      }
-    }
-
-    return processedMove
   }
 
   /// Determines the current check state for the provided `color`.
@@ -587,8 +658,42 @@ public struct Board: Sendable {
 
 }
 
+// MARK: - State
+extension Board {
+  /// Represents a state of the board.
+  public enum State: Hashable, Sendable {
+    /// The board's position represents an active position.
+    ///
+    /// This value indicates there is nothing of note about this position.
+    case active
+    /// The board's position represents an active piece promotion
+    /// with the given move.
+    ///
+    /// If this state is received, call ``Board/completePromotion(of:to:)``
+    /// with `move` and the desired promotion `kind` to complete
+    /// the promotion.
+    case promotion(move: Move)
+    /// The board's position represents a check on the given `color`.
+    case check(color: Piece.Color)
+    /// The board's position represents a checkmate on the given `color`.
+    case checkmate(color: Piece.Color)
+    /// The board's position represents a draw with a given `reason`.
+    case draw(reason: DrawReason)
+
+    /// The type of draw represented on the board.
+    public enum DrawReason: String, Sendable {
+      case agreement
+      case fiftyMoves
+      case insufficientMaterial
+      case repetition
+      case stalemate
+    }
+  }
+}
+
 // MARK: - End Result
 extension Board {
+  @available(*, deprecated, renamed: "State")
   /// Represents an end result of a standard chess game.
   public enum EndResult: Hashable, Sendable {
     /// The board represents a win for the given color.

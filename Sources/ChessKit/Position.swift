@@ -41,9 +41,9 @@ public struct Position: Sendable {
   init(
     pieces: [Piece],
     sideToMove: Piece.Color = .white,
-    legalCastlings: LegalCastlings = LegalCastlings(),
+    legalCastlings: LegalCastlings = .init(),
     enPassant: EnPassant? = nil,
-    clock: Clock = Clock(),
+    clock: Clock = .init(),
     assessment: Assessment = .null
   ) {
     self.pieceSet = .init(pieces: pieces)

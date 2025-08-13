@@ -37,12 +37,13 @@ public struct Game: Hashable, Sendable {
   ///
   /// Defaults to the starting position.
   public init(startingWith position: Position = .standard, tags: Tags? = nil) {
-    moves = MoveTree()
     let startingIndex = position.sideToMove == .white ? MoveTree.Index.minimum : .minimum.next
     self.startingIndex = startingIndex
+    
     positions = [startingIndex: position]
     self.tags = tags ?? .init()
 
+    moves = .init()
     moves.minimumIndex = startingIndex
   }
 
@@ -52,11 +53,7 @@ public struct Game: Hashable, Sendable {
   /// a game.
   public init(pgn: String) throws {
     let parsed = try PGNParser.parse(game: pgn)
-
-    moves = parsed.moves
-    startingIndex = .minimum
-    positions = parsed.positions
-    tags = parsed.tags
+    self = parsed
   }
 
   // MARK: Moves
