@@ -17,6 +17,8 @@ public struct Board: Sendable {
   public weak var delegate: BoardDelegate?
 
   /// The current position represented on the board.
+  ///
+  /// To manually change the position, use ``Board/update(position:resetPositionCounts:)``.
   public private(set) var position: Position
 
   /// The state of the board, based on ``Board/position``.
