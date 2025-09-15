@@ -7,6 +7,11 @@ Released Monday, September 15, 2025.
 * Add `Board.update(position:)` to update `position` in `Board`.
   * Updates `state` along with `position`.
   * `Board.position` now has a private setter, use `Board.update(position:)` instead.
+* Add support for `½` character in PGN parser game result (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
+
+### Bug Fixes
+* Fix issue where PGN parser parses game result as a number (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
+* Fix issue where SAN parser did not disambiguate between check and checkmate moves (by [@Amir-Zucker](https://github.com/Amir-Zucker)).
 
 # ChessKit 0.15.0
 Released Thursday, June 19, 2025.
