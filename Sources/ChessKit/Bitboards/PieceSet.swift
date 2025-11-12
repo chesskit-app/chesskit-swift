@@ -7,7 +7,7 @@
 ///
 /// Also contains convenient amalgamations
 /// of different combinations of pieces.
-struct PieceSet: Hashable, Sendable {
+struct PieceSet: Codable, Hashable, Sendable {
   /// Bitboard for black king pieces.
   var k: Bitboard = 0
   /// Bitboard for black queen pieces.

@@ -4,7 +4,7 @@
 //
 
 /// Structure that captures en passant moves.
-struct EnPassant: Hashable, Sendable {
+struct EnPassant: Codable, Hashable, Sendable {
 
   /// Pawn that is capable of being captured by en passant.
   var pawn: Piece

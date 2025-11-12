@@ -9,6 +9,12 @@ import XCTest
 final class BoardPerformanceTests: XCTestCase {
 
   func testBoardPerformance() {
+    // Clock Monotonic Time: 0.014 s
+    // CPU Cycles: 35461.259 kC
+    // CPU Instructions Retired: 141907.174 kI
+    // CPU Time: 0.014 s
+    // Memory Peak Physical: 36245.299 kB
+    // Memory Physical: 13.107 kB
     measure(
       metrics: [
         XCTClockMetric(),
