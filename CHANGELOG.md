@@ -1,4 +1,5 @@
-# [unreleased]
+# ChessKit 0.17.0
+Released Wednesday, November 12, 2025.
 
 ### New Features
 * All public types except for `Board` now conform to `Codable`.
