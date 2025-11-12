@@ -5,7 +5,7 @@
 
 /// Tracks the number of moves in a game for
 /// the purposes of regulating the 50 move rule.
-public struct Clock: Hashable, Sendable {
+public struct Clock: Codable, Hashable, Sendable {
 
   /// The maximum number of half moves before
   /// a draw by the fifty move rule should be called.

@@ -1,3 +1,9 @@
+# [unreleased]
+
+### New Features
+* All public types except for `Board` now conform to `Codable`.
+  * `Board` conformance to `Codable` will be added when `BoardDelegate` is removed.
+
 # ChessKit 0.16.0
 Released Monday, September 15, 2025.
 

@@ -663,7 +663,7 @@ public struct Board: Sendable {
 // MARK: - State
 extension Board {
   /// Represents a state of the board.
-  public enum State: Hashable, Sendable {
+  public enum State: Codable, Hashable, Sendable {
     /// The board's position represents an active position.
     ///
     /// This default state indicates there is nothing of note about this position.
@@ -689,7 +689,7 @@ extension Board {
     case draw(reason: DrawReason)
 
     /// The type of draw represented on the board.
-    public enum DrawReason: String, Sendable {
+    public enum DrawReason: String, Codable, Sendable {
       case agreement
       case fiftyMoves
       case insufficientMaterial

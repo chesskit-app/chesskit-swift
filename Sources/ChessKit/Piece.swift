@@ -4,10 +4,10 @@
 //
 
 /// Represents a piece on the chess board.
-public struct Piece: Hashable, Sendable {
+public struct Piece: Codable, Hashable, Sendable {
 
   /// Represents the color of a piece.
-  public enum Color: String, CaseIterable, Sendable {
+  public enum Color: String, CaseIterable, Codable, Sendable {
     case black = "b", white = "w"
 
     /// The opposite color of the given color.
@@ -22,7 +22,7 @@ public struct Piece: Hashable, Sendable {
   }
 
   /// Represents the type of piece.
-  public enum Kind: String, CaseIterable, Sendable {
+  public enum Kind: String, CaseIterable, Codable, Sendable {
     case pawn = ""
     case knight = "N", bishop = "B", rook = "R", queen = "Q", king = "K"
 

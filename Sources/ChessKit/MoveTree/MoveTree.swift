@@ -9,7 +9,7 @@ import Foundation
 ///
 /// The tree maintains the move order including variations and
 /// provides index-based access for any element in the tree.
-public struct MoveTree: Hashable, Sendable {
+public struct MoveTree: Codable, Hashable, Sendable {
 
   /// The index of the root of the move tree.
   ///
@@ -374,7 +374,7 @@ extension MoveTree: Equatable {
 extension MoveTree {
 
   /// Object that represents a node in the move tree.
-  class Node: Hashable, @unchecked Sendable, Sequence {
+  class Node: Codable, Hashable, @unchecked Sendable, Sequence {
 
     /// The move for this node.
     var move: Move

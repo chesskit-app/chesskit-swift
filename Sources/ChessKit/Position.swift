@@ -4,7 +4,7 @@
 //
 
 /// Represents the collection of pieces on the chess board.
-public struct Position: Sendable {
+public struct Position: Codable, Sendable {
 
   /// The pieces currently existing on the board in this position.
   public var pieces: [Piece] {
@@ -215,7 +215,7 @@ extension Position {
   ///
   /// The raw String value corresponds to what is displayed
   /// in a PGN string.
-  public enum Assessment: String, Sendable {
+  public enum Assessment: String, Codable, Sendable {
     case null = ""
     case drawishPosition = "$10"
     case equalChancesQuietPosition = "$11"

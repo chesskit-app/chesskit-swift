@@ -4,17 +4,17 @@
 //
 
 /// Represents a move on a chess board.
-public struct Move: Hashable, Sendable {
+public struct Move: Codable, Hashable, Sendable {
 
   /// The result of the move.
-  public enum Result: Hashable, Sendable {
+  public enum Result: Codable, Hashable, Sendable {
     case move
     case capture(Piece)
     case castle(Castling)
   }
 
   /// The check state resulting from the move.
-  public enum CheckState: String, Sendable {
+  public enum CheckState: String, Codable, Sendable {
     case none
     case check
     case checkmate
@@ -30,7 +30,7 @@ public struct Move: Hashable, Sendable {
   }
 
   /// Rank, file, or square disambiguation of moves.
-  public enum Disambiguation: Hashable, Sendable {
+  public enum Disambiguation: Codable, Hashable, Sendable {
     case byFile(Square.File)
     case byRank(Square.Rank)
     case bySquare(Square)
@@ -110,7 +110,7 @@ extension Move {
   ///
   /// The raw String value corresponds to what is displayed
   /// in a PGN string.
-  public enum Assessment: String, Sendable {
+  public enum Assessment: String, Codable, Sendable {
     case null = "$0"
     case good = "$1"
     case mistake = "$2"

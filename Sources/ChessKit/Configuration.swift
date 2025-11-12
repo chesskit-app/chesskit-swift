@@ -4,13 +4,13 @@
 //
 
 /// Stores configuration options for the `ChessKit` package.
-public struct ChessKitConfiguration: Sendable {
+public struct ChessKitConfiguration: Codable, Sendable {
 
   /// Configuration options for printing ``Board`` and ``Position`` objects, useful
   /// for debugging.
   public nonisolated(unsafe) static var printOptions = PrintOptions()
 
-  public struct PrintOptions: Sendable {
+  public struct PrintOptions: Codable, Sendable {
     /// Whether to print pieces as letters (`letter`) or unicode graphics (`graphic`)
     /// when printing ``Board`` and ``Position`` objects.
     ///
@@ -24,7 +24,7 @@ public struct ChessKitConfiguration: Sendable {
     public var showCoordinates = true
 
     /// ChessKit `printMode` options.
-    public enum PrintMode: Sendable {
+    public enum PrintMode: Codable, Sendable {
       /// Print pieces as unicode graphic characters, e.g. ♟, ♞, ♝, ♜, ♛, ♚.
       case graphic
       /// Print pieces as FEN letters, e.g. P, N, B, R, Q, K.

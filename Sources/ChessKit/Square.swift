@@ -4,9 +4,9 @@
 //
 
 /// Represents a square on the chess board.
-public enum Square: Int, CaseIterable, Sendable {
+public enum Square: Int, CaseIterable, Codable, Sendable {
   /// The file on the chess board, from a to h.
-  public enum File: String, CaseIterable, Sendable {
+  public enum File: String, CaseIterable, Codable, Sendable {
     case a, b, c, d, e, f, g, h
 
     /// The number corresponding to the file.
@@ -46,7 +46,7 @@ public enum Square: Int, CaseIterable, Sendable {
   }
 
   /// The rank on the chess board, from 1 to 8.
-  public struct Rank: ExpressibleByIntegerLiteral, Hashable, Sendable {
+  public struct Rank: Codable, ExpressibleByIntegerLiteral, Hashable, Sendable {
     /// The possible range of Rank numbers.
     public static let range = 1...8
 
