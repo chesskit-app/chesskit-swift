@@ -99,7 +99,24 @@ public struct Game: Codable, Hashable, Sendable {
     switch move.result {
     case .move:
       newPosition.move(pieceAt: move.start, to: move.end)
-      if move.piece.kind == .pawn { newPosition.resetHalfmoveClock() }
+      if move.piece.kind == .pawn {
+        newPosition.resetHalfmoveClock()
+        // Set en passant if pawn advances two squares,
+        // so the next position knows a capture is possible.
+        if abs(move.start.rank.value - move.end.rank.value) == 2,
+           let movedPawn = newPosition.piece(at: move.end) {
+          newPosition.enPassant = EnPassant(pawn: movedPawn)
+          newPosition.enPassantIsPossible = true
+        } else {
+          // Clear en passant — pawn moved only one square.
+          newPosition.enPassant = nil
+          newPosition.enPassantIsPossible = false
+        }
+      } else {
+        // Non-pawn move — clear en passant.
+        newPosition.enPassant = nil
+        newPosition.enPassantIsPossible = false
+      }
     case let .capture(capturedPiece):
       newPosition.remove(capturedPiece)
       newPosition.move(pieceAt: move.start, to: move.end)
