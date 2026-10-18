@@ -112,6 +112,23 @@ public struct Game: Codable, Hashable, Sendable {
       newPosition.promote(pieceAt: move.end, to: promotedPiece.kind)
     }
 
+    // Record the en-passant target after a double pawn push (and clear it
+    // otherwise). Without this, positions produced by `make` never carry an
+    // en-passant square, so `SANParser`/`Board` reject the following
+    // en-passant capture as illegal — which makes `Game(pgn:)` fail to parse
+    // any game containing an en-passant capture. `Board.move` already does
+    // this; mirror it here so `Game`-built positions carry the same state.
+    newPosition.enPassant = nil
+    newPosition.enPassantIsPossible = false
+    if case .move = move.result,
+      move.piece.kind == .pawn,
+      abs(move.start.rank.value - move.end.rank.value) == 2,
+      let pushedPawn = newPosition.piece(at: move.end)
+    {
+      newPosition.enPassant = EnPassant(pawn: pushedPawn)
+      newPosition.enPassantIsPossible = true
+    }
+
     positions[newIndex] = newPosition
     return newIndex
   }

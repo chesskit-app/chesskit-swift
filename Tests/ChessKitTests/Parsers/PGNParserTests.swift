@@ -220,6 +220,49 @@ struct PGNParserTests {
 
 }
 
+// MARK: - En passant & castling-rights regressions
+extension PGNParserTests {
+
+  @Test func enPassantCaptureFromPGN() throws {
+    // 3. exd6 is an en passant capture. Parsing previously failed because the
+    // position after 2... d5 did not record the en passant square, so the
+    // capture was rejected as an illegal move.
+    let game = try Game(pgn: "1. e4 Nf6 2. e5 d5 3. exd6")
+
+    let sans = game.moves.history(for: game.moves.endIndex).map { game.moves[$0]?.san }
+    #expect(sans == ["e4", "Nf6", "e5", "d5", "exd6"])
+
+    // The capturing pawn ends on d6 and the d5 pawn is removed.
+    let final = try #require(game.positions[game.moves.endIndex])
+    #expect(final.fen == "rnbqkb1r/ppp1pppp/3P1n2/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3")
+  }
+
+  @Test func doublePushRecordsEnPassantSquare() throws {
+    // A double pawn push should leave an en passant target in the FEN.
+    let game = try Game(pgn: "1. e4 c5")
+    let final = try #require(game.positions[game.moves.endIndex])
+    #expect(final.fen == "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2")
+  }
+
+  @Test func capturedRookForfeitsCastlingRight() throws {
+    // After 14. Rxa8 captures Black's a8 rook, Black can no longer castle
+    // queenside; previously the right lingered because removing a piece did
+    // not invalidate castling.
+    let game = try Game(
+      pgn: """
+        1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O b5 6. Bb3 Bc5 7. c3 d6
+        8. d4 Bb6 9. a4 Bb7 10. Re1 h6 11. Be3 Ng4 12. Bd5 Qc8 13. axb5 axb5
+        14. Rxa8 Qxa8
+        """
+    )
+    let final = try #require(game.positions[game.moves.endIndex])
+    #expect(!final.legalCastlings.contains(.bQ))
+    #expect(final.legalCastlings.contains(.bK))
+    #expect(final.fen.split(separator: " ")[2] == "k")
+  }
+
+}
+
 // MARK: - Deprecated Tests
 extension PGNParserTests {
 

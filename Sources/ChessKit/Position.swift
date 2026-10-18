@@ -153,6 +153,11 @@ public struct Position: Codable, Sendable {
   ///
   /// If the piece is not currently located in the position, this method has no effect.
   mutating func remove(_ piece: Piece) {
+    // Capturing a rook on its home square must forfeit the corresponding
+    // castling right (e.g. after Rxa8, Black can no longer castle queenside).
+    // `invalidateCastling(for:)` keys off the piece's kind and square, so this
+    // is a no-op for any piece that is not a rook on a castling square.
+    legalCastlings.invalidateCastling(for: piece)
     pieceSet.remove(piece)
   }
 
